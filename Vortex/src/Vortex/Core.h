@@ -7,6 +7,6 @@
     #define VORTEX_API __declspec(dllimport)
     #endif
 #else
-    #error Vertex only support for windows!
+    #error Vortex only supports for windows!
 #endif
 
