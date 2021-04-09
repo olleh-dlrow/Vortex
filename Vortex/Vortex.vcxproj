@@ -19,13 +19,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Vortex\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Vortex\Events\Event.h" />
+    <ClInclude Include="src\Vortex\Events\KeyEvent.h" />
+    <ClInclude Include="src\Vortex\Events\MouseEvent.h" />
+    <ClInclude Include="src\Vortex\Log.h" />
     <ClInclude Include="src\Vortex.h" />
     <ClInclude Include="src\Vortex\Application.h" />
     <ClInclude Include="src\Vortex\Core.h" />
     <ClInclude Include="src\Vortex\EntryPoint.h" />
+    <ClInclude Include="src\vtpch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Vortex\Log.cpp" />
     <ClCompile Include="src\Vortex\Application.cpp" />
+    <ClCompile Include="src\vtpch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -129,6 +140,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>VT_PLATFORM_WINDOWS;VT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Vortex\vendor\spdlog\include;$(SolutionDir)Vortex\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>vtpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +157,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>VT_PLATFORM_WINDOWS;VT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)Vortex\vendor\spdlog\include;$(SolutionDir)Vortex\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>vtpch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

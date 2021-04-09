@@ -10,3 +10,4 @@
     #error Vortex only supports for windows!
 #endif
 
+#define BIT(x) (1 << x)
