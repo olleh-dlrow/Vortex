@@ -1,7 +1,14 @@
-#dir
-.vs/
-bin/
+# Binaries
+**/bin/
+!vendor/premake/bin/
 bin-int/
 
-#files
-*.user
+# Vortex files
+*.log
+
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user

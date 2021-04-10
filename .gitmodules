@@ -4,3 +4,4 @@
 [submodule "Vortex/vendor/GLFW"]
 	path = Vortex/vendor/GLFW
 	url = https://github.com/glfw/glfw.git
+	ignore = all
