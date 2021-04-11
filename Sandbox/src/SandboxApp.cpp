@@ -26,6 +26,7 @@ class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
         PushLayer(new ExampleLayer());
+        PushOverlay(new Vortex::ImGuiLayer());
     }
 };
 

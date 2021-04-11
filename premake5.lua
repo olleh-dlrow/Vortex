@@ -16,9 +16,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Vortex/vendor/GLFW/include"
 IncludeDir["Glad"] = "Vortex/vendor/Glad/include"
+IncludeDir["ImGui"] = "Vortex/vendor/imgui"
 
 include "Vortex/vendor/GLFW"
 include "Vortex/vendor/Glad"
+include "Vortex/vendor/imgui"
 
 project "Vortex"
     location "Vortex"
@@ -42,13 +44,15 @@ project "Vortex"
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
         "%{IncludeDir.GLFW}",
-        "%{IncludeDir.Glad}"
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.ImGui}"
     }
     
     links
     {
         "GLFW",
         "Glad",
+        "ImGui",
         "opengl32.lib"
     }
     
