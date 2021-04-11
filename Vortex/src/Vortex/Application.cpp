@@ -3,7 +3,6 @@
 
 #include "Log.h"
 
-#include <GLFW/glfw3.h>
 #include "Platform/Windows/WindowsWindow.h"
 
 namespace Vortex {
@@ -17,6 +16,7 @@ namespace Vortex {
         bind to a pointer to member function
         */
         m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
+
     }
 
     Application::~Application() {}
