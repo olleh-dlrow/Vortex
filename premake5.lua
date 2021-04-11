@@ -66,14 +66,17 @@ project "Vortex"
         
     filter "configurations:Debug"
         defines "VT_DEBUG"
+        buildoptions "/MDd"
         symbols "On"
         
     filter "configurations:Release"
         defines "VT_RELEASE"
+        buildoptions "/MD"
         symbols "On"    
         
     filter "configurations:Dist"
         defines "VT_DIST"
+        buildoptions "/MD"
         symbols "On"       
 
 
@@ -115,13 +118,16 @@ project "Sandbox"
         
     filter "configurations:Debug"
         defines "VT_DEBUG"
+        buildoptions "/MDd"
         symbols "On"
         
     filter "configurations:Release"
         defines "VT_RELEASE"
+        buildoptions "/MD"
         symbols "On"    
         
     filter "configurations:Dist"
         defines "VT_DIST"
+        buildoptions "/MD"
         symbols "On"           
  

@@ -21,11 +21,25 @@ namespace Vortex {
 
     Application::~Application() {}
 
+    void Application::PushLayer(Layer* layer) {
+        m_LayerStack.PushLayer(layer);
+    }
+
+    void Application::PushOverlay(Layer* layer) {
+        m_LayerStack.PushOverlay(layer);
+    }
+
     void Application::OnEvent(Event& e) {
         EventDispatcher dispatcher(e);
         dispatcher.Dispath<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
-        VT_CORE_TRACE("{0}", e);
+
+        for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
+            (*--it)->OnEvent(e);
+            if ( e.Handled )break;
+        }
     }
+
+
 
     bool Application::OnWindowClose(WindowCloseEvent& e) {
         m_Running = false;
@@ -36,6 +50,11 @@ namespace Vortex {
         while(m_Running) {
             glClearColor(1, 0, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            for(auto layer : m_LayerStack) {
+                layer->OnUpdate();
+            }
+
             m_Window->OnUpdate();
         }
     }
