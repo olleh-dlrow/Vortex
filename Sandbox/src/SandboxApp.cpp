@@ -13,7 +13,7 @@ public:
 
     void OnUpdate() override
     {
-        VT_INFO("ExampleLayer::Update");
+        //VT_INFO("ExampleLayer::Update");
     }
 
     void OnEvent(Vortex::Event& event) override
@@ -31,5 +31,6 @@ public:
 };
 
 Vortex::Application* Vortex::CreateApplication() {
+    VT_TRACE("Application created.");
     return new Sandbox();
 }

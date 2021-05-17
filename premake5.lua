@@ -65,7 +65,8 @@ project "Vortex"
         {
             "VT_PLATFORM_WINDOWS",
             "VT_BUILD_DLL",
-            "GLFW_INCLUDE_NONE"
+            "GLFW_INCLUDE_NONE",
+            "VT_ENABLE_ASSERTS"
         }
     
         postbuildcommands
