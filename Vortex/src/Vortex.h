@@ -3,7 +3,6 @@
 
 //for use by vortex application
 #include"Vortex/Application.h"
-#include"Vortex/Log.h"
 #include"Vortex/ImGui/ImGuiLayer.h"
 
 /*

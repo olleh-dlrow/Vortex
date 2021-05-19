@@ -1,4 +1,6 @@
 #include "vtpch.h"
+#include "Vortex/Log.h"
+
 #include "WindowsWindow.h"
 
 #include "Vortex/Events/ApplicationEvent.h"

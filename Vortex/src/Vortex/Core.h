@@ -10,6 +10,10 @@
     #error Vortex only supports for windows!
 #endif
 
+#ifdef VT_DEBUG
+    #define VT_ENABLE_ASSERTS
+#endif
+
 #ifdef VT_ENABLE_ASSERTS
     /*
     tips:

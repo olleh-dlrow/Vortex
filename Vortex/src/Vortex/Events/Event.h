@@ -30,7 +30,7 @@ namespace Vortex {
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override {return category;}
 
-	class Event {
+	class VORTEX_API Event {
 	public:
 		bool Handled = false;  //some event can be handled by other event
 

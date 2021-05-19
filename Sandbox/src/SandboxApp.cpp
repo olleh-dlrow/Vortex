@@ -13,12 +13,12 @@ public:
 
     void OnUpdate() override
     {
-        //VT_INFO("ExampleLayer::Update");
+        //VT_TRACE("ExampleLayer::Update");
     }
 
     void OnEvent(Vortex::Event& event) override
     {
-        VT_TRACE("{0}", event);
+        VT_TRACE("{0}", event);   
     }
 };
 
@@ -28,9 +28,12 @@ public:
         PushLayer(new ExampleLayer());
         PushOverlay(new Vortex::ImGuiLayer());
     }
+    ~Sandbox() {
+    
+    }
 };
 
 Vortex::Application* Vortex::CreateApplication() {
-    VT_TRACE("Application created.");
+    VT_INFO("Create application");
     return new Sandbox();
 }

@@ -1,9 +1,10 @@
 #include "vtpch.h"
 #include "Application.h"
 
-#include "Log.h"
+//#include "Platform/Windows/WindowsWindow.h"
+#include <glad/glad.h>
 
-#include "Platform/Windows/WindowsWindow.h"
+#include "Input.h"
 
 namespace Vortex {
 
@@ -59,6 +60,9 @@ namespace Vortex {
             for(auto layer : m_LayerStack) {
                 layer->OnUpdate();
             }
+
+            //auto[x, y] = Input::GetMousePosition();
+            //VT_CORE_TRACE("Mouse Position: {0}, {1}", x, y);
 
             m_Window->OnUpdate();
         }

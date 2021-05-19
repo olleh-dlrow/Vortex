@@ -3,7 +3,7 @@
 #include "Event.h"
 
 namespace Vortex {
-    class KeyEvent: public Event {
+    class VORTEX_API KeyEvent: public Event {
     public:
         int GetKeyCode() const {return m_KeyCode;}
 
@@ -13,7 +13,7 @@ namespace Vortex {
         int m_KeyCode;
     };
 
-    class KeyPressedEvent: public KeyEvent 
+    class VORTEX_API KeyPressedEvent: public KeyEvent 
     {
     public:
         KeyPressedEvent(const int keycode, int repeatCount): 
@@ -36,7 +36,7 @@ namespace Vortex {
         int m_RepeatCount;
     };
 
-	class KeyReleasedEvent : public KeyEvent
+	class VORTEX_API KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(const int keycode)
@@ -52,7 +52,7 @@ namespace Vortex {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	class KeyTypedEvent : public KeyEvent
+	class VORTEX_API KeyTypedEvent : public KeyEvent
 	{
 	public:
 		KeyTypedEvent(const int keycode)
