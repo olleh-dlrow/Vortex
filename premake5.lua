@@ -113,6 +113,7 @@ project "Sandbox"
     {
         "Vortex/vendor/spdlog/include",
         "Vortex/src",
+        "Vortex/vendor",
         "%{IncludeDir.glm}"
     }
     

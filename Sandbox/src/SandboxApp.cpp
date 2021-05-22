@@ -1,5 +1,7 @@
 #include <Vortex.h>
 
+#include "imgui/imgui.h"
+
 /*
 tips:
 To copy the dll automatically, you can 
@@ -17,6 +19,13 @@ public:
         {
             VT_TRACE("Tab is pressed (poll)!");
         }
+    }
+
+    virtual void OnImGuiRender() override
+    {
+        ImGui::Begin("Test");
+        ImGui::Text("Hello World");
+        ImGui::End();
     }
 
     void OnEvent(Vortex::Event& event) override
@@ -37,7 +46,6 @@ class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
         PushLayer(new ExampleLayer());
-        PushOverlay(new Vortex::ImGuiLayer());
     }
     ~Sandbox() {
     

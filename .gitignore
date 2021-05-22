@@ -6,6 +6,9 @@ bin-int/
 # Vortex files
 *.log
 
+# imgui files
+**/imgui.ini
+
 # Visual Studio files and folder
 .vs/
 **.sln
