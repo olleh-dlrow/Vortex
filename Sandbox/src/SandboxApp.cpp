@@ -13,12 +13,23 @@ public:
 
     void OnUpdate() override
     {
-        //VT_TRACE("ExampleLayer::Update");
+        if ( Vortex::Input::IsKeyPressed(VT_KEY_TAB) )
+        {
+            VT_TRACE("Tab is pressed (poll)!");
+        }
     }
 
     void OnEvent(Vortex::Event& event) override
     {
-        VT_TRACE("{0}", event);   
+        if ( event.GetEventType() == Vortex::EventType::KeyPressed )
+        {
+            Vortex::KeyPressedEvent& e = (Vortex::KeyPressedEvent&)event;
+            if ( e.GetKeyCode() == VT_KEY_TAB )
+            {
+                VT_TRACE("Tab is pressed (event)!");
+            }
+            VT_TRACE("{0}", (char)e.GetKeyCode());
+        }
     }
 };
 

@@ -1,9 +1,14 @@
 #pragma once
-#include"vtpch.h"
+//#include"vtpch.h"
 
 //for use by vortex application
 #include"Vortex/Application.h"
 #include"Vortex/ImGui/ImGuiLayer.h"
+#include"Vortex/Log.h"
+
+#include "Vortex/Input.h"
+#include "Vortex/KeyCodes.h"
+#include "Vortex/MouseButtonCodes.h"
 
 /*
 tips:
