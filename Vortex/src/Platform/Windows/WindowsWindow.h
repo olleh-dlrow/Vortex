@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vortex/Window.h"
+#include "Vortex/Renderer/GraphicsContext.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -26,6 +27,7 @@ namespace Vortex {
 		virtual void Shutdown();
     private:
         GLFWwindow* m_Window;
+        GraphicsContext* m_Context;
         struct WindowData
         {
             std::string Title;
