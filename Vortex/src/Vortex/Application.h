@@ -8,6 +8,8 @@
 
 #include "Vortex/ImGui/ImGuiLayer.h"
 
+#include "Vortex/Renderer/Shader.h"
+
 namespace Vortex {
 
     class VORTEX_API Application
@@ -34,6 +36,8 @@ namespace Vortex {
         LayerStack m_LayerStack;
 
         unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+        std::unique_ptr<Shader> m_Shader;
+
     private:
         static Application* s_Instance;
     };
