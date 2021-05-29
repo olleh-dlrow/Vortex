@@ -11,8 +11,8 @@ namespace Vortex
     {
         switch (Renderer::GetAPI())
         {
-        case RendererAPI::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::OpenGL:  return new OpenGLVertexBuffer(vertices, size);
+        case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+        case RendererAPI::API::OpenGL:  return new OpenGLVertexBuffer(vertices, size);
         }
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -23,8 +23,8 @@ namespace Vortex
     {
         switch (Renderer::GetAPI())
         {
-        case RendererAPI::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::OpenGL:  return new OpenGLIndexBuffer(indices, count);
+        case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+        case RendererAPI::API::OpenGL:  return new OpenGLIndexBuffer(indices, count);
         }
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
