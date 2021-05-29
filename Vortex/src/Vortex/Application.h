@@ -12,6 +12,8 @@
 #include "Vortex/Renderer/Buffer.h"
 #include "Vortex/Renderer/VertexArray.h"
 
+#include "Vortex/Renderer/OrthographicCamera.h"
+
 namespace Vortex {
 
     class VORTEX_API Application
@@ -43,7 +45,7 @@ namespace Vortex {
         std::shared_ptr<Shader> m_BlueShader;
         std::shared_ptr<VertexArray> m_SquareVA;
 
-
+        OrthographicCamera m_Camera;
     private:
         static Application* s_Instance;
     };
