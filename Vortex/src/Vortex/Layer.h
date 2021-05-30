@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vortex/Core.h"
+#include "Vortex/Core/Timestep.h"
 #include "Vortex/Events/Event.h"
 
 namespace Vortex {
@@ -13,7 +14,7 @@ namespace Vortex {
 
 		virtual void OnAttach() {}    //tips: set the env of layer
 		virtual void OnDetach() {}    //tips: cancel the env of layer
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep ts) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 

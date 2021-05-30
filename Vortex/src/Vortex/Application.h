@@ -8,12 +8,6 @@
 
 #include "Vortex/ImGui/ImGuiLayer.h"
 
-#include "Vortex/Renderer/Shader.h"
-#include "Vortex/Renderer/Buffer.h"
-#include "Vortex/Renderer/VertexArray.h"
-
-#include "Vortex/Renderer/OrthographicCamera.h"
-
 namespace Vortex {
 
     class VORTEX_API Application
@@ -34,18 +28,13 @@ namespace Vortex {
     private:
         bool OnWindowClose(WindowCloseEvent& e);
 
+    private:
         std::unique_ptr<Window> m_Window;
         ImGuiLayer* m_ImGuiLayer;
         bool m_Running = true;
         LayerStack m_LayerStack;
 
-        std::shared_ptr<Shader> m_Shader;
-        std::shared_ptr<VertexArray> m_VertexArray;
-
-        std::shared_ptr<Shader> m_BlueShader;
-        std::shared_ptr<VertexArray> m_SquareVA;
-
-        OrthographicCamera m_Camera;
+        float m_LastFrameTime = 0.0f;
     private:
         static Application* s_Instance;
     };
