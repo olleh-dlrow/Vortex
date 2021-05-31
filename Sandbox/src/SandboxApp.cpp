@@ -27,7 +27,7 @@ public:
              0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
         };
 
-        std::shared_ptr<Vortex::VertexBuffer> vertexBuffer;
+        Vortex::Ref<Vortex::VertexBuffer> vertexBuffer;
         vertexBuffer.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
         Vortex::BufferLayout layout = {
             { Vortex::ShaderDataType::Float3, "a_Position" },
@@ -37,28 +37,29 @@ public:
         m_VertexArray->AddVertexBuffer(vertexBuffer);
 
         uint32_t indices[3] = { 0, 1, 2 };
-        std::shared_ptr<Vortex::IndexBuffer> indexBuffer;
+        Vortex::Ref<Vortex::IndexBuffer> indexBuffer;
         indexBuffer.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
         m_SquareVA.reset(Vortex::VertexArray::Create());
 
-        float squareVertices[3 * 4] = {
-            -0.5f, -0.5f, 0.0f,
-             0.5f, -0.5f, 0.0f,
-             0.5f,  0.5f, 0.0f,
-            -0.5f,  0.5f, 0.0f
+        float squareVertices[5 * 4] = {
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+             0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+            -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
         };
 
-        std::shared_ptr<Vortex::VertexBuffer> squareVB;
+        Vortex::Ref<Vortex::VertexBuffer> squareVB;
         squareVB.reset(Vortex::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
         squareVB->SetLayout({
-            { Vortex::ShaderDataType::Float3, "a_Position" }
+            { Vortex::ShaderDataType::Float3, "a_Position" },
+            { Vortex::ShaderDataType::Float2, "a_TexCoord" }
             });
         m_SquareVA->AddVertexBuffer(squareVB);
 
         uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-        std::shared_ptr<Vortex::IndexBuffer> squareIB;
+        Vortex::Ref<Vortex::IndexBuffer> squareIB;
         squareIB.reset(Vortex::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
         m_SquareVA->SetIndexBuffer(squareIB);
 
@@ -130,6 +131,41 @@ public:
 		)";
 
         m_FlatColorShader.reset(Vortex::Shader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+
+        std::string textureShaderVertexSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TexCoord;
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
+			out vec2 v_TexCoord;
+			void main()
+			{
+				v_TexCoord = a_TexCoord;
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);	
+			}
+		)";
+
+        std::string textureShaderFragmentSrc = R"(
+			#version 330 core
+			
+			layout(location = 0) out vec4 color;
+			in vec2 v_TexCoord;
+			
+			uniform sampler2D u_Texture;
+			void main()
+			{
+				color = texture(u_Texture, v_TexCoord);
+			}
+		)";
+
+        m_TextureShader.reset(Vortex::Shader::Create(textureShaderVertexSrc, textureShaderFragmentSrc));
+
+        m_Texture = Vortex::Texture2D::Create("assets/textures/Checkerboard.png");
+
+        std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_TextureShader)->Bind();
+        std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
     }
 
     void OnUpdate(Vortex::Timestep ts) override
@@ -175,7 +211,11 @@ public:
             }
         }
 
-        Vortex::Renderer::Submit(m_Shader, m_VertexArray);
+        m_Texture->Bind();
+        Vortex::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+        // Triangle
+        // Vortex::Renderer::Submit(m_Shader, m_VertexArray);
 
         Vortex::Renderer::EndScene();
     }
@@ -193,11 +233,13 @@ public:
     }
 
 private:
-    std::shared_ptr<Vortex::Shader> m_Shader;
-    std::shared_ptr<Vortex::VertexArray> m_VertexArray;
+    Vortex::Ref<Vortex::Shader> m_Shader;
+    Vortex::Ref<Vortex::VertexArray> m_VertexArray;
 
-    std::shared_ptr<Vortex::Shader> m_FlatColorShader;
-    std::shared_ptr<Vortex::VertexArray> m_SquareVA;
+    Vortex::Ref<Vortex::Shader> m_FlatColorShader, m_TextureShader;
+    Vortex::Ref<Vortex::VertexArray> m_SquareVA;
+
+    Vortex::Ref<Vortex::Texture2D> m_Texture;
 
     Vortex::OrthographicCamera m_Camera;
     glm::vec3 m_CameraPosition;

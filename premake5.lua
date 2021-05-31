@@ -18,6 +18,7 @@ IncludeDir["GLFW"] = "Vortex/vendor/GLFW/include"
 IncludeDir["Glad"] = "Vortex/vendor/Glad/include"
 IncludeDir["ImGui"] = "Vortex/vendor/imgui"
 IncludeDir["glm"] = "Vortex/vendor/glm"
+IncludeDir["stb_image"] = "Vortex/vendor/stb_image"
 
 include "Vortex/vendor/GLFW"
 include "Vortex/vendor/Glad"
@@ -40,6 +41,8 @@ project "Vortex"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl"
     }
@@ -56,7 +59,8 @@ project "Vortex"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.stb_image}"
     }
     
     links

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef VT_PLATFORM_WINDOWS
 
 #if VT_DYNAMIC_LINK
@@ -42,5 +44,5 @@ namespace Vortex
     using Scope = std::unique_ptr<T>;
 
     template<typename T>
-    using Ref = std::unique_ptr<T>;
+    using Ref = std::shared_ptr<T>;
 }
