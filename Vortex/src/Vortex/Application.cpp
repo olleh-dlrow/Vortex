@@ -21,7 +21,7 @@ namespace Vortex {
         tips:
         bind to a pointer to member function
         */
-        m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
+        m_Window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -39,7 +39,7 @@ namespace Vortex {
 
     void Application::OnEvent(Event& e) {
         EventDispatcher dispatcher(e);
-        dispatcher.Dispath<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+        dispatcher.Dispath<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnWindowClose));
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
             (*--it)->OnEvent(e);

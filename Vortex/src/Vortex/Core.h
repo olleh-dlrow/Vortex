@@ -34,4 +34,13 @@
 
 #define BIT(x) (1 << x)
 
-#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
+#define VT_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+namespace Vortex
+{
+    template<typename T>
+    using Scope = std::unique_ptr<T>;
+
+    template<typename T>
+    using Ref = std::unique_ptr<T>;
+}
