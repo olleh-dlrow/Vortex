@@ -5,7 +5,12 @@
 namespace Vortex {
 
     class VORTEX_API Input {
+    protected:
+        Input() = default;
     public:
+        Input(const Input&) = delete;
+        Input& operator=(const Input&) = delete;
+
         // through this design, you can use static methods with polymorphism
         inline static bool IsKeyPressed(int keycode) {return s_Instance->IsKeyPressedImpl(keycode);}
         inline static bool IsMouseButtonPressed(int button) {return s_Instance->IsMouseButtonPressedImpl(button);}
