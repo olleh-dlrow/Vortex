@@ -11,6 +11,7 @@
 #include "Vortex/Input.h"
 #include "Vortex/KeyCodes.h"
 #include "Vortex/MouseButtonCodes.h"
+#include "Vortex/OrthographicCameraController.h"
 
 // --- Renderer -------------------------
 #include "Vortex/Renderer/Renderer.h"

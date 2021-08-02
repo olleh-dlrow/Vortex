@@ -52,7 +52,7 @@ namespace Vortex {
 
 		//T: Event class, F: function type
 		template<typename T, typename F>
-		bool Dispath(const F& func) {
+		bool Dispatch(const F& func) {
 			if ( m_Event.GetEventType() == T::GetStaticType()) {
 				/*
 				tips:
