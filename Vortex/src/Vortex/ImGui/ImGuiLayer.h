@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vortex/Layer.h"
+#include "Vortex/Core/Layer.h"
 
 #include "Vortex/Events/KeyEvent.h"
 #include "Vortex/Events/MouseEvent.h"

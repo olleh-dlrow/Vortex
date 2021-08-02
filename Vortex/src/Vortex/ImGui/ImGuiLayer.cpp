@@ -5,7 +5,7 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-#include "Vortex/Application.h"
+#include "Vortex/Core/Application.h"
 
 // not in this module
 #include <glad/glad.h>

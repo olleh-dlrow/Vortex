@@ -2,7 +2,7 @@
 
 #include "vtpch.h"
 
-#include "Vortex/Core.h"
+#include "Vortex/Core/Core.h"
 #include "Vortex/Events/Event.h"
 
 namespace Vortex {

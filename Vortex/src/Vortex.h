@@ -2,16 +2,16 @@
 //#include"vtpch.h"
 
 //for use by vortex application
-#include"Vortex/Application.h"
+#include"Vortex/Core/Application.h"
 #include"Vortex/ImGui/ImGuiLayer.h"
-#include"Vortex/Log.h"
+#include"Vortex/Core/Log.h"
 
 #include "Vortex/Core/Timestep.h"
 
-#include "Vortex/Input.h"
-#include "Vortex/KeyCodes.h"
-#include "Vortex/MouseButtonCodes.h"
-#include "Vortex/OrthographicCameraController.h"
+#include "Vortex/Core/Input.h"
+#include "Vortex/Core/KeyCodes.h"
+#include "Vortex/Core/MouseButtonCodes.h"
+#include "Vortex/Renderer/OrthographicCameraController.h"
 
 // --- Renderer -------------------------
 #include "Vortex/Renderer/Renderer.h"
@@ -31,5 +31,5 @@ this head file should put in the last,
 it will reference the content of above head files.
 */
 // --- Entry Point ----------------------
-#include"Vortex/EntryPoint.h"
+#include"Vortex/Core/EntryPoint.h"
 // --------------------------------------

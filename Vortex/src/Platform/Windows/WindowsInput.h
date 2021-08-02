@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vortex/Input.h"
+#include "Vortex/Core/Input.h"
 
 namespace Vortex {
     class WindowsInput : public Input 

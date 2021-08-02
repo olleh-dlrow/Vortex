@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Vortex/Log.h"
+#include "Vortex/Core/Log.h"
 
 #ifdef VT_PLATFORM_WINDOWS
     #include<Windows.h>

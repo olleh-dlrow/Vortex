@@ -1,5 +1,4 @@
 #include "vtpch.h"
-#include "Vortex/Log.h"
 
 #include "WindowsWindow.h"
 

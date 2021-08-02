@@ -2,9 +2,9 @@
 
 #include "Core.h"
 #include "Window.h"
-#include "Vortex/LayerStack.h"
-#include "Events/Event.h"
-#include "Events/ApplicationEvent.h"
+#include "Vortex/Core/LayerStack.h"
+#include "Vortex/Events/Event.h"
+#include "Vortex/Events/ApplicationEvent.h"
 
 #include "Vortex/ImGui/ImGuiLayer.h"
 

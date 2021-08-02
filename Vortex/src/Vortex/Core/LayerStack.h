@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vortex/Core.h"
+#include "Vortex/Core/Core.h"
 #include "Layer.h"
 
 #include <vector>

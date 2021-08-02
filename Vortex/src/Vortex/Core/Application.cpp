@@ -3,8 +3,6 @@
 
 #include "Vortex/Renderer/Renderer.h"
 
-#include "Input.h"
-
 #include <GLFW/glfw3.h>
 
 namespace Vortex {
@@ -42,7 +40,7 @@ namespace Vortex {
     void Application::OnEvent(Event& e) {
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnWindowClose));
-        dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(OnWindowResize));
+        dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(Application::OnWindowResize));
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
             (*--it)->OnEvent(e);
