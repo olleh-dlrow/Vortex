@@ -1,8 +1,9 @@
 #include "vtpch.h"
+#include "Vortex/Core/Log.h"
 
 namespace Vortex {
-    std::shared_ptr<spdlog::logger> Log::s_CoreLogger = nullptr;
-    std::shared_ptr<spdlog::logger> Log::s_ClientLogger = nullptr;
+    Ref<spdlog::logger> Log::s_CoreLogger = nullptr;
+    Ref<spdlog::logger> Log::s_ClientLogger = nullptr;
 
 
     void Log::Init() {

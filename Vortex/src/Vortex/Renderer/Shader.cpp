@@ -1,7 +1,7 @@
 #include "vtpch.h"
-#include "Shader.h"
+#include "Vortex/Renderer/Shader.h"
 
-#include "Renderer.h"
+#include "Vortex/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Vortex 

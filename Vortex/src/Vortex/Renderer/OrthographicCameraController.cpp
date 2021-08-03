@@ -1,5 +1,5 @@
 #include "vtpch.h"
-#include "OrthographicCameraController.h"
+#include "Vortex/Renderer/OrthographicCameraController.h"
 
 #include "Vortex/Core/Input.h"
 #include "Vortex/Core/KeyCodes.h"

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "RenderCommand.h"
+#include "Vortex/Renderer/RenderCommand.h"
 
-#include "OrthographicCamera.h"
-#include "Shader.h"
+#include "Vortex/Renderer/OrthographicCamera.h"
+#include "Vortex/Renderer/Shader.h"
 
 namespace Vortex {
 
@@ -11,6 +11,8 @@ namespace Vortex {
     {
     public:
         static void Init();
+        static void Shutdown();
+
         static void OnWindowResize(uint32_t width, uint32_t height);
 
         // camera: the main camera that defines view and projection matrix
@@ -19,11 +21,12 @@ namespace Vortex {
 
         // bind shader and vertexArray to renderer, then draw index
         // transform: the matrix that transform object from local space to world space
-        static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, 
+        static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, 
             const glm::mat4& transform = glm::mat4(1.0f));
 
         inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
     private:
+        // Stored ViewProjectionMatrix
         struct SceneData
         {
             glm::mat4 ViewProjectionMatrix;

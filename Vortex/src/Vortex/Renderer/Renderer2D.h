@@ -1,8 +1,8 @@
 #pragma once
 
-#include "OrthographicCamera.h"
+#include "Vortex/Renderer/OrthographicCamera.h"
 
-#include "Texture.h"
+#include "Vortex/Renderer/Texture.h"
 
 namespace Vortex
 {

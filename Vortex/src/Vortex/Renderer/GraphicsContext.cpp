@@ -1,19 +1,18 @@
 #include "vtpch.h"
-#include "Vortex/Renderer/VertexArray.h"
+#include "GraphicsContext.h"
 
 #include "Vortex/Renderer/Renderer.h"
-#include "Platform/OpenGL/OpenGLVertexArray.h"
+#include "Platform/OpenGL/OpenGLContext.h"
 
 namespace Vortex
 {
-    Ref<VertexArray> VertexArray::Create()
+    Scope<GraphicsContext> GraphicsContext::Create(void* window)
     {
         switch (Renderer::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLVertexArray>();
+        case RendererAPI::API::OpenGL:  return CreateScope<OpenGLContext>(static_cast<GLFWwindow*>(window));
         }
-
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }

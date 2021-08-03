@@ -116,7 +116,7 @@ namespace Vortex
 
         // vertices: the data of vertices stored in buffer
         // size: the size of all vertices
-        static VertexBuffer* Create(float* vertices, uint32_t size);
+        static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
     };
 
     class IndexBuffer
@@ -131,6 +131,6 @@ namespace Vortex
 
         // indices: the data of indices stored in buffer
         // count: the count of indices (not size!)
-        static IndexBuffer* Create(uint32_t* indices, uint32_t count);
+        static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
     };
 }

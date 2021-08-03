@@ -4,7 +4,7 @@
 
 namespace Vortex {
 
-    class VORTEX_API Input {
+    class Input {
     protected:
         Input() = default;
     public:

@@ -1,7 +1,7 @@
 #include "vtpch.h"
-#include "Texture.h"
+#include "Vortex/Renderer/Texture.h"
 
-#include "Renderer.h"
+#include "Vortex/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
 
 namespace Vortex

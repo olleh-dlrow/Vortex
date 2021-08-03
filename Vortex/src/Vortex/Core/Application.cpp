@@ -1,7 +1,9 @@
 #include "vtpch.h"
-#include "Application.h"
+#include "Vortex/Core/Application.h"
 
 #include "Vortex/Renderer/Renderer.h"
+
+#include "Vortex/Core/Input.h"
 
 #include <GLFW/glfw3.h>
 
@@ -14,7 +16,7 @@ namespace Vortex {
         VT_CORE_ASSERT(!s_Instance, "Application already exists!");
         s_Instance = this;
 
-        m_Window = std::unique_ptr<Window>(Window::Create());
+        m_Window = Window::Create();
         /*
         tips:
         bind to a pointer to member function
@@ -23,11 +25,15 @@ namespace Vortex {
 
         Renderer::Init();
 
+        // Add an ImGuiLayer to Overlay
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
     }
 
-    Application::~Application() {}
+    Application::~Application() 
+    {
+        Renderer::Shutdown();
+    }
 
     void Application::PushLayer(Layer* layer) {
         m_LayerStack.PushLayer(layer);

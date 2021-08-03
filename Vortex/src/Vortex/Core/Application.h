@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core.h"
-#include "Window.h"
+#include "Vortex/Core/Core.h"
+#include "Vortex/Core/Window.h"
 #include "Vortex/Core/LayerStack.h"
 #include "Vortex/Events/Event.h"
 #include "Vortex/Events/ApplicationEvent.h"
@@ -10,17 +10,19 @@
 
 namespace Vortex {
 
-    class VORTEX_API Application
+    class Application
     {
     public:
         Application();
-        ~Application();
+        virtual ~Application();
 
         void Run();
 
         void OnEvent(Event& e);
 
+        // push layer to Layer part in LayerStack (below Overlay part)
         void PushLayer(Layer* layer);
+        // push layer to Overlay part in LayerStack (above Layer part)
         void PushOverlay(Layer* layer);
 
         inline static Application& Get() {return *s_Instance;}  //get application instance

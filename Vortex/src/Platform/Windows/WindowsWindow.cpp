@@ -1,6 +1,6 @@
 #include "vtpch.h"
 
-#include "WindowsWindow.h"
+#include "Platform/Windows/WindowsWindow.h"
 
 #include "Vortex/Events/ApplicationEvent.h"
 #include "Vortex/Events/MouseEvent.h"
@@ -15,8 +15,8 @@ namespace Vortex {
         VT_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
-    Window* Window::Create(const WindowProps& props) {
-        return new WindowsWindow(props);
+    Scope<Window> Window::Create(const WindowProps& props) {
+        return CreateScope<WindowsWindow>(props);
     }
 
     WindowsWindow::WindowsWindow(const WindowProps& props) {
@@ -44,7 +44,7 @@ namespace Vortex {
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
         ++s_GLFWWindowCount;
 
-        m_Context = CreateScope<OpenGLContext>(m_Window);
+        m_Context = GraphicsContext::Create(m_Window);
         m_Context->Init();
 
         glfwSetWindowUserPointer(m_Window, &m_Data);

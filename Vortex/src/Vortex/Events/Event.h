@@ -30,7 +30,7 @@ namespace Vortex {
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override {return category;}
 
-	class VORTEX_API Event {
+	class Event {
 	public:
 		bool Handled = false;  //some event can be handled by other event
 
@@ -50,6 +50,9 @@ namespace Vortex {
 			
 		}
 
+		// Dispatch Event of T to certain function F to handle.
+		// If any of the function handled this Event, Dispatch return true,
+		// else return false
 		//T: Event class, F: function type
 		template<typename T, typename F>
 		bool Dispatch(const F& func) {

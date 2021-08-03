@@ -1,9 +1,8 @@
 #include <Vortex.h>
 #include <Vortex/Core/EntryPoint.h>
 
-#include "Platform/OpenGL/OpenGLShader.h"
 
-#include "imgui/imgui.h"
+#include <imgui/imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -30,8 +29,7 @@ public:
              0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
         };
 
-        Vortex::Ref<Vortex::VertexBuffer> vertexBuffer;
-        vertexBuffer.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
+        Vortex::Ref<Vortex::VertexBuffer> vertexBuffer = Vortex::VertexBuffer::Create(vertices, sizeof(vertices));
         Vortex::BufferLayout layout = {
             { Vortex::ShaderDataType::Float3, "a_Position" },
             { Vortex::ShaderDataType::Float4, "a_Color" }
@@ -40,8 +38,7 @@ public:
         m_VertexArray->AddVertexBuffer(vertexBuffer);
 
         uint32_t indices[3] = { 0, 1, 2 };
-        Vortex::Ref<Vortex::IndexBuffer> indexBuffer;
-        indexBuffer.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        Vortex::Ref<Vortex::IndexBuffer> indexBuffer = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
         m_SquareVA = Vortex::VertexArray::Create();
@@ -53,8 +50,7 @@ public:
             -0.5f,  0.5f, 0.0f, 0.0f, 1.0f
         };
 
-        Vortex::Ref<Vortex::VertexBuffer> squareVB;
-        squareVB.reset(Vortex::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+        Vortex::Ref<Vortex::VertexBuffer> squareVB = Vortex::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
         squareVB->SetLayout({
             { Vortex::ShaderDataType::Float3, "a_Position" },
             { Vortex::ShaderDataType::Float2, "a_TexCoord" }
@@ -62,8 +58,7 @@ public:
         m_SquareVA->AddVertexBuffer(squareVB);
 
         uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-        Vortex::Ref<Vortex::IndexBuffer> squareIB;
-        squareIB.reset(Vortex::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+        Vortex::Ref<Vortex::IndexBuffer> squareIB = Vortex::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
         m_SquareVA->SetIndexBuffer(squareIB);
 
         std::string vertexSrc = R"(
@@ -140,8 +135,8 @@ public:
         m_Texture = Vortex::Texture2D::Create("assets/textures/Checkerboard.png");
         m_ChernoLogoTexture = Vortex::Texture2D::Create("assets/textures/ChernoLogo.png");
 
-        std::dynamic_pointer_cast<Vortex::OpenGLShader>(textureShader)->Bind();
-        std::dynamic_pointer_cast<Vortex::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
+        textureShader->Bind();
+        textureShader->SetInt("u_Texture", 0);
     }
 
     void OnUpdate(Vortex::Timestep ts) override
@@ -175,9 +170,9 @@ public:
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
         
-        // question: we still need to convert Shader to OpenGLShder, could this make packing shader no meaning?
-        std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_FlatColorShader)->Bind();
-        std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_FlatColorShader)->UploadUniformFloat3("u_Color", m_SquareColor);
+        
+        m_FlatColorShader->Bind();
+        m_FlatColorShader->SetFloat3("u_Color", m_SquareColor);
 
         for (int y = 0; y < 20; y++)
         {

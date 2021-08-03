@@ -1,4 +1,5 @@
 #pragma once
+#include "Vortex/Core/Core.h"
 
 #ifdef VT_PLATFORM_WINDOWS
 

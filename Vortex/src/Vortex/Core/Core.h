@@ -44,21 +44,6 @@
 #endif // End of platform detection
 
 
-// DLL support
-#ifdef VT_PLATFORM_WINDOWS
-	#if VT_DYNAMIC_LINK
-		#ifdef VT_BUILD_DLL
-			#define VORTEX_API __declspec(dllexport)
-		#else
-			#define VORTEX_API __declspec(dllimport)
-		#endif
-	#else
-		#define VORTEX_API
-	#endif
-#else
-	#error Vortex only supports Windows!
-#endif // End of DLL support
-
 #ifdef VT_DEBUG
     #define VT_ENABLE_ASSERTS
 #endif
@@ -77,6 +62,7 @@
 
 #define BIT(x) (1 << x)
 
+// bind a event callback function to a function pointer
 #define VT_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
 namespace Vortex

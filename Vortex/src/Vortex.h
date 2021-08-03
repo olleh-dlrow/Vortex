@@ -2,6 +2,8 @@
 //#include"vtpch.h"
 
 //for use by vortex application
+#include "Vortex/Core/Core.h"
+
 #include"Vortex/Core/Application.h"
 #include"Vortex/ImGui/ImGuiLayer.h"
 #include"Vortex/Core/Log.h"

@@ -1,5 +1,5 @@
 #include "vtpch.h"
-#include "OrthographicCamera.h"
+#include "Vortex/Renderer/OrthographicCamera.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 

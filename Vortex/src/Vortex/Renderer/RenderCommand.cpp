@@ -1,9 +1,7 @@
 #include "vtpch.h"
-#include "RenderCommand.h"
-
-#include "Platform/OpenGL/OpenGLRendererAPI.h"
+#include "Vortex/Renderer/RenderCommand.h"
 
 namespace Vortex
 {
-    Scope<RendererAPI> RenderCommand::s_RendererAPI = CreateScope<OpenGLRendererAPI>();
+    Scope<RendererAPI> RenderCommand::s_RendererAPI = RendererAPI::Create();
 }

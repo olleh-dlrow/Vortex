@@ -2,9 +2,6 @@
 #include "Vortex/Core/LayerStack.h"
 
 namespace Vortex {
-	LayerStack::LayerStack()
-	{
-	}
 
 	LayerStack::~LayerStack()
 	{

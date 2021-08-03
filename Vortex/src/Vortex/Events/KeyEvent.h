@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Event.h"
+#include "Vortex/Events/Event.h"
 
 namespace Vortex {
-    class VORTEX_API KeyEvent: public Event {
+    class KeyEvent: public Event {
     public:
         int GetKeyCode() const {return m_KeyCode;}
 
@@ -13,7 +13,7 @@ namespace Vortex {
         int m_KeyCode;
     };
 
-    class VORTEX_API KeyPressedEvent: public KeyEvent 
+    class KeyPressedEvent: public KeyEvent 
     {
     public:
         KeyPressedEvent(const int keycode, int repeatCount): 
@@ -36,7 +36,7 @@ namespace Vortex {
         int m_RepeatCount;
     };
 
-	class VORTEX_API KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(const int keycode)
@@ -52,7 +52,7 @@ namespace Vortex {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	class VORTEX_API KeyTypedEvent : public KeyEvent
+	class KeyTypedEvent : public KeyEvent
 	{
 	public:
 		KeyTypedEvent(const int keycode)

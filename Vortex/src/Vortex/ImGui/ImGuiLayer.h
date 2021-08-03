@@ -7,7 +7,7 @@
 #include "Vortex/Events/ApplicationEvent.h"
 
 namespace Vortex {
-    class VORTEX_API ImGuiLayer: public Layer 
+    class ImGuiLayer: public Layer 
     {
     public:
         ImGuiLayer();
