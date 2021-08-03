@@ -81,7 +81,8 @@ project "Vortex"
         
         defines
         {
-            "VT_PLATFORM_WINDOWS",
+            -- has defined in Core.h
+            -- "VT_PLATFORM_WINDOWS",
             "VT_BUILD_DLL",
             "GLFW_INCLUDE_NONE"
         }
@@ -138,7 +139,8 @@ project "Sandbox"
         
         defines
         {
-            "VT_PLATFORM_WINDOWS"
+            -- has defined in Core.h
+            -- "VT_PLATFORM_WINDOWS"  
         }
         
     filter "configurations:Debug"

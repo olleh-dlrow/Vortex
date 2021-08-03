@@ -19,6 +19,8 @@ namespace Vortex
         return nullptr;
     }
 
+    // indices: the data of indices stored in buffer
+    // count: the count of indices (not size!)
     IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t count)
     {
         switch (Renderer::GetAPI())

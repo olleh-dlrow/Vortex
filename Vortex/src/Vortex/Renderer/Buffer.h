@@ -114,6 +114,8 @@ namespace Vortex
         virtual const BufferLayout& GetLayout() const = 0;
         virtual void SetLayout(const BufferLayout& layout) = 0;
 
+        // vertices: the data of vertices stored in buffer
+        // size: the size of all vertices
         static VertexBuffer* Create(float* vertices, uint32_t size);
     };
 
@@ -127,6 +129,8 @@ namespace Vortex
 
         virtual uint32_t GetCount() const = 0;
 
+        // indices: the data of indices stored in buffer
+        // count: the count of indices (not size!)
         static IndexBuffer* Create(uint32_t* indices, uint32_t count);
     };
 }

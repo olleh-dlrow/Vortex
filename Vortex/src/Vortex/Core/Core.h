@@ -2,21 +2,62 @@
 
 #include <memory>
 
+// Platform detection using predefined macros
+#ifdef _WIN32
+	/* Windows x64/x86 */
+	#ifdef _WIN64
+		/* Windows x64  */
+		#define VT_PLATFORM_WINDOWS
+	#else
+		/* Windows x86 */
+		#error "x86 Builds are not supported!"
+	#endif
+#elif defined(__APPLE__) || defined(__MACH__)
+	#include <TargetConditionals.h>
+	/* TARGET_OS_MAC exists on all the platforms
+	 * so we must check all of them (in this order)
+	 * to ensure that we're running on MAC
+	 * and not some other Apple platform */
+	#if TARGET_IPHONE_SIMULATOR == 1
+		#error "IOS simulator is not supported!"
+	#elif TARGET_OS_IPHONE == 1
+		#define VT_PLATFORM_IOS
+		#error "IOS is not supported!"
+	#elif TARGET_OS_MAC == 1
+		#define VT_PLATFORM_MACOS
+		#error "MacOS is not supported!"
+	#else
+		#error "Unknown Apple platform!"
+	#endif
+/* We also have to check __ANDROID__ before __linux__
+ * since android is based on the linux kernel
+ * it has __linux__ defined */
+#elif defined(__ANDROID__)
+	#define VT_PLATFORM_ANDROID
+	#error "Android is not supported!"
+#elif defined(__linux__)
+	#define VT_PLATFORM_LINUX
+	#error "Linux is not supported!"
+#else
+	/* Unknown compiler/platform */
+	#error "Unknown platform!"
+#endif // End of platform detection
+
+
+// DLL support
 #ifdef VT_PLATFORM_WINDOWS
-
-#if VT_DYNAMIC_LINK
-#ifdef VT_BUILD_DLL
-#define VORTEX_API __declspec(dllexport)
+	#if VT_DYNAMIC_LINK
+		#ifdef VT_BUILD_DLL
+			#define VORTEX_API __declspec(dllexport)
+		#else
+			#define VORTEX_API __declspec(dllimport)
+		#endif
+	#else
+		#define VORTEX_API
+	#endif
 #else
-#define VORTEX_API __declspec(dllimport)
-#endif
-#else
-#define VORTEX_API
-#endif
-
-#else
-    #error Vortex only supports for windows!
-#endif
+	#error Vortex only supports Windows!
+#endif // End of DLL support
 
 #ifdef VT_DEBUG
     #define VT_ENABLE_ASSERTS
@@ -43,6 +84,22 @@ namespace Vortex
     template<typename T>
     using Scope = std::unique_ptr<T>;
 
-    template<typename T>
-    using Ref = std::shared_ptr<T>;
-}
+	template <typename T, typename... Args>
+	constexpr Scope<T> CreateScope(Args &&...args)
+	{
+        // tips: C++11 lets us perform perfect forwarding, which means that
+        // we can forward the parameters passed to a function template to
+        // another function call inside it without losing their own
+        // qualifiers (const-ref, ref, value, rvalue, etc.).
+		return std::make_unique<T>(std::forward<Args>(args)...);
+	}
+
+	template <typename T> 
+	using Ref = std::shared_ptr<T>;
+
+	template <typename T, typename... Args>
+	constexpr Ref<T> CreateRef(Args &&...args)
+	{
+		return std::make_shared<T>(std::forward<Args>(args)...);
+	}
+} // namespace Vortex

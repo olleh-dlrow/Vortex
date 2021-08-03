@@ -27,9 +27,17 @@ namespace Vortex
         std::string source = ReadFile(filepath);
         auto shaderSources = PreProcess(source);
         Compile(shaderSources);
+
+        // Extract name from filepath
+        auto lastSlash = filepath.find_last_of("/\\");
+        lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+        auto lastDot = filepath.rfind('.');
+        auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+        m_Name = filepath.substr(lastSlash, count);
     }
 
-    OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
+    OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
+        : m_Name(name)
     {
         std::unordered_map<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
@@ -45,7 +53,7 @@ namespace Vortex
     std::string OpenGLShader::ReadFile(const std::string& filepath)
     {
         std::string result;
-        std::ifstream in(filepath, std::ios::in, std::ios::binary);
+        std::ifstream in(filepath, std::ios::in | std::ios::binary);
         if (in)
         {
             in.seekg(0, std::ios::end);
@@ -85,17 +93,22 @@ namespace Vortex
 
             // store source code to hashtable and find start pos of next shader code
             size_t nextLinePos = source.find_first_not_of("\r\n", eol); // find next line's pos which is not \r\n
+            
+            VT_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
             pos = source.find(typeToken, nextLinePos); // the start pos of next shader code
-            shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, 
-                pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
-        }
+
+            shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);        }
         return shaderSources;
     }
 
     void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
     {
         GLuint program = glCreateProgram();
-        std::vector<GLenum> glShaderIDs(shaderSources.size());
+        
+        VT_CORE_ASSERT(shaderSources.size() <= 2, "We only support 2 shaders for now");
+        std::array<GLenum, 2> glShaderIDs;
+        int glShaderIDIndex = 0;
+
         for(auto& kv : shaderSources)
         {
             GLenum type = kv.first;
@@ -131,7 +144,7 @@ namespace Vortex
 
             // if compile success, attach it to program
             glAttachShader(program, shader);
-            glShaderIDs.push_back(shader);
+            glShaderIDs[glShaderIDIndex++] = shader;
         }
 
         // Vertex and fragment shaders are successfully compiled.
@@ -163,9 +176,12 @@ namespace Vortex
             return;
         }
 
-        // Always detach shaders after a successful link.
+        // Always detach and delete shaders after a successful link.
         for (auto id : glShaderIDs)
+        {
             glDetachShader(program, id);
+            glDeleteShader(id);   
+        }
     }
 
     void OpenGLShader::Bind() const

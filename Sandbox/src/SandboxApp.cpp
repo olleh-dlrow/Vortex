@@ -1,4 +1,5 @@
 #include <Vortex.h>
+#include <Vortex/Core/EntryPoint.h>
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
@@ -6,6 +7,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.h"
 
 /*
 tips:
@@ -19,7 +22,7 @@ public:
     ExampleLayer(): 
         Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
     {
-        m_VertexArray.reset(Vortex::VertexArray::Create());
+        m_VertexArray = Vortex::VertexArray::Create();
 
         float vertices[3 * 7] = {
             -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
@@ -41,7 +44,7 @@ public:
         indexBuffer.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
-        m_SquareVA.reset(Vortex::VertexArray::Create());
+        m_SquareVA = Vortex::VertexArray::Create();
 
         float squareVertices[5 * 4] = {
             -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -98,7 +101,7 @@ public:
 			}
 		)";
 
-        m_Shader.reset(Vortex::Shader::Create(vertexSrc, fragmentSrc));
+        m_Shader = Vortex::Shader::Create("VertexPosColor", vertexSrc, fragmentSrc);
 
         std::string flatColorShaderVertexSrc = R"(
 			#version 330 core
@@ -130,20 +133,21 @@ public:
 			}
 		)";
 
-        m_FlatColorShader.reset(Vortex::Shader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+        m_FlatColorShader = Vortex::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
-        m_TextureShader.reset(Vortex::Shader::Create("assets/shaders/Texture.glsl"));
+        auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
         m_Texture = Vortex::Texture2D::Create("assets/textures/Checkerboard.png");
         m_ChernoLogoTexture = Vortex::Texture2D::Create("assets/textures/ChernoLogo.png");
 
-        std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_TextureShader)->Bind();
-        std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+        std::dynamic_pointer_cast<Vortex::OpenGLShader>(textureShader)->Bind();
+        std::dynamic_pointer_cast<Vortex::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
     }
 
     void OnUpdate(Vortex::Timestep ts) override
     {
         // handle input
+        // move in local space
         if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT))
             m_CameraPosition.x -= m_CameraMoveSpeed * ts;
         else if (Vortex::Input::IsKeyPressed(VT_KEY_RIGHT))
@@ -158,6 +162,7 @@ public:
             m_CameraRotation += m_CameraRotationSpeed * ts;
         if (Vortex::Input::IsKeyPressed(VT_KEY_D))
             m_CameraRotation -= m_CameraRotationSpeed * ts;
+
 
         Vortex::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
         Vortex::RenderCommand::Clear();
@@ -184,11 +189,13 @@ public:
             }
         }
 
+        auto textureShader = m_ShaderLibrary.Get("Texture");
+
         m_Texture->Bind();
-        Vortex::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        Vortex::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
         m_ChernoLogoTexture->Bind();
-        Vortex::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        Vortex::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
         // Triangle
         // Vortex::Renderer::Submit(m_Shader, m_VertexArray);
@@ -209,10 +216,11 @@ public:
     }
 
 private:
+    Vortex::ShaderLibrary m_ShaderLibrary;
     Vortex::Ref<Vortex::Shader> m_Shader;
     Vortex::Ref<Vortex::VertexArray> m_VertexArray;
 
-    Vortex::Ref<Vortex::Shader> m_FlatColorShader, m_TextureShader;
+    Vortex::Ref<Vortex::Shader> m_FlatColorShader;
     Vortex::Ref<Vortex::VertexArray> m_SquareVA;
 
     Vortex::Ref<Vortex::Texture2D> m_Texture, m_ChernoLogoTexture;
@@ -230,7 +238,7 @@ private:
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new ExampleLayer());
+        PushLayer(new Sandbox2D());
     }
     ~Sandbox() {
     

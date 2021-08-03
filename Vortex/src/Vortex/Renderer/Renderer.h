@@ -13,9 +13,12 @@ namespace Vortex {
         static void Init();
         static void OnWindowResize(uint32_t width, uint32_t height);
 
+        // camera: the main camera that defines view and projection matrix
         static void BeginScene(OrthographicCamera& camera);
         static void EndScene();
 
+        // bind shader and vertexArray to renderer, then draw index
+        // transform: the matrix that transform object from local space to world space
         static void Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& vertexArray, 
             const glm::mat4& transform = glm::mat4(1.0f));
 
@@ -26,6 +29,6 @@ namespace Vortex {
             glm::mat4 ViewProjectionMatrix;
         };
 
-        static SceneData* s_SceneData;
+        static Scope<SceneData> s_SceneData;
     };
 }

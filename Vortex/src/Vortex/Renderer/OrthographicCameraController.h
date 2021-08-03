@@ -10,6 +10,7 @@ namespace Vortex
 {
     class OrthographicCameraController {
       public:
+        // aspectRadio: the radio of screen's width and height
         OrthographicCameraController(float aspectRatio, bool rotation = false);
 
         void OnUpdate(Timestep ts);
@@ -32,7 +33,7 @@ namespace Vortex
         bool m_Rotation;
 
         glm::vec3 m_CameraPosition = {0.0f, 0.0f, 0.0f};
-        float m_CameraRotation = 0.0f;
+        float m_CameraRotation = 0.0f;  // in degrees, in the anti-clockwise direction
         float m_CameraTranslationSpeed = 5.0f, m_CameraRotationSpeed = 180.0f;
     };
 }

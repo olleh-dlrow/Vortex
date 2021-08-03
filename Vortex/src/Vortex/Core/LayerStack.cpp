@@ -9,7 +9,10 @@ namespace Vortex {
 	LayerStack::~LayerStack()
 	{
 		for (Layer* layer : m_Layers)
-			delete layer;
+		{
+			layer->OnDetach();
+            delete layer;
+		}
 	}
 
 	void LayerStack::PushLayer(Layer* layer)

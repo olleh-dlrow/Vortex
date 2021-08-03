@@ -29,7 +29,9 @@
 tips:
 this head file should put in the last, 
 it will reference the content of above head files.
+
+-- has moved to SandboxApp.cpp
 */
 // --- Entry Point ----------------------
-#include"Vortex/Core/EntryPoint.h"
+// #include"Vortex/Core/EntryPoint.h"
 // --------------------------------------
