@@ -6,6 +6,9 @@ bin-int/
 # Vortex files
 *.log
 
+# Sandbox files
+Sandbox/**.json
+
 # imgui files
 imgui.ini
 
