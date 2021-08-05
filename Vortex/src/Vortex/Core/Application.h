@@ -8,6 +8,8 @@
 
 #include "Vortex/ImGui/ImGuiLayer.h"
 
+int main(int argc, char** argv);
+
 namespace Vortex {
 
     class Application
@@ -15,8 +17,6 @@ namespace Vortex {
     public:
         Application();
         virtual ~Application();
-
-        void Run();
 
         void OnEvent(Event& e);
 
@@ -28,6 +28,7 @@ namespace Vortex {
         inline static Application& Get() {return *s_Instance;}  //get application instance
         inline Window& GetWindow() {return *m_Window;}
     private:
+        void Run();
         bool OnWindowClose(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
 
@@ -43,6 +44,7 @@ namespace Vortex {
         float m_LastFrameTime = 0.0f;
     private:
         static Application* s_Instance;
+        friend int ::main(int argc, char** argv);
     };
 
     //to be defined in client
