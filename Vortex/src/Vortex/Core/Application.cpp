@@ -37,10 +37,12 @@ namespace Vortex {
 
     void Application::PushLayer(Layer* layer) {
         m_LayerStack.PushLayer(layer);
+        // QUESTION: should layer->OnAttach() be put here or in LayerStack.PushLayer?
     }
 
     void Application::PushOverlay(Layer* layer) {
         m_LayerStack.PushOverlay(layer);
+        // QUESTION: should layer->OnAttach() be put here or in LayerStack.PushLayer?
     }
 
     void Application::OnEvent(Event& e) {
