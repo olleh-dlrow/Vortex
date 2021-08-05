@@ -18,6 +18,7 @@ namespace Vortex {
         inline static float GetMouseX() {return s_Instance->GetMouseXImpl();}
         inline static float GetMouseY() {return s_Instance->GetMouseYImpl();}
 
+        static Scope<Input> Create();
     protected:
         // different platforms have different implimentation.
         virtual bool IsKeyPressedImpl(int keycode) = 0;

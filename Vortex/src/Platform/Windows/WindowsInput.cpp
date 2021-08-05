@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 
 namespace Vortex {
-    Scope<Input> Input::s_Instance = CreateScope<WindowsInput>();
 
     bool WindowsInput::IsKeyPressedImpl(int keycode)
     {
