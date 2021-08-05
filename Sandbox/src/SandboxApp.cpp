@@ -20,7 +20,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new ExampleLayer());
+        PushLayer(new Sandbox2D());
     }
     ~Sandbox() {
     
