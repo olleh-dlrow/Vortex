@@ -9,11 +9,14 @@ namespace Vortex
     class Renderer2D
     {
     public:
+        // define the data type(VA, VB, IB) and rules(the size and pos of Position, color,
+        // TexCoord... in opengl)
         static void Init();
         static void Shutdown();
 
         static void BeginScene(const OrthographicCamera& camera);
         static void EndScene();
+        // actually draw data to screen
         static void Flush();
 
         // Primitives

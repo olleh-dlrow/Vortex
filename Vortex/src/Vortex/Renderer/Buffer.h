@@ -134,6 +134,7 @@ namespace Vortex
 
         // indices: the data of indices stored in buffer
         // count: the count of indices (not size!)
+        // the data has been transported to opengl, so you can free the memory of indices
         static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
     };
 }

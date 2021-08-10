@@ -7,6 +7,7 @@ namespace Vortex
     class OpenGLVertexBuffer : public VertexBuffer
     {
     public:
+        // only give a memory of size but not transport actual data
         OpenGLVertexBuffer(uint32_t size);
         OpenGLVertexBuffer(float* vertices, uint32_t size);
         virtual ~OpenGLVertexBuffer();

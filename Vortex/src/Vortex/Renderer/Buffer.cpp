@@ -7,6 +7,7 @@
 
 namespace Vortex 
 {
+    // only give a memory of size but not transport actual data
     Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
     {
         switch (Renderer::GetAPI())
