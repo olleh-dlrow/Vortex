@@ -8,6 +8,7 @@ namespace Vortex
     class RenderCommand
     {
     public:
+        // for opengl, it opened blend affect and depth test
         inline static void Init()
         {
             s_RendererAPI->Init();
