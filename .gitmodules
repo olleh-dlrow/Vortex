@@ -1,7 +1,3 @@
-[submodule "Vortex/vendor/spdlog"]
-	path = Vortex/vendor/spdlog
-	url = https://github.com/gabime/spdlog.git
-	ignore = dirty
 [submodule "Vortex/vendor/GLFW"]
 	path = Vortex/vendor/GLFW
 	url = https://github.com/glfw/glfw.git
