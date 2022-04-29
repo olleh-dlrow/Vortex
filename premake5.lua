@@ -126,7 +126,9 @@ project "Sandbox"
         "Vortex/vendor/spdlog/include",
         "Vortex/src",
         "Vortex/vendor",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}",
     }
     
     links
