@@ -1,12 +1,12 @@
-[submodule "Vortex/vendor/GLFW"]
-	path = Vortex/vendor/GLFW
-	url = https://github.com/glfw/glfw.git
-	ignore = dirty
-[submodule "Vortex/vendor/imgui"]
-	path = Vortex/vendor/imgui
-	url = https://github.com/ocornut/imgui.git
-	ignore = dirty
+[submodule "Vortex/vendor/spdlog"]
+	path = Vortex/vendor/spdlog
+	url = https://github.com/olleh-dlrow/spdlog.git
 [submodule "Vortex/vendor/glm"]
 	path = Vortex/vendor/glm
-	url = https://github.com/g-truc/glm.git
-	ignore = dirty
+	url = https://github.com/olleh-dlrow/glm.git
+[submodule "Vortex/vendor/glfw"]
+	path = Vortex/vendor/glfw
+	url = https://github.com/olleh-dlrow/glfw.git
+[submodule "Vortex/vendor/imgui"]
+	path = Vortex/vendor/imgui
+	url = https://github.com/olleh-dlrow/imgui.git
