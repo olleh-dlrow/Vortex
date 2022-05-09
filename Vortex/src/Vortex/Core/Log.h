@@ -19,26 +19,38 @@ namespace Vortex{
         inline static Ref<spdlog::logger>& GetClientLogger(){return s_ClientLogger;}
 
     private:
-            /*
+        /*
             tips:
             this should be defined in source file.
-            */
+        */
         static Ref<spdlog::logger> s_CoreLogger;
         static Ref<spdlog::logger> s_ClientLogger;
     };
 }
 
+/*
+log has effects when current level >= setted level
+
+#define SPDLOG_LEVEL_TRACE 0
+#define SPDLOG_LEVEL_DEBUG 1
+#define SPDLOG_LEVEL_INFO 2
+#define SPDLOG_LEVEL_WARN 3
+#define SPDLOG_LEVEL_ERROR 4
+#define SPDLOG_LEVEL_CRITICAL 5
+#define SPDLOG_LEVEL_OFF 6
+*/
+
 //Core log macros
-#define VT_CORE_ERROR(...) ::Vortex::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define VT_CORE_WARN(...)  ::Vortex::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define VT_CORE_INFO(...)  ::Vortex::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define VT_CORE_TRACE(...) ::Vortex::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define VT_CORE_CRITICAL(...) ::Vortex::Log::GetCoreLogger()->critical(__VA_ARGS__)
+#define VT_CORE_ERROR(...)      SPDLOG_LOGGER_ERROR(Vortex::Log::GetCoreLogger(), __VA_ARGS__)
+#define VT_CORE_WARN(...)       SPDLOG_LOGGER_WARN(Vortex::Log::GetCoreLogger(), __VA_ARGS__)
+#define VT_CORE_INFO(...)       SPDLOG_LOGGER_INFO(Vortex::Log::GetCoreLogger(), __VA_ARGS__)
+#define VT_CORE_TRACE(...)      SPDLOG_LOGGER_TRACE(Vortex::Log::GetCoreLogger(), __VA_ARGS__)
+#define VT_CORE_CRITICAL(...)   SPDLOG_LOGGER_CRITICAL(Vortex::Log::GetCoreLogger(), __VA_ARGS__)
 
 
 //Client log macros
-#define VT_ERROR(...) ::Vortex::Log::GetClientLogger()->error(__VA_ARGS__)
-#define VT_WARN(...)  ::Vortex::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define VT_INFO(...)  ::Vortex::Log::GetClientLogger()->info(__VA_ARGS__)
-#define VT_TRACE(...) ::Vortex::Log::GetClientLogger()->trace(__VA_ARGS__)
-#define VT_CRITICAL(...) ::Vortex::Log::GetClientLogger()->critical(__VA_ARGS__)
+#define VT_ERROR(...)       SPDLOG_LOGGER_ERROR(Vortex::Log::GetClientLogger(), __VA_ARGS__)
+#define VT_WARN(...)        SPDLOG_LOGGER_WARN (Vortex::Log::GetClientLogger(), __VA_ARGS__)
+#define VT_INFO(...)        SPDLOG_LOGGER_INFO (Vortex::Log::GetClientLogger(), __VA_ARGS__)
+#define VT_TRACE(...)       SPDLOG_LOGGER_TRACE(Vortex::Log::GetClientLogger(), __VA_ARGS__)
+#define VT_CRITICAL(...)    SPDLOG_LOGGER_CRITICAL(Vortex::Log::GetClientLogger(), __VA_ARGS__)

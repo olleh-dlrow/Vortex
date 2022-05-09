@@ -51,6 +51,8 @@ namespace Vortex {
 		}
 
 		// Dispatch Event of T to certain function F to handle.
+		// Only T is the same type as m_Event could F handles it, 
+		// otherwise IGNORE
 		// If any of the function handled this Event, Dispatch return true,
 		// else return false
 		//T: Event class, F: function type

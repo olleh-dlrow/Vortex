@@ -47,7 +47,9 @@ namespace Vortex {
 
     void Application::OnEvent(Event& e) {
         EventDispatcher dispatcher(e);
+        // Will window be closed?
         dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnWindowClose));
+        // Will window be resized?
         dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(Application::OnWindowResize));
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
@@ -55,8 +57,6 @@ namespace Vortex {
             (*--it)->OnEvent(e);
         }
     }
-
-
 
     bool Application::OnWindowClose(WindowCloseEvent& e) {
         m_Running = false;

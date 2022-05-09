@@ -12,6 +12,7 @@ namespace Vortex {
         WindowsWindow(const WindowProps& props);
         virtual ~WindowsWindow();
 
+        // update glfw, swap opengl buffers
         void OnUpdate() override;
         unsigned int GetWidth() const override {return m_Data.Width;}
         unsigned int GetHeight() const override {return m_Data.Height;}

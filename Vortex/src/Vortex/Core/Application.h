@@ -18,6 +18,14 @@ namespace Vortex {
         Application();
         virtual ~Application();
 
+        // CORE part to event handling
+        // ==== process:
+        // event -> glfw -> window (m_EventCallbackfn=OnEvent)
+        // -> OnEvent -> end
+        // 
+        // ==== handle event:
+        // e -> dispatch<some event>(handler) -> dispatch... -> ...
+        // e -> layer1(OnEvent) -> layer2(OnEvent) -> ...
         void OnEvent(Event& e);
 
         // push layer to Layer part in LayerStack (below Overlay part)
@@ -28,20 +36,24 @@ namespace Vortex {
         inline static Application& Get() {return *s_Instance;}  //get application instance
         inline Window& GetWindow() {return *m_Window;}
     private:
+        // MAIN LOOP of the application
+        // Calulate game time
+        // Update all layers
+        // Update all GUIs for layers
+        // update window
         void Run();
         bool OnWindowClose(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
-
     private:
         std::unique_ptr<Window> m_Window;
         ImGuiLayer* m_ImGuiLayer;
-
-        bool m_Running = true;
-        bool m_Minimized = false;
-
         LayerStack m_LayerStack;
 
         float m_LastFrameTime = 0.0f;
+
+        // states
+        bool m_Running = true;
+        bool m_Minimized = false;
     private:
         static Application* s_Instance;
         friend int ::main(int argc, char** argv);
