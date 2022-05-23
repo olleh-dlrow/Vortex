@@ -82,6 +82,9 @@ namespace Vortex {
                 layer->OnImGuiRender();
             m_ImGuiLayer->End();
 
+            // execute only if events have been handled
+            // so the color buffer can't update when you 
+            // dragging, resizing.. windows!!
             m_Window->OnUpdate();
         }
     }

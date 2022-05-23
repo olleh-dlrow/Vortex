@@ -20,7 +20,7 @@ windows10 x64
 
 [glm](https://github.com/g-truc/glm.git)
 
-
+[Home | Premake](https://premake.github.io/docs/)
 
 ## Usage
 
@@ -106,11 +106,42 @@ output location: stdout and file
 
 behaviour:
 
+initialize app
+
+- create window
+- init render
+- push imgui layer
+
+
+
 add layers
 
-handle all layers' events
+OnEvent:
 
-handle window events
+>         // CORE part to event handling
+>         // process:
+>         // e -> captured by glfw 
+>         // -> trigger window::eventCallBack(App::OnEvent)
+>         // -> Application::OnEvent(e) -> end
+>         // 
+>         // handle event:
+>         // e -> dispatch<some event>(handler) -> dispatch... -> ...
+>         // e -> layer1(OnEvent) -> layer2(OnEvent) -> ...
+>
+>          
+>
+>         problem:
+>
+>         Event processing (`glfwPollEvents`) stalls whenever the window is resized, 
+>
+>         see annotation of glfw3.h:glfwPollEvents()
+
+- handle all layers' events
+- handle window events
+
+
+
+
 
 main loop
 
@@ -363,7 +394,344 @@ calculate time
 
 
 
+### BufferElement
 
+the element of buffer
+
+member:
+
+name
+
+type of this element
+
+size of this element
+
+offset in buffer, calculated in buffer layout
+
+
+
+### BufferLayout
+
+define the layout of buffer with the information of buffer elements, 
+
+calculate every element's offset in one buffer unit and stride
+
+member:
+
+buffer elements
+
+stride
+
+
+
+
+
+### VertexBuffer
+
+the buffer of vertices, which may include coordinates, colors, normals, etc.
+
+behaviour:
+
+create vertex buffer
+
+set data to buffer
+
+bind this vertex buffer to activate it
+
+unbind this vertex buffer
+
+get/set layout of vertices
+
+
+
+
+
+#### OpenGLVertexBuffer: VertexBuffer
+
+![img](README/vertex_attribute_pointer.png)
+
+implementation  to vertexbuffer with opengl
+
+member:
+
+id
+
+layout
+
+
+
+### IndexBuffer
+
+explain vertex coordinates as triangles
+
+behaviour:
+
+create index buffer
+
+bind this index buffer to activate it
+
+unbind this index buffer
+
+get count of indices
+
+
+
+#### OpenGLIndexBuffer: IndexBuffer
+
+implementation  to indexbuffer with opengl
+
+member:
+
+id
+
+count of indices
+
+
+
+### VertexArray
+
+record attributes of vertex
+
+behaviour:
+
+create vertex array
+
+bind this vertex array to activate it
+
+unbind this vertex array
+
+add vertex buffer
+
+set index buffer
+
+
+
+#### OpenGLVertexArray: VertexArray
+
+![img](README/vertex_array_objects.png)
+
+member:
+
+id
+
+vertex buffer index
+
+vertex buffers
+
+index buffer
+
+
+
+implementation  of add vertex buffer:
+
+- activate this vertex array and vertex buffer
+- enable vertex attribute array in current vertex buffer index
+- set attribute pointer using layout of this vertex buffer
+- update vertex buffer index
+
+
+
+### Texture
+
+behaviour:
+
+get width, height
+
+set data
+
+bind this texture to activate it
+
+check equal
+
+
+
+#### Texture2D: Texture
+
+2d of texture
+
+behaviour:
+
+create texture
+
+
+
+##### OpenGLTexture2D: Texture2D
+
+create texture
+
+load texture in file
+
+
+
+bind this texture to activate it
+
+set storage format
+
+set blend mode
+
+set filter mode
+
+set minmap
+
+
+
+### Shader
+
+shade objects with some methods
+
+behaviour:
+
+create using glsl
+
+bind
+
+unbind
+
+set global value in glsl
+
+
+
+#### OpenGLShader: Shader
+
+implementation of shader
+
+member:
+
+id
+
+name
+
+behaviour:
+
+compile vertex shader and fragment shader
+
+pre process the source code of openGL shader: 
+
+- source can include multiple shader types with flag "#type xxx" in start
+
+
+
+
+
+### ShaderLibrary
+
+store, add, load shaders
+
+behaviour:
+
+add shader
+
+load shader with file
+
+check if some shader exists
+
+
+
+### RendererAPI
+
+application interface gived by certain renderer, this determines which type of instance you will get through Create function in renderer
+
+behaviour:
+
+init renderer
+
+set viewport
+
+set clear color
+
+clear screen
+
+draw indexed objects
+
+
+
+#### OpenGLRendererAPI: RendererAPI
+
+implementation of RendererAPI
+
+
+
+### RenderCommand
+
+the common command used for renderer
+
+behaviour:
+
+invoke renderer api's function
+
+
+
+
+### Renderer
+
+render image to screen
+
+member:
+
+scene data:
+
+- VPmatrix
+
+
+
+
+
+behaviour:
+init
+
+shutdown
+
+begin a scene with a camera
+
+submit vertices and shaders to render
+
+get renderer api
+
+
+
+### Renderer2D
+
+render 2d objects, statistic its consumption
+
+behaviour:
+
+init
+
+shutdown
+
+begin a scene with a camera
+
+flush 
+
+draw primitives
+
+
+
+### OrthographicCamera
+
+set and calculate m, v, p matrix
+
+member:
+
+projection matrix
+
+view matrix
+
+
+
+### OrthographicCameraController
+
+control orthographic camera's behaviours
+
+behaviour:
+
+update
+
+handle events:
+
+- mouse scoll
+- window resize
+- others
 
 
 

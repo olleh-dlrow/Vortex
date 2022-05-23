@@ -3,14 +3,16 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Vortex/Renderer/Renderer2D.h"
+#include "Vortex/Renderer/GraphicsContext.h"
 
 namespace Vortex {
 
     Scope<Renderer::SceneData> Renderer::s_SceneData = CreateScope<Renderer::SceneData>();
+    Scope<RendererAPI> Renderer::s_RendererAPI = RendererAPI::Create();
 
     void Renderer::Init()
     {
-        RenderCommand::Init();
+        s_RendererAPI->Init();
         Renderer2D::Init();
     }
 
@@ -21,7 +23,7 @@ namespace Vortex {
 
     void Renderer::OnWindowResize(uint32_t width, uint32_t height)
     {
-        RenderCommand::SetViewport(0, 0, width, height);
+        SetViewport(0, 0, width, height);
     }
 
     void Renderer::BeginScene(OrthographicCamera& camera)
@@ -41,6 +43,13 @@ namespace Vortex {
         shader->SetMat4("u_Transform", transform);
 
         vertexArray->Bind();
-        RenderCommand::DrawIndexed(vertexArray);
+        DrawIndexed(vertexArray);
+    }
+
+    void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray)
+    {
+        shader->Bind();
+        vertexArray->Bind();
+        DrawIndexed(vertexArray);
     }
 }

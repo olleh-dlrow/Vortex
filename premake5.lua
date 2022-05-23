@@ -29,6 +29,21 @@ include "Vortex/vendor/GLFW"
 include "Vortex/vendor/Glad"
 include "Vortex/vendor/imgui"
 
+-- Clean Function --
+newaction {
+    trigger     = "clean",
+    description = "clean the software",
+    execute     = function ()
+       print("clean project configs...")
+       os.remove("Vortex.sln")
+       os.remove("Vortex/*.vcxproj*")
+       os.remove("Vortex/vendor/Glad/*.vcxproj*")
+       os.remove("Vortex/vendor/glfw/*.vcxproj*")
+       os.remove("Vortex/vendor/imgui/*.vcxproj*")
+       print("clean done.")
+    end
+ }
+
 project "Vortex"
     location "Vortex"
     kind "StaticLib"

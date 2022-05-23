@@ -58,10 +58,40 @@ namespace Vortex
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    void OpenGLRendererAPI::DrawTriangleStrip(const Ref<VertexArray>& vertexArray, TriangleAttribute attr)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
+        glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
     {
         uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
         glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, LineAttribute attr)
+    {
+        if (attr.width > 0.0f)
+            glLineWidth(attr.width);
+        else
+            glLineWidth(1.0f);
+        glDrawArrays(attr.mode, 0, attr.pointCount);
+    }
+
+    void OpenGLRendererAPI::DrawPoints(const Ref<VertexArray>& vertexArray, PointAttribute attr)
+    {
+        if(attr.size > 0.0f) 
+        {
+            glEnable(GL_PROGRAM_POINT_SIZE);
+        }
+        else
+        {
+            glDisable(GL_PROGRAM_POINT_SIZE);
+        }
+        glDrawArrays(attr.mode, 0, attr.count);
+    }
+
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vortex/Renderer/RendererAPI.h"
+#include "Vortex/Renderer/Shader.h"
 
 namespace Vortex
 {
@@ -33,6 +34,15 @@ namespace Vortex
         {
             s_RendererAPI->DrawIndexed(vertexArray, count);
         }
+        inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader)
+        {
+            vertexArray->Bind();
+            shader->Bind();
+            s_RendererAPI->DrawIndexed(vertexArray, 0);
+        }
+
+
+
     private:
         static Scope<RendererAPI> s_RendererAPI;
     };

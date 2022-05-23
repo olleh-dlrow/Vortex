@@ -7,8 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Sandbox2D.h"
-#include "ExampleLayer.h"
+#include "TemplateLayer.h"
 
 /*
 tips:
@@ -20,7 +19,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new ExampleLayer());
+        PushLayer(new TemplateLayer());
     }
     ~Sandbox() {
     

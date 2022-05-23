@@ -25,18 +25,15 @@ void Sandbox2D::OnDetach()
 
 void Sandbox2D::OnUpdate(Vortex::Timestep ts)
 {
-    VT_PROFILE_FUNCTION();
 
     // Update
     {
-        VT_PROFILE_SCOPE("CameraController::OnUpdate");
         m_CameraController.OnUpdate(ts);
     }
 
     // Render
     Vortex::Renderer2D::ResetStats();
     {
-        VT_PROFILE_SCOPE("Renderer Prep");
         Vortex::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Vortex::RenderCommand::Clear();
     }
@@ -45,7 +42,6 @@ void Sandbox2D::OnUpdate(Vortex::Timestep ts)
         static float rotation = 0.0f;
         rotation += ts * 50.0f;
 
-        VT_PROFILE_SCOPE("Renderer Draw");
         Vortex::Renderer2D::BeginScene(m_CameraController.GetCamera());
         Vortex::Renderer2D::DrawRotatedQuad({ 1.0f, 0.0f }, { 0.8f, 0.8f }, -45.0f, { 0.8f, 0.2f, 0.3f, 1.0f });
         Vortex::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
@@ -71,7 +67,6 @@ void Sandbox2D::OnUpdate(Vortex::Timestep ts)
 
 void Sandbox2D::OnImGuiRender()
 {
-    VT_PROFILE_FUNCTION();
 
     ImGui::Begin("Settings");
 

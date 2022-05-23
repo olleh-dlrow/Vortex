@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Geo/GeoAttribute.h"
 
 namespace Vortex 
 {
@@ -22,6 +23,10 @@ namespace Vortex
         virtual void Clear() = 0;
 
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
+        virtual void DrawTriangleStrip(const Ref<VertexArray>& vertexArray, TriangleAttribute attr) = 0;
+
+        virtual void DrawLines(const Ref<VertexArray>& vertexArray, LineAttribute attr) = 0;
+        virtual void DrawPoints(const Ref<VertexArray>& vertexArray, PointAttribute attr) = 0;
 
         inline static API GetAPI() { return s_API; }
         static Scope<RendererAPI> Create();

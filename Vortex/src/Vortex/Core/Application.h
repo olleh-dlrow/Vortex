@@ -20,8 +20,9 @@ namespace Vortex {
 
         // CORE part to event handling
         // ==== process:
-        // event -> glfw -> window (m_EventCallbackfn=OnEvent)
-        // -> OnEvent -> end
+        // e -> captured by glfw 
+        // -> trigger window::eventCallBack(App::OnEvent)
+        // -> Application::OnEvent(e) -> end
         // 
         // ==== handle event:
         // e -> dispatch<some event>(handler) -> dispatch... -> ...
