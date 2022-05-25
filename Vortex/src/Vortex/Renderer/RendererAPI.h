@@ -24,6 +24,8 @@ namespace Vortex
 
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
         virtual void DrawTriangleStrip(const Ref<VertexArray>& vertexArray, TriangleAttribute attr) = 0;
+        virtual void DrawTriangles(const Ref<VertexArray>& vertexArray, TriangleAttribute attr) = 0;
+
 
         virtual void DrawLines(const Ref<VertexArray>& vertexArray, LineAttribute attr) = 0;
         virtual void DrawPoints(const Ref<VertexArray>& vertexArray, PointAttribute attr) = 0;

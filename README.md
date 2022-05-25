@@ -10,6 +10,19 @@ windows10 x64
 
 
 
+## Plan
+
+- write perspective camera √
+- import libigl, load modules
+- modify GUI，move viewport into ImguiWindow with frame buffer
+- create entity
+- import imgzimo
+- interaction in viewport
+- implement geo algorithms
+- implement render algorithms
+
+
+
 ## Third Party
 
 [spdlog](https://github.com/gabime/spdlog.git)
@@ -125,10 +138,16 @@ OnEvent:
 >         // -> Application::OnEvent(e) -> end
 >         // 
 >         // handle event:
->         // e -> dispatch<some event>(handler) -> dispatch... -> ...
+>         // e -> dispatch\<some event\>(handler) -> dispatch... -> ...
 >         // e -> layer1(OnEvent) -> layer2(OnEvent) -> ...
 >
 >          
+>
+>         summary:
+>
+>         e1, e2, e3... -> APP -> win, camera, layer1, layer2...
+>
+>         
 >
 >         problem:
 >

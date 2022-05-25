@@ -98,8 +98,8 @@ namespace Vortex {
         }
 
         m_Minimized = false;
-        Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
-
+        // Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+        VT_CORE_INFO("{} {}", e.GetWidth(), e.GetHeight());
         return false;
     }
 }

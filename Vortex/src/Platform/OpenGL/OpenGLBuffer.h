@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Vortex/Renderer/Buffer.h"
+#include "Vortex/Renderer/Texture.h"
+
 
 namespace Vortex 
 {
@@ -38,5 +40,23 @@ namespace Vortex
     private:
         uint32_t m_RendererID;
         uint32_t m_Count;
+    };
+
+    class OpenGLFrameBuffer : public FrameBuffer
+    {
+    public:
+        OpenGLFrameBuffer(uint32_t width, uint32_t height);
+        virtual ~OpenGLFrameBuffer();
+
+        virtual void Bind() const;
+        virtual void Unbind() const;
+        virtual uint32_t GetWidth() const override { return m_Width; } 
+        virtual uint32_t GetHeight() const override { return m_Height; }
+        virtual uint32_t GetTextureID() const override { return m_Tex2d->GetID(); }
+    private:
+        uint32_t m_RendererID;
+        Ref<Texture2D> m_Tex2d;
+        uint32_t m_Width;
+        uint32_t m_Height;
     };
 }

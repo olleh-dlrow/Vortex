@@ -28,6 +28,13 @@ namespace Vortex {
         return state == GLFW_PRESS;
     }
 
+    bool WindowsInput::IsMouseButtonReleasedImpl(int button)
+    {
+        auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+        auto state = glfwGetMouseButton(window, button);
+        return state == GLFW_RELEASE;
+    }
+
     float WindowsInput::GetMouseXImpl()
     {
         // in C++17 or higher version can use this grammar

@@ -13,6 +13,8 @@ namespace Vortex
         virtual void Clear() override;
 
         virtual void DrawTriangleStrip(const Ref<VertexArray>& vertexArray, TriangleAttribute attr) override;
+        virtual void DrawTriangles(const Ref<VertexArray>& vertexArray, TriangleAttribute attr) override;
+
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) override;
 
         virtual void DrawLines(const Ref<VertexArray>& vertexArray, LineAttribute attr) override;

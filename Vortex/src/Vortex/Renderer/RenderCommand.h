@@ -5,6 +5,7 @@
 
 namespace Vortex
 {
+    // OBSOLETE
     // The common Command used by renderer
     class RenderCommand
     {

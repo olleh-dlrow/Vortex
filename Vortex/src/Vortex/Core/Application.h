@@ -19,6 +19,9 @@ namespace Vortex {
         virtual ~Application();
 
         // CORE part to event handling
+        // the TRIGGER TIME depend on other function's callback
+        // it's not certain
+        // 
         // ==== process:
         // e -> captured by glfw 
         // -> trigger window::eventCallBack(App::OnEvent)

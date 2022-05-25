@@ -32,7 +32,8 @@ namespace Vortex {
         ImGuiIO& io = ImGui::GetIO(); (void)io;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
         //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+        //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
 
@@ -63,8 +64,15 @@ namespace Vortex {
     void ImGuiLayer::OnEvent(Event& e)
     {
         ImGuiIO& io = ImGui::GetIO();
+        //VT_CORE_INFO("[BEGIN]=====================");
+        //VT_CORE_INFO("MOUSE {}", io.WantCaptureMouse);
+        //VT_CORE_INFO("KEYBO {}", io.WantCaptureKeyboard);
+
+        //VT_CORE_INFO("BEFORE {}", e.Handled);
         e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
         e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+        //VT_CORE_INFO("AFTER {}", e.Handled);
+        //VT_CORE_INFO("[END  ]=====================");
 
     }
 
@@ -72,7 +80,11 @@ namespace Vortex {
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
+        // WARNING: changed io.WantCaptureXXX
         ImGui::NewFrame();
+        ImGuiIO& io = ImGui::GetIO();
+        io.WantCaptureMouse = false;
+        io.WantCaptureKeyboard = false;
     }
 
     void ImGuiLayer::End()

@@ -1,5 +1,6 @@
 #include "vtpch.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
+#include "Platform/OpenGL/OpenGLTexture.h"
 #include <glad/glad.h>
 
 namespace Vortex 
@@ -71,5 +72,26 @@ namespace Vortex
     void OpenGLIndexBuffer::Unbind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height)
+        :m_Width(width), m_Height(height)
+    {
+        glGenFramebuffers(1, &m_RendererID);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+        m_Tex2d = OpenGLTexture2D::Create(width, height);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Tex2d->GetID(), 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+    OpenGLFrameBuffer::~OpenGLFrameBuffer()
+    {
+        glDeleteFramebuffers(1, &m_RendererID);
+    }
+    void OpenGLFrameBuffer::Bind() const
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+    }
+    void OpenGLFrameBuffer::Unbind() const
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 }

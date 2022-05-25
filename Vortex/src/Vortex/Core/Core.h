@@ -59,4 +59,5 @@ namespace Vortex
 	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
+	
 } // namespace Vortex

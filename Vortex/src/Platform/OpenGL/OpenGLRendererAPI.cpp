@@ -62,7 +62,12 @@ namespace Vortex
     {
         glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
         glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void OpenGLRendererAPI::DrawTriangles(const Ref<VertexArray>& vertexArray, TriangleAttribute attr)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
+        glDrawArrays(GL_TRIANGLES, 0, attr.pointCnt);
     }
 
     void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
