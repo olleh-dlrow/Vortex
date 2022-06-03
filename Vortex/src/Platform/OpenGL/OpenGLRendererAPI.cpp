@@ -58,16 +58,16 @@ namespace Vortex
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void OpenGLRendererAPI::DrawTriangleStrip(const Ref<VertexArray>& vertexArray, TriangleAttribute attr)
+    void OpenGLRendererAPI::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
     {
         glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
-        glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, attr.indexCnt, GL_UNSIGNED_INT, nullptr);
     }
 
-    void OpenGLRendererAPI::DrawTriangles(const Ref<VertexArray>& vertexArray, TriangleAttribute attr)
+    void OpenGLRendererAPI::DrawTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
     {
         glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
-        glDrawArrays(GL_TRIANGLES, 0, attr.pointCnt);
+        glDrawArrays(GL_TRIANGLES, 0, attr.vertCnt);
     }
 
     void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
@@ -77,7 +77,7 @@ namespace Vortex
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, LineAttribute attr)
+    void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, DrawLineConfig attr)
     {
         if (attr.width > 0.0f)
             glLineWidth(attr.width);
@@ -86,7 +86,7 @@ namespace Vortex
         glDrawArrays(attr.mode, 0, attr.pointCount);
     }
 
-    void OpenGLRendererAPI::DrawPoints(const Ref<VertexArray>& vertexArray, PointAttribute attr)
+    void OpenGLRendererAPI::DrawPoints(const Ref<VertexArray>& vertexArray, DrawPointConfig attr)
     {
         if(attr.size > 0.0f) 
         {

@@ -6,9 +6,9 @@
 
 namespace Vortex
 {
-	struct PointAttribute
+	struct DrawPointConfig
 	{
-		PointAttribute(uint32_t cnt, float sz = -1.0f, const glm::vec3& c=glm::vec3(1.0f, 0.5f, 0.2f), uint32_t m = GL_POINTS)
+		DrawPointConfig(uint32_t cnt, float sz = -1.0f, const glm::vec3& c=glm::vec3(1.0f, 0.5f, 0.2f), uint32_t m = GL_POINTS)
 			:mode(m), size(sz), count(cnt), color(c)
 		{
 

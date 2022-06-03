@@ -12,14 +12,26 @@ windows10 x64
 
 ## Plan
 
-- write perspective camera √
-- import libigl, load modules
-- modify GUI，move viewport into ImguiWindow with frame buffer
+- write perspective and orthographic camera √
+- import libigl, load models
+- modify GUI，move viewport into ImguiWindow with frame buffer √
+- finish batch render of opengl
 - create entity
-- import imgzimo
+- import imguizmo
 - interaction in viewport
+  - get world pos of cursor in viewport window √
+  - select point
+  - drag point
 - implement geo algorithms
 - implement render algorithms
+
+
+
+## Note
+
+use reference but not raw pointer
+
+use shared_ptr to manage heap space
 
 
 
@@ -751,6 +763,16 @@ handle events:
 - mouse scoll
 - window resize
 - others
+
+
+
+## BatchRendering
+
+the birth of batch rendering is from a trade-off:
+
+if there are lots of primitives whose transforms are the same, calculating their world positions in GPU is better for the reason of parallel
+
+but, if the primitives have different transforms, multiple submits may cost more time than which costed by calculating world positions with CPU, such as 1 million points or 1million lines. In this case, use batch rendering is better because it may need only one or two submit to finish rendering :)
 
 
 

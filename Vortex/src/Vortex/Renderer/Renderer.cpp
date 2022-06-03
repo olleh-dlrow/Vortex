@@ -15,6 +15,9 @@ namespace Vortex {
         s_RendererAPI->Init();
         RenderCommand::Init();
         Renderer2D::Init();
+
+        // init all batches
+        s_SceneData->PointBatch = CreateRef<Batch<Quad1>>(Shader::Create("assets/shaders/Vertex1.glsl"));
     }
 
     void Renderer::Shutdown()
@@ -40,6 +43,8 @@ namespace Vortex {
 
     void Renderer::EndScene()
     {
+        // flush all batches
+        s_SceneData->PointBatch->Flush(s_SceneData->ViewProjectionMatrix);
     }
 
     void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
@@ -75,20 +80,18 @@ namespace Vortex {
         s_RendererAPI->Clear();
     }
 
-    void Renderer::DrawTriangleStrip(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, TriangleAttribute attr)
+    void Renderer::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr)
     {
-        vertexArray->Bind();
-        shader->Bind();
-        s_RendererAPI->DrawTriangleStrip(vertexArray, attr);
+        s_RendererAPI->DrawIndexedTriangles(vertexArray, attr);
     }
-    void Renderer::DrawLines(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, LineAttribute attr)
+    void Renderer::DrawLines(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawLineConfig attr)
     {
         vertexArray->Bind();
         shader->Bind();
         shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
         s_RendererAPI->DrawLines(vertexArray, attr);
     }
-    void Renderer::DrawPoints(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, PointAttribute attr)
+    void Renderer::DrawPoints(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawPointConfig attr)
     {
         vertexArray->Bind();
         shader->Bind();
@@ -100,10 +103,25 @@ namespace Vortex {
         s_RendererAPI->DrawPoints(vertexArray, attr);
     }
 
-    void Renderer::DrawTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, TriangleAttribute attr)
+    void Renderer::DrawTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr)
     {
         vertexArray->Bind();
         shader->Bind();
         s_RendererAPI->DrawTriangles(vertexArray, attr);
+    }
+    void Renderer::DrawPoints(const std::vector<glm::vec3>& positions, float size, const glm::vec4& color)
+    {
+        auto batch = s_SceneData->PointBatch;
+        auto VP = s_SceneData->ViewProjectionMatrix;
+        int sz = (int)positions.size();
+        for (int i = 0; i < sz; i++)
+        {
+            Quad1 quad(positions[i], glm::vec2(1, 1) * 0.1f * size, color);
+            if (!batch->TryAddBatchUnit(quad))
+            {
+                batch->Flush(VP);
+                batch->TryAddBatchUnit(quad);
+            }
+        }
     }
 }

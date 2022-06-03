@@ -48,6 +48,15 @@ namespace Vortex
     // IndexBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
 
+    OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t count)
+        :m_Count(count)
+    {
+        glCreateBuffers(1, &m_RendererID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+        glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint32_t), nullptr, GL_DYNAMIC_DRAW);
+
+    }
+
     OpenGLIndexBuffer::OpenGLIndexBuffer(uint32_t* indices, uint32_t count)
         : m_Count(count)
     {
@@ -73,6 +82,18 @@ namespace Vortex
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
+
+    void OpenGLIndexBuffer::SetData(const void* data, uint32_t count)
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, count * sizeof(uint32_t), data);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
+    // FrameBuffer //////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+
+
     OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height)
         :m_Width(width), m_Height(height)
     {

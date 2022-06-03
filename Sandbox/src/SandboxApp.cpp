@@ -2,15 +2,15 @@
 #include <Vortex/Core/EntryPoint.h>
 
 
-#include <imgui/imgui.h>
+#include <imgui.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "TemplateLayer.h"
-#include "ExampleLayer.h"
-//#include "CameraTest.h"
-#include "RayCastTest.h"
+//#include "TemplateLayer.h"
+//#include "ExampleLayer.h"
+//#include "RayCastTest.h"
+#include "BatchRenderingTest.h"
 
 /*
 tips:
@@ -22,7 +22,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new RayCastTest());
+        PushLayer(new BatchRenderingTest());
     }
     ~Sandbox() {
     

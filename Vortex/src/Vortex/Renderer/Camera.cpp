@@ -6,11 +6,6 @@
 
 namespace Vortex
 {
-	static bool  isDragging = false;
-	static float lastPosX = 0;
-	static float lastPosY = 0;
-	static float deltaPos = 0;
-
 	void Camera::Init()
 	{
 		m_Front = glm::vec3(0, 0, -1.0f);
@@ -37,6 +32,33 @@ namespace Vortex
 		Init();
 	}
 
+	glm::mat4 Camera::GetProjMatrix() const
+	{
+		if (m_ProjMode == CameraProjMode::Perspective)
+			return glm::perspective(glm::radians(m_PerspParam.degFOV), m_Aspect, m_ZNear, m_ZFar);
+		if (m_ProjMode == CameraProjMode::Orthographic)
+		{
+			float zl = m_OrthoParam.zoomLevel;
+			float hWidth = m_Aspect * zl;
+			float hHeight = zl;
+			return glm::ortho(-hWidth, hWidth, -hHeight, hHeight, m_ZNear, m_ZFar);
+		}
+		VT_ASSERT(0, "unknown projection mode!");
+		return glm::mat4();
+	}
+
+	void Camera::CastRay(const glm::vec2& normPos, Ray& r)
+	{
+		if (CameraProjMode::Orthographic == m_ProjMode)
+		{
+			float camHalfW = m_Aspect * m_OrthoParam.zoomLevel;
+			float camHalfH = m_OrthoParam.zoomLevel;
+			r.origin = glm::vec3((normPos.x * 2 - 1) * camHalfW, ((1 - normPos.y) * 2 - 1) * camHalfH, m_ZNear);
+			r.origin += m_Position;
+			r.direction = m_Front;
+		}
+	}
+
 	void Camera::ReCalculateCameraVectors()
 	{
 		glm::vec3 front;
@@ -51,7 +73,7 @@ namespace Vortex
 
 	void Camera::PerspectiveModeHandleInput(Timestep ts) 
 	{
-		deltaPos = m_MovementSpeed * ts;
+		float deltaPos = m_MovementSpeed * ts;
 		if (Input::IsKeyPressed(VT_KEY_W))
 		{
 			m_Position += m_Front * deltaPos;
@@ -77,26 +99,26 @@ namespace Vortex
 			m_Position -= m_WorldUp * deltaPos;
 		}
 
-		if (isDragging)
+		if (m_IsRotating)
 		{
 			float x = Input::GetMouseX();
 			float y = Input::GetMouseY();
 
-			float offsetX = x - lastPosX;
-			float offsetY = lastPosY - y;
+			float offsetX = x - m_LastMouseX;
+			float offsetY = m_LastMouseY - y;
 
 			m_Yaw += offsetX * m_MoveSensitivity;
 			m_Pitch += offsetY * m_MoveSensitivity;
 			m_Pitch = glm::clamp(m_Pitch, -89.0f, 89.0f);
 
-			lastPosX = x;
-			lastPosY = y;
+			m_LastMouseX = x;
+			m_LastMouseY = y;
 		}
 	}
 
 	void Camera::OrthoModeHandleInput(Timestep ts)
 	{
-		deltaPos = m_MovementSpeed * ts;
+		float deltaPos = m_MovementSpeed * ts;
 		if (Input::IsKeyPressed(VT_KEY_W))
 		{
 			m_Position += m_WorldUp * deltaPos;
@@ -162,12 +184,12 @@ namespace Vortex
 	{
 		if (e.GetMouseButton() == VT_MOUSE_BUTTON_2)
 		{
-			if (!isDragging)
+			if (!m_IsRotating)
 			{
-				lastPosX = Input::GetMouseX();
-				lastPosY = Input::GetMouseY();
+				m_LastMouseX = Input::GetMouseX();
+				m_LastMouseY = Input::GetMouseY();
 			}
-			isDragging = true;
+			m_IsRotating = true;
 		}
 		return false;
 	}
@@ -176,7 +198,7 @@ namespace Vortex
 	{
 		if (e.GetMouseButton() == VT_MOUSE_BUTTON_2)
 		{
-			isDragging = false;
+			m_IsRotating = false;
 		}
 		return false;
 	}
@@ -186,31 +208,31 @@ namespace Vortex
 		// WARNING: can't use this to handle input,
 		// the speed is too slow!!
 		// VT_CORE_INFO("Camera: Key Pressed");
-		int keycode = e.GetKeyCode();
-		if (keycode == VT_KEY_W)
-		{
-			m_Position += m_Front * deltaPos;
-		}
-		if (keycode == VT_KEY_S)
-		{
-			m_Position -= m_Front * deltaPos;
-		}
-		if (keycode == VT_KEY_A)
-		{
-			m_Position -= m_Right * deltaPos;
-		}
-		if (keycode == VT_KEY_D)
-		{
-			m_Position += m_Right * deltaPos;
-		}
-		if (keycode == VT_KEY_SPACE)
-		{
-			m_Position += m_WorldUp * deltaPos;
-		}
-		if (keycode == VT_KEY_LEFT_SHIFT)
-		{
-			m_Position -= m_WorldUp * deltaPos;
-		}
+		//int keycode = e.GetKeyCode();
+		//if (keycode == VT_KEY_W)
+		//{
+		//	m_Position += m_Front * deltaPos;
+		//}
+		//if (keycode == VT_KEY_S)
+		//{
+		//	m_Position -= m_Front * deltaPos;
+		//}
+		//if (keycode == VT_KEY_A)
+		//{
+		//	m_Position -= m_Right * deltaPos;
+		//}
+		//if (keycode == VT_KEY_D)
+		//{
+		//	m_Position += m_Right * deltaPos;
+		//}
+		//if (keycode == VT_KEY_SPACE)
+		//{
+		//	m_Position += m_WorldUp * deltaPos;
+		//}
+		//if (keycode == VT_KEY_LEFT_SHIFT)
+		//{
+		//	m_Position -= m_WorldUp * deltaPos;
+		//}
 		return false;
 	}
 
@@ -235,14 +257,15 @@ namespace Vortex
 		ImGui::DragFloat3("up", glm::value_ptr(cam.m_Up));
 		ImGui::DragFloat3("world up", glm::value_ptr(cam.m_WorldUp));
 
-		ImGui::DragFloat("zoomLv", &cam.m_OrthoParam.zoomLevel);
+		// ImGui::DragFloat("zoomLv", &cam.m_OrthoParam.zoomLevel);
+		ImGui::SliderFloat("zoomLv", &cam.m_OrthoParam.zoomLevel, 0.1f, 100.0f);
 
-		ImGui::DragFloat("fov", &cam.m_PerspParam.degFOV);
-		ImGui::DragFloat("yaw", &cam.m_Yaw);
+		ImGui::DragFloat("fov",   &cam.m_PerspParam.degFOV);
+		ImGui::DragFloat("yaw",   &cam.m_Yaw);
 		ImGui::DragFloat("pitch", &cam.m_Pitch);
 		ImGui::DragFloat("zNear", &cam.m_ZNear);
 		ImGui::DragFloat("zFar ", &cam.m_ZFar);
-		ImGui::InputFloat("aspect", &cam.m_Aspect);
+		ImGui::DragFloat("aspect", &cam.m_Aspect);
 		ImGui::DragFloat("speed", &cam.m_MovementSpeed);
 		ImGui::DragFloat("moveSen", &cam.m_MoveSensitivity);
 		ImGui::DragFloat("zoomSen", &cam.m_ZoomSensitivity);

@@ -5,12 +5,19 @@
 #include "Vortex/Renderer/OrthographicCamera.h"
 #include "Vortex/Renderer/Camera.h"
 #include "Vortex/Renderer/Shader.h"
-#include "Vortex/Geo/GeoAttribute.h"
+#include "Vortex/Geo/DrawGeoConfig.h"
+
+#include "Vortex/Renderer/Batch.h"
 
 namespace Vortex {
 
+    struct Vertex1;
+    class Quad1;
+    template <typename T> class Batch;
+
     class Renderer
     {
+        template <typename T> friend class Batch;
     public:
         static void Init();
         static void Shutdown();
@@ -37,13 +44,17 @@ namespace Vortex {
         
         static void Clear();
                
-        static void DrawTriangleStrip(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, TriangleAttribute attr);
+        static void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr);
      
-        static void DrawTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, TriangleAttribute attr);
+        static void DrawTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr);
 
-        static void DrawLines(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, LineAttribute attr);
+        static void DrawPoints(const std::vector<glm::vec3>&    positions,
+                               float                            size,
+                               const glm::vec4&                 color);
+
+        static void DrawLines(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawLineConfig attr);
         
-        static void DrawPoints(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, PointAttribute attr);
+        static void DrawPoints(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawPointConfig attr);
 
         // OBSOLETE
         inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count = 0)
@@ -64,6 +75,7 @@ namespace Vortex {
         struct SceneData
         {
             glm::mat4 ViewProjectionMatrix;
+            Ref<Batch<Quad1>> PointBatch;
         };
 
         static Scope<SceneData> s_SceneData;

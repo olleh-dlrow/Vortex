@@ -1,8 +1,8 @@
 #include "TemplateLayer.h"
 
-#include "Vortex/Geo/GeoAttribute.h"
+#include <Vortex/Geo/DrawGeoConfig.h>
 
-#include "imgui/imgui.h"
+#include <imgui.h>
 #include <glad/glad.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -103,13 +103,13 @@ void TemplateLayer::OnUpdate(Vortex::Timestep ts)
 	Vortex::Renderer::SetClearColor(glm::vec4(m_BgColor, 1.0f));
 	Vortex::Renderer::Clear();
 
-    Vortex::TriangleAttribute triAttr(4);
-    Vortex::Renderer::DrawTriangleStrip(squareVA, squareShader, triAttr);
+    Vortex::DrawTriangleConfig triAttr(4, 6);
+    Vortex::Renderer::DrawIndexedTriangles(squareVA, squareShader, triAttr);
 
-    Vortex::LineAttribute lineAttr(4, width, glm::vec3(0.5f, 0.9f, 0.4f));
+    Vortex::DrawLineConfig lineAttr(4, width, glm::vec3(0.5f, 0.9f, 0.4f));
     Vortex::Renderer::DrawLines(lineVA, lineShader, lineAttr);
 
-    Vortex::PointAttribute pointAttr(4, sz);
+    Vortex::DrawPointConfig pointAttr(4, sz);
     Vortex::Renderer::DrawPoints(lineVA, pointShader, pointAttr);
 }
 

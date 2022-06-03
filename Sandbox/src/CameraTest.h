@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Vortex.h"
-
-class Camera;
+#include <Vortex.h>
 
 class CameraTest : public Vortex::Layer
 {

@@ -143,10 +143,12 @@ project "Sandbox"
     {
         "Vortex/vendor/spdlog/include",
         "Vortex/src",
-        "Vortex/vendor",
-        "%{IncludeDir.glm}",
+        --"Vortex/vendor",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
+        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.stb_image}",
         "%{IncludeDir.eigen}"
     }
     

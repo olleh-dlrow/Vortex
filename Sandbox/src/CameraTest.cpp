@@ -1,13 +1,11 @@
 #include "CameraTest.h"
 
-#include "imgui/imgui.h"
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Vortex/Renderer/Camera.h"
-#include "Vortex/ImGui/ViewportWindow.h"
-
+#include <Vortex/Renderer/Camera.h>
+#include <Vortex/ImGui/ViewportWindow.h>
+#include <imgui.h>
 
 static float vertices[] = {
 -0.5f, -0.5f, -0.5f,
@@ -117,7 +115,7 @@ void CameraTest::OnUpdate(Vortex::Timestep ts)
     VA->Bind();
     shader->Bind();
     shader->SetFloat4("u_Color", glm::vec4(color, 1.0f));
-    shader->SetMat4("u_ViewProjection", cam->GetProjMatrix() * cam->GetViewMatrix());
+    shader->SetMat4("u_ViewProjection", vw->GetCamera()->GetViewProjMatrix());
 
     for (int i = 0; i < 10; i++)
     {
@@ -126,7 +124,7 @@ void CameraTest::OnUpdate(Vortex::Timestep ts)
         float angle = 20.0f * i;
         modelMat = glm::rotate(modelMat, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->SetMat4("u_Transform", modelMat);
-        Vortex::TriangleAttribute attr(36, GL_LINE);
+        Vortex::DrawTriangleConfig attr(36, GL_LINE);
         Vortex::Renderer::DrawTriangles(VA, shader, attr);
     }
 
@@ -137,42 +135,11 @@ void CameraTest::OnUpdate(Vortex::Timestep ts)
 void CameraTest::OnImGuiRender()
 {
     vw->OnImGuiRender();
-    Vortex::Camera& cam = *(vw->GetCamera());
-
-    ImGui::Begin("Settings");
-    if (ImGui::Button("Persp"))
-    {
-        cam.m_ProjMode = Vortex::CameraProjMode::Perspective;
-    }
-    if (ImGui::Button("Ortho"))
-    {
-        cam.m_ProjMode = Vortex::CameraProjMode::Orthographic;
-    }
-    ImGui::DragFloat3("pos", glm::value_ptr     (cam.m_Position));
-    ImGui::DragFloat3("front", glm::value_ptr   (cam.m_Front));
-    ImGui::DragFloat3("right", glm::value_ptr   (cam.m_Right));
-    ImGui::DragFloat3("up", glm::value_ptr      (cam.m_Up));
-    ImGui::DragFloat3("world up", glm::value_ptr(cam.m_WorldUp));
-
-    ImGui::DragFloat("zoomLv", &cam.m_OrthoParam.zoomLevel);
-
-    ImGui::DragFloat("fov",     &cam.m_PerspParam.degFOV);
-    ImGui::DragFloat("yaw",     &cam.m_Yaw);
-    ImGui::DragFloat("pitch",   &cam.m_Pitch);
-    ImGui::DragFloat("zNear",   &cam.m_ZNear);
-    ImGui::DragFloat("zFar ",   &cam.m_ZFar);
-    ImGui::InputFloat("aspect", &cam.m_Aspect);
-    ImGui::DragFloat("speed",   &cam.m_MovementSpeed);
-    ImGui::DragFloat("moveSen", &cam.m_MoveSensitivity);
-    ImGui::DragFloat("zoomSen", &cam.m_ZoomSensitivity);
-
-    ImGui::End();
-
-
+    auto cam = vw->GetCamera();
+    cam->CameraDebug();
 }
 
 void CameraTest::OnEvent(Vortex::Event& e)
 {
     vw->OnEvent(e);
-
 }

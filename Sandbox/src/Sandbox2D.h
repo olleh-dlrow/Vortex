@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vortex.h"
+#include <Vortex.h>
 
 class Sandbox2D: public Vortex::Layer
 {
