@@ -1,7 +1,6 @@
 #pragma once
 
-#include <imgui.h>
-#include <Vortex.h>
+#include "EditorLayer.h"
 
 using Vortex::Ref;
 using Vortex::CreateRef;
@@ -18,9 +17,6 @@ using Vortex::IndexBuffer;
 using Vortex::Ray;
 using Vortex::Shader;
 
-using Vortex::Batch;
-using Vortex::Quad1;
-
 using std::vector;
 
 static glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
@@ -33,52 +29,65 @@ static bool clicked = false;
 static bool mouseInPoint = false;
 static bool isDragging = false;
 static int curChosenIndex = 0;
+static bool mouseInWindow = false;
+static ImVec2 vMin, vMax;
 
-class BatchRenderingTest : public Vortex::Layer
+static bool drawLines = false;
+
+std::vector<float> lagrange(const std::vector<glm::vec3>& input_points,
+                            const std::vector<float>& xs)
+{
+    int length = input_points.size();
+    std::vector<float> ys;
+    if (length >= 2)
+    {
+        for (auto x : xs)
+        {
+            float y = 0.0f;
+            for (int i = 0; i < length; i++)
+            {
+                float temp = input_points[i][1];
+                for (int j = 0; j < length; j++)
+                {
+                    if (i != j)
+                    {
+                        temp *= x - input_points[j][0];
+                        temp *= 1 / (input_points[i][0] - input_points[j][0]);
+                    }
+                }
+                y += temp;
+            }
+            ys.push_back(y);
+        }
+
+    }
+    return ys;
+}
+
+
+
+class DrawLineTest : public EditorLayer
 {
 public:
-    BatchRenderingTest()
-    {
-        srand(time(NULL));
+	DrawLineTest()
+	{
 
-        Ref<Camera> cam = CreateRef<Camera>(OrthoParam(), glm::vec3(0, 0, 5.0f));
-        m_ViewportWindow = CreateRef<ViewportWindow>("Viewport", cam);
-    }
+	}
 
-    virtual ~BatchRenderingTest() = default;
-
-    inline virtual void OnAttach() override
-    {
-
-    }
-    inline virtual void OnDetach() override
-    {
-
-    }
-
-
-    inline void OnUpdate(Vortex::Timestep ts) override
-    {
-        m_ViewportWindow->OnUpdate(ts);
-
-        // background
-        Vortex::Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-        // clear glfw background and imgui 
-        Vortex::Renderer::Clear();
-        // start render in viewport window
-        m_ViewportWindow->Begin();
-
-        Vortex::Camera& cam = *m_ViewportWindow->GetCamera();
-
+	inline void OnUpdate(Vortex::Timestep ts) override
+	{
+		Vortex::Camera& cam = GetCamera();
         // cast ray
         ImVec2 scrPos = ImGui::GetMousePos();
+        mouseInWindow = m_ViewportWindow->InWindow(scrPos);
+
         ImVec2 normPos = m_ViewportWindow->ConvertToNormalizedPos(scrPos);
         Ray r;
         cam.CastRay(glm::vec2(normPos.x, normPos.y), r);
         worldPos = ImVec2(r.origin.x, r.origin.y);
         if (!mouseInPoint)
         {
-            if (!clicked && Vortex::Input::IsMouseButtonPressed(VT_MOUSE_BUTTON_1))
+            if (mouseInWindow && !clicked && Vortex::Input::IsMouseButtonPressed(VT_MOUSE_BUTTON_1))
             {
                 positions.emplace_back(glm::vec3(worldPos.x, worldPos.y, 0));
                 colors.emplace_back(pointColor1);
@@ -118,7 +127,7 @@ public:
 
             glm::vec3 vMin = glm::vec3(-0.5, -0.5, 0);
             glm::vec3 vMax = glm::vec3(0.5, 0.5, 0);
-            vMin = glm::translate(I, pos) * glm::scale(I, {size, size, 1.0f}) * glm::vec4(vMin, 1);
+            vMin = glm::translate(I, pos) * glm::scale(I, { size, size, 1.0f }) * glm::vec4(vMin, 1);
             vMax = glm::translate(I, pos) * glm::scale(I, { size, size, 1.0f }) * glm::vec4(vMax, 1);
             if (worldPos.x >= vMin.x && worldPos.x <= vMax.x && worldPos.y >= vMin.y &&
                 worldPos.y <= vMax.y)
@@ -139,37 +148,56 @@ public:
         Vortex::Renderer::BeginScene(cam);
         Renderer::DrawPoints(positions, 1.0f, colors);
 
-        if (positions.size() > 1)
+        if (drawLines && positions.size() > 1)
         {
-            float width = 2.0f;
-            Renderer::DrawLines(positions, width);
+            vector<glm::vec3> sortedPositions(positions.begin(), positions.end());
+            std::sort(sortedPositions.begin(), sortedPositions.end(), [](glm::vec3 v1, glm::vec3 v2) {
+                return v1.x < v2.x;
+                });
+
+            float xStart = sortedPositions[0].x;
+            float xEnd = sortedPositions[sortedPositions.size() - 1].x;
+            int cnt = 1000;
+            float eps = (xEnd - xStart) / cnt;
+            vector<float> xs(cnt + 1);
+            float cur = xStart;
+            for (int i = 0; i <= cnt; i++)
+            {
+                xs[i] = cur;
+                cur += eps;
+            }
+
+            auto ys = lagrange(sortedPositions, xs);
+            vector<glm::vec3> points(cnt + 1);
+            for (int i = 0; i < xs.size(); i++)
+            {
+                points[i] = glm::vec3(xs[i], ys[i], 0);
+            }
+            Renderer::DrawLines(points, 2.0f);
         }
 
         Vortex::Renderer::EndScene();
-        m_ViewportWindow->End();
-    }
+	}
 
     inline virtual void OnImGuiRender() override
     {
-        m_ViewportWindow->OnImGuiRender();
-        m_ViewportWindow->GetCamera()->CameraDebug();
-        ImGui::ShowDemoWindow();
-
         ImGui::Begin("Debug");
 
         ImVec2 scrPos = ImGui::GetMousePos();
         ImVec2 winPos = m_ViewportWindow->ConvertToWinPos(scrPos);
         ImGui::DragFloat2("WinPos", (float*)&winPos);
         ImGui::DragFloat2("WorldPos", (float*)&worldPos);
-        ImGui::ColorEdit3("Line Color", glm::value_ptr(color));
-
+        ImGui::DragFloat2("vMin", (float*)&vMin);
+        ImGui::DragFloat2("vMax", (float*)&vMax);
+        ImGui::DragInt("in window", (int*)&mouseInWindow);
+        if (ImGui::Button("Draw or Not"))
+        {
+            drawLines = !drawLines;
+        }
+        if (ImGui::Button("Clear"))
+        {
+            positions.swap(vector<glm::vec3>());
+        }
         ImGui::End();
     }
-    inline void OnEvent(Vortex::Event& e) override
-    {
-        m_ViewportWindow->OnEvent(e);
-    }
-private:
-    Ref<ViewportWindow> m_ViewportWindow;
 };
-

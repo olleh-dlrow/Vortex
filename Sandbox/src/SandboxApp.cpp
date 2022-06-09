@@ -10,7 +10,9 @@
 //#include "TemplateLayer.h"
 //#include "ExampleLayer.h"
 //#include "RayCastTest.h"
-#include "BatchRenderingTest.h"
+//#include "BatchRenderingTest.h"
+//#include "EditorLayer.h"
+#include "DrawLineTest.h"
 
 /*
 tips:
@@ -22,7 +24,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new BatchRenderingTest());
+        PushLayer(new DrawLineTest());
     }
     ~Sandbox() {
     

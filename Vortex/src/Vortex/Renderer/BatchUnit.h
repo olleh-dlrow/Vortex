@@ -20,6 +20,24 @@ namespace Vortex
 	};
 
 	template<typename V>
+	class Line : public BatchUnit<V, 2, 0>
+	{
+	public:
+
+	};
+
+	class Line2 : public Line<Vertex2>
+	{
+	public:
+		Line2(const glm::vec3& p1,
+			  const glm::vec3& p2)
+		{
+			m_Vertices[0].position = p1;
+			m_Vertices[1].position = p2;
+		}
+	};
+
+	template<typename V>
 	class Quad : public BatchUnit<V, 4, 6>
 	{
 	public:

@@ -15,6 +15,9 @@
 #include "Vortex/Core/MouseButtonCodes.h"
 #include "Vortex/Renderer/OrthographicCameraController.h"
 
+// some basic geometry objects
+#include "Vortex/Geo/Ray.h"
+
 // --- Renderer -------------------------
 #include "Vortex/Renderer/Renderer.h"
 #include "Vortex/Renderer/Renderer2D.h"
@@ -26,7 +29,12 @@
 #include "Vortex/Renderer/VertexArray.h"
 
 #include "Vortex/Renderer/OrthographicCamera.h"
+#include "Vortex/Renderer/Camera.h"
 // --------------------------------------
+
+#include "Vortex/Geo/DrawGeoConfig.h"
+
+#include "Vortex/ImGui/ViewportWindow.h"
 
 /*
 tips:

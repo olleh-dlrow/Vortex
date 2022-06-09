@@ -52,7 +52,15 @@ namespace Vortex {
                                float                            size,
                                const glm::vec4&                 color);
 
+        static void DrawPoints(const std::vector<glm::vec3>&    positions,
+                               float                            size,
+                               const std::vector<glm::vec4>&    colors);
+
         static void DrawLines(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawLineConfig attr);
+
+        static void DrawLines(const std::vector<glm::vec3> points, float width = 1.0f, const glm::vec3& color = glm::vec3(1.0f, 0.5f, 0.2f));
+
+        static void DrawLine(const std::pair<glm::vec3, glm::vec3>& ends, float width=1.0f, const glm::vec3& color = glm::vec3(1.0f, 0.5f, 0.2f));
         
         static void DrawPoints(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawPointConfig attr);
 

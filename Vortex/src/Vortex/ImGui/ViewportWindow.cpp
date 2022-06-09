@@ -1,7 +1,7 @@
 #include "vtpch.h"
 #include "ViewportWindow.h"
 
-#include "imgui_internal.h"
+
 
 Vortex::ViewportWindow::ViewportWindow(const std::string& winName, const Ref<Camera>& cam)
 	:m_WindowName(winName), m_Camera(cam), m_IsFocused(false)
@@ -85,7 +85,6 @@ ImVec2 Vortex::ViewportWindow::ConvertToWinPos(ImVec2 scrPos)
 	ImVec2 winPos = scrPos;
 	winPos.x -= m_AbsContentPos.x;
 	winPos.y -= m_AbsContentPos.y;
-	//VT_CORE_INFO("{} {}", winPos.x, winPos.y);
 	return winPos;
 }
 

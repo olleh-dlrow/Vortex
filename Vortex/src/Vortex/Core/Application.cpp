@@ -54,7 +54,11 @@ namespace Vortex {
 
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
             if ( e.Handled )break;
-            (*--it)->OnEvent(e);
+            it--;
+            (*it)->PreEvent(e);
+            (*it)->OnEvent(e);
+            (*it)->AfterEvent(e);
+
         }
     }
 
@@ -73,13 +77,20 @@ namespace Vortex {
             {
                 for (Layer* layer : m_LayerStack)
                 {
+                    layer->PreUpdate(timestep);
                     layer->OnUpdate(timestep);
+                    layer->AfterUpdate(timestep);
                 }
             }
 
             m_ImGuiLayer->Begin();
             for (Layer* layer : m_LayerStack)
+            {
+                layer->PreImGuiRender();
                 layer->OnImGuiRender();
+                layer->AfterImGuiRender();
+            }
+
             m_ImGuiLayer->End();
 
             // execute only if events have been handled

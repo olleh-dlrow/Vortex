@@ -88,9 +88,75 @@ namespace Vortex {
     {
         vertexArray->Bind();
         shader->Bind();
+        shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
         shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
         s_RendererAPI->DrawLines(vertexArray, attr);
     }
+
+    void Renderer::DrawLines(const std::vector<glm::vec3> points, float width, const glm::vec3& color)
+    {
+        static bool initialized = false;
+        static uint32_t maxPointCount = 1023;
+
+        static Ref<VertexArray> VA;
+        static Ref<VertexBuffer> VB;
+        static BufferLayout layout = { {Vortex::ShaderDataType::Float3, "a_Position"} };
+        static Ref<Shader> shader = Shader::Create("assets/shaders/Line.glsl");
+
+        uint32_t pointCnt = points.size();
+        if (pointCnt > maxPointCount) 
+        {
+            VT_ASSERT(maxPointCount != 0xffffffff, "MaxPointCount Arrived!");
+            maxPointCount = maxPointCount << 1 + 1;
+            initialized = false;
+        }
+
+        if (!initialized)
+        {
+            VA = VertexArray::Create();
+            VB = VertexBuffer::Create(maxPointCount * sizeof(glm::vec3));
+            VB->SetLayout(layout);
+            VA->AddVertexBuffer(VB);
+            initialized = true;
+        }
+
+        DrawLineConfig attr(pointCnt, width, color);
+        VA->Bind();
+        VB->SetData(&points[0], pointCnt * sizeof(glm::vec3));
+        shader->Bind();
+        shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+        shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
+        s_RendererAPI->DrawLines(VA, attr);
+    }
+
+    void Renderer::DrawLine(const std::pair<glm::vec3, glm::vec3>& ends, float width, const glm::vec3& color)
+    {
+        static bool initialized = false;
+        const int VBSize = 2 * sizeof(glm::vec3);
+        static Ref<VertexArray> VA = VertexArray::Create();
+        static Ref<VertexBuffer> VB = VertexBuffer::Create(VBSize);
+        static BufferLayout layout = { {Vortex::ShaderDataType::Float3, "a_Position"} };
+        static Ref<Shader> shader = Shader::Create("assets/shaders/Line.glsl");
+
+        if (!initialized)
+        {
+            VB->SetLayout(layout);
+            VA->AddVertexBuffer(VB);
+            initialized = true;
+        }
+
+        DrawLineConfig attr(2, width, color);
+
+        VA->Bind();
+        glm::vec3 endsArr[2] = {ends.first, ends.second};
+        VB->SetData(endsArr, VBSize);
+
+        shader->Bind();
+        shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
+        shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
+        s_RendererAPI->DrawLines(VA, attr);
+    }
+
     void Renderer::DrawPoints(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawPointConfig attr)
     {
         vertexArray->Bind();
@@ -109,6 +175,7 @@ namespace Vortex {
         shader->Bind();
         s_RendererAPI->DrawTriangles(vertexArray, attr);
     }
+
     void Renderer::DrawPoints(const std::vector<glm::vec3>& positions, float size, const glm::vec4& color)
     {
         auto batch = s_SceneData->PointBatch;
@@ -117,6 +184,22 @@ namespace Vortex {
         for (int i = 0; i < sz; i++)
         {
             Quad1 quad(positions[i], glm::vec2(1, 1) * 0.1f * size, color);
+            if (!batch->TryAddBatchUnit(quad))
+            {
+                batch->Flush(VP);
+                batch->TryAddBatchUnit(quad);
+            }
+        }
+    }
+
+    void Renderer::DrawPoints(const std::vector<glm::vec3>& positions, float size, const std::vector<glm::vec4>& colors)
+    {
+        auto batch = s_SceneData->PointBatch;
+        auto VP = s_SceneData->ViewProjectionMatrix;
+        int sz = (int)positions.size();
+        for (int i = 0; i < sz; i++)
+        {
+            Quad1 quad(positions[i], glm::vec2(1, 1) * 0.1f * size, colors[i]);
             if (!batch->TryAddBatchUnit(quad))
             {
                 batch->Flush(VP);
