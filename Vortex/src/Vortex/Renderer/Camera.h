@@ -47,7 +47,7 @@ namespace Vortex
 		void ReCalculateCameraVectors();
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
-		void CameraDebug();
+		void RenderConfigGUI();
 	private:
 		void Init();
 		void PerspectiveModeHandleInput(Timestep ts);

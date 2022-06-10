@@ -1,10 +1,10 @@
 #include "vtpch.h"
 #include "ViewportWindow.h"
 
-
-
-Vortex::ViewportWindow::ViewportWindow(const std::string& winName, const Ref<Camera>& cam)
-	:m_WindowName(winName), m_Camera(cam), m_IsFocused(false)
+Vortex::ViewportWindow::ViewportWindow(const std::string& winName, 
+									   const Ref<Camera>& cam,
+									   const glm::vec4& clearColor)
+	:m_WindowName(winName), m_Camera(cam), m_IsFocused(false), m_ClearColor(clearColor)
 {
 	int width = Application::Get().GetWindow().GetWidth();
 	int height = Application::Get().GetWindow().GetHeight();
@@ -14,6 +14,7 @@ Vortex::ViewportWindow::ViewportWindow(const std::string& winName, const Ref<Cam
 void Vortex::ViewportWindow::Begin()
 {
 	m_FB->Bind();
+	Renderer::SetClearColor(m_ClearColor);
 	Renderer::Clear();
 }
 
@@ -24,6 +25,7 @@ void Vortex::ViewportWindow::End()
 
 void Vortex::ViewportWindow::OnImGuiRender()
 {
+	// viewport
 	ImGui::Begin(m_WindowName.c_str());
 	{
 		if (ImGui::IsWindowFocused())
@@ -43,8 +45,6 @@ void Vortex::ViewportWindow::OnImGuiRender()
 		m_Camera->m_Aspect = (float)m_ContentSize.x / m_ContentSize.y;
 		// Because I use the texture from OpenGL, I need to invert the V from the UV.
 		ImGui::Image((ImTextureID)(uint64_t)m_FB->GetTextureID(), m_ContentSize, ImVec2(0, 1), ImVec2(1, 0));
-		
-
 
 		// TEST
 		//{
@@ -61,6 +61,13 @@ void Vortex::ViewportWindow::OnImGuiRender()
 		//	//VT_CORE_INFO("({}, {})", vMax.x, vMax.y);
 		//}
 	}
+	ImGui::End();
+}
+
+void Vortex::ViewportWindow::RenderConfigGUI()
+{
+	ImGui::Begin(("Cfg_" + m_WindowName).c_str());
+	ImGui::DragFloat4("Clear Color", (float*)& m_ClearColor, 0.01f, 0.0f, 1.0f);
 	ImGui::End();
 }
 

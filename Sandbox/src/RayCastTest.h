@@ -119,7 +119,7 @@ public:
     inline virtual void OnImGuiRender() override
     {
         m_ViewportWindow->OnImGuiRender();
-        m_ViewportWindow->GetCamera()->CameraDebug();
+        m_ViewportWindow->GetCamera()->RenderConfigGUI();
         ImGui::ShowDemoWindow();
 
         Vortex::Camera* cam = m_ViewportWindow->GetCamera().get();

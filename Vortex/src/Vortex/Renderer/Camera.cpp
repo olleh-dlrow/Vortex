@@ -236,12 +236,12 @@ namespace Vortex
 		return false;
 	}
 
-	void Camera::CameraDebug()
+	void Camera::RenderConfigGUI()
 	{
 		Vortex::Camera& cam = *this;
 		std::string mode = cam.m_ProjMode == Vortex::CameraProjMode::Perspective ? "Persp" : "Ortho";
 
-		ImGui::Begin("Settings");
+		ImGui::Begin("Camera");
 		ImGui::Text("MODE: %s", mode.c_str());
 		if (ImGui::Button("Persp"))
 		{

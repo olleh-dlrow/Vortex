@@ -136,7 +136,7 @@ void CameraTest::OnImGuiRender()
 {
     vw->OnImGuiRender();
     auto cam = vw->GetCamera();
-    cam->CameraDebug();
+    cam->RenderConfigGUI();
 }
 
 void CameraTest::OnEvent(Vortex::Event& e)
