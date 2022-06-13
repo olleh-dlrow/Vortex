@@ -48,6 +48,7 @@ namespace Vortex
 		int GetTempBufferVertexCount() const { return m_FreeVertexBufferBaseIndex; }
 		int GetTempBufferIndexCount() const { return GetTempBufferBatchUnitCount() * BU::GetIndexCount(); }
 
+		// OBSOLETE
 		virtual void Flush(const glm::mat4& VP)
 		{
 			// vertex buffer is empty, don't flush repeatly!

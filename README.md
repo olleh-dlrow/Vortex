@@ -1,8 +1,6 @@
 # Vortex Engine
 
-
-
-a 2D game engine program
+a mini renderer used for studying and testing
 
 ## Support
 
@@ -13,15 +11,15 @@ windows10 x64
 ## Plan
 
 - write perspective and orthographic camera √
-- import libigl, load models
+- import libigl, load models √
 - modify GUI，move viewport into ImguiWindow with frame buffer √
-- finish batch render of opengl
-- create entity
-- import imguizmo
-- interaction in viewport
+- finish batch render of opengl √
+- create entity √
+- import imguizmo 
+- interaction in viewport √
   - get world pos of cursor in viewport window √
-  - select point
-  - drag point
+  - select point √
+  - drag point √
 - implement geo algorithms
 - implement render algorithms
 
@@ -29,9 +27,11 @@ windows10 x64
 
 ## Note
 
-use reference but not raw pointer
+use shared_ptr or unique_ptr to manage heap space
 
-use shared_ptr to manage heap space
+achieve first, others second
+
+design first, code second
 
 
 
@@ -47,14 +47,22 @@ use shared_ptr to manage heap space
 
 [Home | Premake](https://premake.github.io/docs/)
 
+[libigl](https://libigl.github.io/)
+
+[Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page)
+
 ## Usage
 
-git clone \<repo\> --recursive
+```shell
+git clone <repo> --recursive
+.\GenerateProjects.bat
+```
 
 
 
 **delete submodule:**
 
+```shell
 cd Vortex/vendor/moduleA
 
 git rm moduleA
@@ -62,197 +70,284 @@ git rm moduleA
 vim .git/config, delete [submodule moduleA]...
 
 rm .git/modules/Vortex/vendor/moduleA
+```
 
 
 
 **add submodule:**
 
+```shell
 git submodule add url
-
-
-
-premake:
-
-find compiled files in cmake
+```
 
 
 
 ## Vortex
 
-main:
+template:
 
-Initialize log
+H3 CLASS_NAME
+
+---
+
+> H4 ***BEHAVIOUR***
+
+ H4 BEHAVIOUR1
+
+description
 
 
 
-create application
+H4 BEHAVIOUR2(STATIC)
+
+description
 
 
 
-loop application
+> H4 ***MEMBER***
+
+**MEMBER1**
+
+description
 
 
 
-delete application
+**STATIC_MEMBER1(STATIC)**
+
+description
+
+
+
+### MAIN(VOID)
+
+---
+
+> #### *BEHAVIOUR*
+
+#### Initialize log
+
+
+
+#### create application
+
+
+
+#### application loop
+
+
+
+#### delete application
 
 
 
 ### Log
 
-#### CoreLogger
+---
 
-static member
-
-shared_ptr
-
-use in vortex
-
-#### ClientLogger
-
-static member
-
-shared_ptr
-
-use in sandbox
+> #### *BEHAVIOUR*
 
 #### Init
 
-set:
+initialize loggers
 
-log name
+settings:
 
-log level: output all
+- logger's name
 
-output location: stdout and file
+- logger's level: output all
+
+- output location: stdout or file
+
+
+
+> #### *MEMBER*
+
+**Core Logger(STATIC)**
+
+used in vortex
+
+
+
+**Client Logger(STATIC)**
+
+used in sandbox
 
 
 
 ### Application
 
-behaviour:
+---
 
-initialize app
+>  #### *BEHAVIOUR*
+
+#### initialize app
 
 - create window
-- init render
+- initialize backend render(not render component)
 - push imgui layer
 
 
 
-add layers
+#### push layers
 
-OnEvent:
+push layer to Layer part in Layer Stack (below Overlay part)
 
->         // CORE part to event handling
->         // process:
->         // e -> captured by glfw 
->         // -> trigger window::eventCallBack(App::OnEvent)
->         // -> Application::OnEvent(e) -> end
->         // 
->         // handle event:
->         // e -> dispatch\<some event\>(handler) -> dispatch... -> ...
->         // e -> layer1(OnEvent) -> layer2(OnEvent) -> ...
->
->          
->
->         summary:
->
->         e1, e2, e3... -> APP -> win, camera, layer1, layer2...
->
->         
->
->         problem:
->
->         Event processing (`glfwPollEvents`) stalls whenever the window is resized, 
->
->         see annotation of glfw3.h:glfwPollEvents()
+or push layer to Overlay part in Layer Stack (above Layer part)
+
+
+
+#### OnEvent
+
+![image-20220613225338892](README/image-20220613225338892.png)
+
+CORE part to event handling
+process:
+ e -> captured by glfw 
+ -> trigger window::eventCallBack(App::OnEvent)
+-> Application::OnEvent(e) -> end
+
+
+
+handle event:
+e -> dispatch\<some event\>(handler) -> dispatch... -> ...
+e -> layer1(OnEvent) -> layer2(OnEvent) -> ...
+
+
+
+summary:
+
+e1, e2, e3... -> APP -> win, camera, layer1, layer2...
+
+
+
+problem:
+Event processing (`glfwPollEvents`) stalls whenever the window is resized, 
+see annotation of glfw3.h:glfwPollEvents()
+
+
+
+main functions:
 
 - handle all layers' events
 - handle window events
 
 
 
+#### **execute main loop**
 
-
-main loop
-
-
-
-static member:
-
-s_Instance
+run your code
 
 
 
-member:
+> #### *MEMBER*
 
-m_Window: Window
+**Window**
 
-m_ImGuiLayer: ImGuiLayer
-
-m_LastFrameTime: (maybe should put in another place)
+glfw window
 
 
 
-state:
+**ImGui Layer**
 
-m_Running
-
-m_Minimized
+responsible for GUI rendering
 
 
 
-#### SandboxApp: Application
+**Last Frame Time**
 
-behaviour:
+(maybe should put in another place)
 
-add user's layer
 
-create application
+
+**States**
+
+- running
+
+  if application is running
+
+- Minimized
+
+  if window is minimized
+
+
+
+### SandboxApp: Application
+
+---
+
+> #### *BEHAVIOUR*
+
+#### add user's layer
+
+
+
+#### create application
 
 
 
 ### Window
 
+---
+
 virtual base class
 
-behaviour:
+> #### *BEHAVIOUR*
 
-set title, width, height
-
-set sync
-
-create main window
+#### set title, width, height
 
 
 
-#### WindowsWindow: Window
+#### set sync
 
-behaviour:
+vsync
 
-init window's properties:
+
+
+#### create main window
+
+create glfw window
+
+
+
+### WindowsWindow: Window
+
+---
+
+> #### *BEHAVIOUR*
+
+#### init window's properties
 
 - response to window resize
 
 - response to window close
+
 - response to key press, release, repeat
+
 - response to unicode char input
+
 - response to mouse press, release
+
 - response to scroll
+
 - response to mouse move
-- 
 
-update window to flush graphics context
+  
+
+#### update window to flush graphics context
 
 
 
-member:
+> #### *MEMBER*
 
-GLFWWindow
+**GLFW Window**
 
-GraphicsContext
 
-WindowData:
+
+**Graphics Context**
+
+
+
+**Window Data**
 
 - width, height
 - title
@@ -268,39 +363,59 @@ glfw
 
 ### GraphicsContext
 
+---
+
 context of renderer
 
-behaviour:
+> #### *BEHAVIOUR*
 
-create graphics context
-
-initialize context
-
-swap buffers
+#### create graphics context
 
 
 
-#### OpenGLContext: GraphicsContext
+#### initialize context
+
+
+
+#### swap buffers
+
+
+
+### OpenGLContext: GraphicsContext
+
+---
 
 context of opengl
 
-behaviour:
+> #### *BEHAVIOUR*
 
-initialize glfw context to OpenGLWindow and check opengl version
+#### initialize glfw context to OpenGLWindow
 
-glfw swap buffers
+
+
+#### check opengl version
+
+
+
+#### glfw swap buffers
 
 
 
 ### Event
 
+---
+
 the base of all kinds of events
 
-member:
+> #### *MEMBER*
 
-Handled bool
+**Handled**
 
-event type
+if this event has been handled
+
+
+
+**event type**
 
 > None = 0,
 > WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
@@ -308,9 +423,11 @@ event type
 > KeyPressed, KeyReleased, KeyTyped,
 > MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled...
 
-event name
+**event name**
 
-event categories
+
+
+**event categories**
 
 > None = 0,
 > EventCategoryApplication    = BIT(0),
@@ -318,6 +435,8 @@ event categories
 > EventCategoryKeyboard       = BIT(2),
 > EventCategoryMouse          = BIT(3),
 > EventCategoryMouseButton    = BIT(4)
+
+
 
 category:
 
@@ -354,27 +473,41 @@ mouse event:
 
 ### EventDispatcher
 
-dispatch current event to some handle
+---
 
-BROADCAST event to different classes
+> #### *BEHAVIOUR*
+
+#### dispatch current event to some handle
+
+
+
+#### BROADCAST event to different classes
 
 
 
 ### Input
 
+---
+
 get input response like key, mouse etc.
 
-behaviour:
+> #### *BEHAVIOUR*
 
-get mouse position
-
-check key pressed
-
-check mouse button clicked
+#### get mouse position
 
 
 
-#### WindowsInput: Input
+#### check key pressed
+
+
+
+#### check mouse button clicked
+
+
+
+### WindowsInput: Input
+
+---
 
 package glfw input event
 
@@ -382,44 +515,66 @@ package glfw input event
 
 ### Layer
 
-behaviour:
+---
 
-handle attach
+> #### *BEHAVIOUR*
 
-handle detach
-
-handle update
-
-render gui
-
-handle event
+#### handle attach
 
 
 
-#### ImGuiLayer: Layer
+#### handle detach
 
-initialize imgui context
 
-config imgui
+
+#### handle update
+
+
+
+#### render gui
+
+
+
+#### handle event
+
+
+
+### ImGuiLayer: Layer
+
+---
+
+> #### *BEHAVIOUR*
+
+#### initialize imgui context
+
+
+
+#### config imgui
 
 
 
 ### LayerStack
+
+---
 
 store layers
 
 LayerStack has two parts: Overlay on the top and Layer underneath it,
 all of the layers in Overlay part are higher than layers in Layer part
 
-behaviour:
+> #### *BEHAVIOUR*
 
-push/pop layer
+#### push/pop layer
 
-push/pop overlay
+
+
+#### push/pop overlay
 
 
 
 ### Timestep
+
+---
 
 calculate time
 
@@ -427,31 +582,45 @@ calculate time
 
 ### BufferElement
 
+---
+
 the element of buffer
 
-member:
+> #### *MEMBER*
 
-name
+**name**
 
-type of this element
 
-size of this element
 
-offset in buffer, calculated in buffer layout
+**type of this element**
+
+
+
+**size of this element**
+
+
+
+**offset in buffer**
+
+calculated in buffer layout
 
 
 
 ### BufferLayout
 
+---
+
 define the layout of buffer with the information of buffer elements, 
 
 calculate every element's offset in one buffer unit and stride
 
-member:
+> #### *MEMBER*
 
-buffer elements
+**buffer elements**
 
-stride
+
+
+**stride**
 
 
 
@@ -459,19 +628,33 @@ stride
 
 ### VertexBuffer
 
+---
+
 the buffer of vertices, which may include coordinates, colors, normals, etc.
 
-behaviour:
+> #### *BEHAVIOUR*
 
-create vertex buffer
+#### create vertex buffer
 
-set data to buffer
+create and set buffer data
 
-bind this vertex buffer to activate it
 
-unbind this vertex buffer
 
-get/set layout of vertices
+#### set data to buffer
+
+if setted dynamic_draw, you can set data after create buffer
+
+
+
+#### bind this vertex buffer to activate it
+
+
+
+#### unbind this vertex buffer
+
+
+
+#### get/set layout of vertices
 
 
 
@@ -479,77 +662,111 @@ get/set layout of vertices
 
 #### OpenGLVertexBuffer: VertexBuffer
 
+---
+
 ![img](README/vertex_attribute_pointer.png)
 
 implementation  to vertexbuffer with opengl
 
-member:
+> #### *MEMBER*
 
-id
+**id**
 
-layout
+
+
+**layout**
 
 
 
 ### IndexBuffer
 
+---
+
 explain vertex coordinates as triangles
 
-behaviour:
+> #### *BEHAVIOUR*
 
-create index buffer
-
-bind this index buffer to activate it
-
-unbind this index buffer
-
-get count of indices
+#### create index buffer
 
 
 
-#### OpenGLIndexBuffer: IndexBuffer
+#### set data to buffer
+
+if setted dynamic_draw, you can set data after create buffer
+
+
+
+#### bind this index buffer to activate it
+
+
+
+#### unbind this index buffer
+
+
+
+#### get count of indices
+
+
+
+### OpenGLIndexBuffer: IndexBuffer
+
+---
 
 implementation  to indexbuffer with opengl
 
-member:
+> #### *MEMBER*
 
-id
+**id**
 
-count of indices
+
+
+**count of indices**
 
 
 
 ### VertexArray
 
+---
+
 record attributes of vertex
 
-behaviour:
+> #### *BEHAVIOUR*
 
-create vertex array
-
-bind this vertex array to activate it
-
-unbind this vertex array
-
-add vertex buffer
-
-set index buffer
+#### create vertex array
 
 
 
-#### OpenGLVertexArray: VertexArray
+#### bind this vertex array to activate it
+
+
+
+#### unbind this vertex array
+
+
+
+#### add vertex buffer
+
+
+
+#### set index buffer
+
+
+
+### OpenGLVertexArray: VertexArray
+
+---
 
 ![img](README/vertex_array_objects.png)
 
-member:
+> #### *MEMBER*
 
-id
+**id**
 
-vertex buffer index
+**vertex buffer index**
 
-vertex buffers
+**vertex buffers**
 
-index buffer
+**index buffer**
 
 
 
@@ -564,215 +781,335 @@ implementation  of add vertex buffer:
 
 ### Texture
 
-behaviour:
+---
 
-get width, height
+> #### *BEHAVIOUR*
 
-set data
-
-bind this texture to activate it
-
-check equal
+#### get width, height
 
 
 
-#### Texture2D: Texture
+#### set data
+
+
+
+#### bind this texture to activate it
+
+
+
+#### check equal to other texture
+
+
+
+### Texture2D: Texture
+
+---
 
 2d of texture
 
-behaviour:
+> #### *BEHAVIOUR*
 
-create texture
-
-
-
-##### OpenGLTexture2D: Texture2D
-
-create texture
-
-load texture in file
+#### create texture
 
 
 
-bind this texture to activate it
+### OpenGLTexture2D: Texture2D
 
-set storage format
+---
 
-set blend mode
+> #### *BEHAVIOUR*
 
-set filter mode
+#### create texture
 
-set minmap
+
+
+#### load texture in file
+
+
+
+#### bind this texture to activate it
+
+
+
+#### set storage format
+
+
+
+#### set blend mode
+
+
+
+#### set filter mode
+
+
+
+#### set minmap
 
 
 
 ### Shader
 
+---
+
 shade objects with some methods
 
-behaviour:
+> #### *BEHAVIOUR*
 
-create using glsl
+#### create using glsl
 
-bind
+#### bind
 
-unbind
+#### unbind
 
-set global value in glsl
+#### set global value in glsl
 
 
 
-#### OpenGLShader: Shader
+### OpenGLShader: Shader
+
+---
 
 implementation of shader
 
-member:
-
-id
-
-name
-
-behaviour:
-
-compile vertex shader and fragment shader
-
-pre process the source code of openGL shader: 
-
-- source can include multiple shader types with flag "#type xxx" in start
 
 
+> #### *BEHAVIOUR*
+
+#### compile vertex shader and fragment shader
+
+
+
+#### pre process the source code of openGL shader
+
+source can include multiple shader types with flag "#type xxx" in start
+
+
+
+> #### *MEMBER*
+
+**id**
+
+
+
+**name**
 
 
 
 ### ShaderLibrary
 
+---
+
 store, add, load shaders
 
-behaviour:
+> #### *BEHAVIOUR*
 
-add shader
+#### add shader
 
-load shader with file
+#### load shader with file
 
-check if some shader exists
+#### check if some shader exists
 
 
 
 ### RendererAPI
 
+---
+
 application interface gived by certain renderer, this determines which type of instance you will get through Create function in renderer
 
-behaviour:
+> #### *BEHAVIOUR*
 
-init renderer
+#### init renderer
 
-set viewport
+#### set viewport
 
-set clear color
+#### set clear color
 
-clear screen
+#### clear screen
 
-draw indexed objects
+#### draw indexed objects
 
 
 
-#### OpenGLRendererAPI: RendererAPI
+### OpenGLRendererAPI: RendererAPI
+
+---
 
 implementation of RendererAPI
 
 
 
-### RenderCommand
-
-the common command used for renderer
-
-behaviour:
-
-invoke renderer api's function
-
-
-
-
 ### Renderer
+
+---
 
 render image to screen
 
-member:
-
-scene data:
-
-- VPmatrix
 
 
+> #### *BEHAVIOUR*
 
+#### init
 
+#### shutdown
 
-behaviour:
-init
+#### begin a scene with a camera
 
-shutdown
+#### submit vertices and shaders to render
 
-begin a scene with a camera
-
-submit vertices and shaders to render
-
-get renderer api
+#### get renderer api
 
 
 
-### Renderer2D
+### BatchUnit
 
-render 2d objects, statistic its consumption
+---
 
-behaviour:
-
-init
-
-shutdown
-
-begin a scene with a camera
-
-flush 
-
-draw primitives
+the unit of batch, describing the information of vertex and index
 
 
 
-### OrthographicCamera
+### Batch
 
-set and calculate m, v, p matrix
+---
 
-member:
-
-projection matrix
-
-view matrix
-
-
-
-### OrthographicCameraController
-
-control orthographic camera's behaviours
-
-behaviour:
-
-update
-
-handle events:
-
-- mouse scoll
-- window resize
-- others
-
-
-
-## BatchRendering
+![image-20220613222349534](README/image-20220613222349534.png)
 
 the birth of batch rendering is from a trade-off:
 
 if there are lots of primitives whose transforms are the same, calculating their world positions in GPU is better for the reason of parallel
 
-but, if the primitives have different transforms, multiple submits may cost more time than which costed by calculating world positions with CPU, such as 1 million points or 1million lines. In this case, use batch rendering is better because it may need only one or two submit to finish rendering :)
+but, if the primitives have different transforms, multiple submits may cost more time than which costed by calculating world positions with CPU, such as 1 million points or 1million lines. In this case, use batch rendering is better because it may need only one or two submit to finish rendering :), this is also the idea of ECS.
 
 
 
+batch is a class with template, the element Batch Unit constitutes of different kinds of vertices with different structure
+
+
+
+> #### *BEHAVIOUR*
+
+#### manage vertex buffer
+
+- define the size of vertex buffer
+- store current state of the buffer, such as:
+  - size of free space
+  - vertex count
+  - index count
+  - batch unit count
+- add vertex to temp buffer in cpu
+
+
+
+### Camera
+
+---
+
+the inner camera used mainly for editing, studying papers, or testing
+
+> #### *BEHAVIOUR*
+
+#### change projection mode
+
+support orthographic and projection mode
+
+
+
+#### operate with basic movement
+
+- move in four direction
+- zoom in and out
+- rotate in projection mode
+
+
+
+#### calculate view, projection matrix
+
+recalculate matrix after every movement operation
+
+
+
+### ViewportWindow
+
+---
+
+the imgui window showing viewport content
+
+> #### *BEHAVIOURS*
+
+#### screen coordinate conversion
+
+change screen coordinate to:
+
+- normalized coordinate
+- world coordinate
+
+
+
+#### get screen infomation
+
+get screen size, corner coordinates in different coordinate systems
+
+
+
+#### render config GUI
+
+output config information in imgui
+
+
+
+### Scene
+
+---
+
+scene managing entities
+
+> #### *BEHAVIOUR*
+
+#### add entity
+
+
+
+#### find entity with name
+
+
+
+#### update
+
+update in certain window
+
+
+
+### Entity
+
+---
+
+entity managing components
+
+> #### *BEHAVIOUR*
+
+#### add component
+
+
+
+#### get component with type
+
+use RTTI attribute to get the information of class
+
+
+
+#### update
+
+update in scene
+
+
+
+### Component
+
+---
+
+> #### *BEHAVIOUR*
+
+#### update
+
+update in entity
