@@ -36,6 +36,8 @@
 
 #include "Vortex/ImGui/ViewportWindow.h"
 
+#include "Vortex/Scene/Scene.h"
+
 /*
 tips:
 this head file should put in the last, 

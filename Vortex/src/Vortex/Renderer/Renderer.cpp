@@ -15,7 +15,7 @@ namespace Vortex {
         s_RendererAPI->Init();
         RenderCommand::Init();
         Renderer2D::Init();
-
+        
         // init all batches
         s_SceneData->PointBatch = CreateRef<Batch<Quad1>>(Shader::Create("assets/shaders/Vertex1.glsl"));
     }
@@ -80,16 +80,13 @@ namespace Vortex {
         s_RendererAPI->Clear();
     }
 
-    void Renderer::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr)
+    void Renderer::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
     {
         s_RendererAPI->DrawIndexedTriangles(vertexArray, attr);
     }
-    void Renderer::DrawLines(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawLineConfig attr)
+
+    void Renderer::DrawLines(const Ref<VertexArray>& vertexArray, DrawLineConfig attr)
     {
-        vertexArray->Bind();
-        shader->Bind();
-        shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
-        shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
         s_RendererAPI->DrawLines(vertexArray, attr);
     }
 
@@ -125,7 +122,7 @@ namespace Vortex {
         VB->SetData(&points[0], pointCnt * sizeof(glm::vec3));
         shader->Bind();
         shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
-        shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
+        shader->SetFloat4("u_Color", attr.color);
         s_RendererAPI->DrawLines(VA, attr);
     }
 
@@ -153,7 +150,7 @@ namespace Vortex {
 
         shader->Bind();
         shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
-        shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
+        shader->SetFloat4("u_Color", attr.color);
         s_RendererAPI->DrawLines(VA, attr);
     }
 
@@ -165,7 +162,7 @@ namespace Vortex {
         {
             shader->SetFloat("u_PointSize", attr.size);
         }
-        shader->SetFloat4("u_Color", glm::vec4(attr.color, 1.0f));
+        shader->SetFloat4("u_Color", attr.color);
         s_RendererAPI->DrawPoints(vertexArray, attr);
     }
 

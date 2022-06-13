@@ -11,45 +11,22 @@ namespace Vortex
 	template<typename BU>
 	class Batch
 	{
+		friend class LineRendererComponent;
+		friend class PointRendererComponent;
 		friend class Renderer;
 	public:
 		using V = typename BU::VertexType;
 
+		Batch(int maxUnitCount = 10000)
+			:m_MaxUnitCount(maxUnitCount), m_FreeVertexBufferBaseIndex(0)
+		{
+			Init();
+		}
+
 		Batch(const Ref<Shader>& shader, int maxUnitCount = 10000)
 			:m_Shader(shader), m_MaxUnitCount(maxUnitCount), m_FreeVertexBufferBaseIndex(0)
 		{
-			// create vertex array
-			m_VertexArray = VertexArray::Create();
-
-			// create vertex buffer and set size(byte)
-			m_VertexBuffer = VertexBuffer::Create(m_MaxVertexCount * sizeof(V));
-			// init temp vertex buffer
-			m_TempVertexBuffer = std::vector<V>(m_MaxVertexCount);
-			// get layout of this vertex
-			BufferLayout layout = V::GetLayout();
-			m_VertexBuffer->SetLayout(layout);
-			m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-
-			if (BU::GetIndexCount() != 0)
-			{
-				// init IndexBuffer
-				m_IndexBuffer = IndexBuffer::Create(m_MaxIndexCount);
-				std::vector<uint32_t> tempIndexBuffer(m_MaxIndexCount);
-				auto indices = BU::GetIndices();
-				int stride = BU::GetIndexCount();
-
-				int vertCnt = BU::GetVertexCount();
-				for (int i = 0; i < m_MaxIndexCount / stride; i++)
-				{
-					for (int j = 0; j < stride; j++)
-					{
-						tempIndexBuffer[i * stride + j] = i * vertCnt + indices[j];
-					}
-				}
-				m_IndexBuffer->SetData(&tempIndexBuffer[0], m_MaxIndexCount);
-
-				m_VertexArray->SetIndexBuffer(m_IndexBuffer);
-			}
+			Init();
 		}
 
 		~Batch() {}
@@ -82,12 +59,48 @@ namespace Vortex
 			m_Shader->Bind();
 			m_Shader->SetMat4("u_ViewProjection", VP);
 		
-			Renderer::DrawIndexedTriangles(m_VertexArray, m_Shader, DrawTriangleConfig(m_FreeVertexBufferBaseIndex, GetTempBufferIndexCount()));
+			Renderer::DrawIndexedTriangles(m_VertexArray, DrawTriangleConfig(m_FreeVertexBufferBaseIndex, GetTempBufferIndexCount()));
 
 			m_FreeVertexBufferBaseIndex = 0;
 		}
 
 	protected:
+		void Init()
+		{
+			// create vertex array
+			m_VertexArray = VertexArray::Create();
+
+			// create vertex buffer and set size(byte)
+			m_VertexBuffer = VertexBuffer::Create(m_MaxVertexCount * sizeof(V));
+			// init temp vertex buffer
+			m_TempVertexBuffer = std::vector<V>(m_MaxVertexCount);
+			// get layout of this vertex
+			BufferLayout layout = V::GetLayout();
+			m_VertexBuffer->SetLayout(layout);
+			m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+
+			if constexpr (BU::GetIndexCount() != 0)
+			{
+				// init IndexBuffer
+				m_IndexBuffer = IndexBuffer::Create(m_MaxIndexCount);
+				std::vector<uint32_t> tempIndexBuffer(m_MaxIndexCount);
+				auto indices = BU::GetIndices();
+				constexpr int stride = BU::GetIndexCount();
+
+				int vertCnt = BU::GetVertexCount();
+				for (int i = 0; i < m_MaxIndexCount / stride; i++)
+				{
+					for (int j = 0; j < stride; j++)
+					{
+						tempIndexBuffer[i * stride + j] = i * vertCnt + indices[j];
+					}
+				}
+				m_IndexBuffer->SetData(&tempIndexBuffer[0], m_MaxIndexCount);
+
+				m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+			}
+		}
+
 		void AddVertexToCPU(const V& vertex)
 		{
 			m_TempVertexBuffer[m_FreeVertexBufferBaseIndex++] = vertex;

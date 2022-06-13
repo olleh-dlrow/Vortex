@@ -20,20 +20,19 @@ namespace Vortex
 	};
 
 	template<typename V>
-	class Line : public BatchUnit<V, 2, 0>
+	class LinePoint : public BatchUnit<V, 1, 0>
 	{
 	public:
 
 	};
 
-	class Line2 : public Line<Vertex2>
+	class LinePoint2 : public LinePoint<Vertex2>
 	{
+		friend class Batch<LinePoint2>;
 	public:
-		Line2(const glm::vec3& p1,
-			  const glm::vec3& p2)
+		LinePoint2(const glm::vec3& p)
 		{
-			m_Vertices[0].position = p1;
-			m_Vertices[1].position = p2;
+			m_Vertices[0].position = p;
 		}
 	};
 
@@ -60,6 +59,10 @@ namespace Vortex
 	{
 		friend class Batch<Quad1>;
 	public:
+		Quad1()
+		{
+
+		}
 		Quad1(const glm::vec3& position,
 			  const glm::vec2& size,
 			  const glm::vec4& color)

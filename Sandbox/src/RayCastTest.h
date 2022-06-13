@@ -86,7 +86,7 @@ public:
         m_ViewportWindow->Begin();
 
         glm::mat4 trans = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0, 0, 0));
-        Vortex::Camera* cam = m_ViewportWindow->GetCamera().get();
+        Vortex::Camera* cam = m_ViewportWindow->GetCamera();
 
         // cast ray
         ImVec2 scrPos = ImGui::GetMousePos();
@@ -109,7 +109,7 @@ public:
         }
         triShader->SetMat4("u_ViewProjection", cam->GetProjMatrix() * cam->GetViewMatrix());
         triShader->SetMat4("u_Transform", trans);
-        Renderer::DrawIndexedTriangles(VA, triShader, Vortex::DrawTriangleConfig(4, 6));
+        Renderer::DrawIndexedTriangles(VA, Vortex::DrawTriangleConfig(4, 6));
         
         Vortex::Renderer::EndScene();
 
@@ -122,7 +122,7 @@ public:
         m_ViewportWindow->GetCamera()->RenderConfigGUI();
         ImGui::ShowDemoWindow();
 
-        Vortex::Camera* cam = m_ViewportWindow->GetCamera().get();
+        Vortex::Camera* cam = m_ViewportWindow->GetCamera();
         ImGui::Begin("Debug");
    
         ImVec2 scrPos = ImGui::GetMousePos();

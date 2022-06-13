@@ -13,6 +13,7 @@
 //#include "BatchRenderingTest.h"
 //#include "EditorLayer.h"
 #include "DrawLineTest.h"
+//#include "SceneTest.h"
 
 /*
 tips:

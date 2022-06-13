@@ -104,13 +104,7 @@ void TemplateLayer::OnUpdate(Vortex::Timestep ts)
 	Vortex::Renderer::Clear();
 
     Vortex::DrawTriangleConfig triAttr(4, 6);
-    Vortex::Renderer::DrawIndexedTriangles(squareVA, squareShader, triAttr);
-
-    Vortex::DrawLineConfig lineAttr(4, width, glm::vec3(0.5f, 0.9f, 0.4f));
-    Vortex::Renderer::DrawLines(lineVA, lineShader, lineAttr);
-
-    Vortex::DrawPointConfig pointAttr(4, sz);
-    Vortex::Renderer::DrawPoints(lineVA, pointShader, pointAttr);
+    Vortex::Renderer::DrawIndexedTriangles(squareVA, triAttr);
 }
 
 void TemplateLayer::OnImGuiRender()

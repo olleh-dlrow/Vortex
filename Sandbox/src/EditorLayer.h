@@ -20,7 +20,8 @@ public:
 	virtual void OnEvent(Vortex::Event& e) override;
 
 	inline Vortex::Camera& GetCamera() const { return *m_ViewportWindow->GetCamera(); };
-
-protected:
+	inline Vortex::Scene* GetEditorScene() { return m_EditorScene.get(); }
+public:
 	Vortex::Ref<Vortex::ViewportWindow> m_ViewportWindow;
+	Vortex::Ref<Vortex::Scene>			m_EditorScene;
 };

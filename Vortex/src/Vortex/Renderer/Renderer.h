@@ -44,7 +44,7 @@ namespace Vortex {
         
         static void Clear();
                
-        static void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr);
+        static void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr);
      
         static void DrawTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr);
 
@@ -56,7 +56,7 @@ namespace Vortex {
                                float                            size,
                                const std::vector<glm::vec4>&    colors);
 
-        static void DrawLines(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawLineConfig attr);
+        static void DrawLines(const Ref<VertexArray>& vertexArray, DrawLineConfig attr);
 
         static void DrawLines(const std::vector<glm::vec3> points, float width = 1.0f, const glm::vec3& color = glm::vec3(1.0f, 0.5f, 0.2f));
 

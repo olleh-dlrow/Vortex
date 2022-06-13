@@ -10,3 +10,9 @@
 [submodule "Vortex/vendor/imgui"]
 	path = Vortex/vendor/imgui
 	url = https://github.com/olleh-dlrow/imgui.git
+[submodule "Vortex/vendor/eigen"]
+	path = Vortex/vendor/eigen
+	url = https://gitlab.com/olleh-dlrow/eigen.git
+[submodule "Vortex/vendor/libigl"]
+	path = Vortex/vendor/libigl
+	url = https://github.com/olleh-dlrow/libigl.git

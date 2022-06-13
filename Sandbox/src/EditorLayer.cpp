@@ -4,6 +4,8 @@ EditorLayer::EditorLayer()
 {
 	Vortex::Ref<Vortex::Camera> cam = Vortex::CreateRef<Vortex::Camera>(Vortex::OrthoParam(), glm::vec3(0, 0, 5.0f));
 	m_ViewportWindow = Vortex::CreateRef<Vortex::ViewportWindow>("Viewport", cam);
+    m_EditorScene = Vortex::CreateRef<Vortex::Scene>(m_ViewportWindow.get());
+    m_EditorScene->Init();
 }
 
 void EditorLayer::PreUpdate(Vortex::Timestep ts)
@@ -16,6 +18,8 @@ void EditorLayer::PreUpdate(Vortex::Timestep ts)
     Vortex::Renderer::Clear();
     // start render in viewport window
     m_ViewportWindow->Begin();
+
+    m_EditorScene->OnUpdate(ts);
 }
 
 void EditorLayer::OnUpdate(Vortex::Timestep ts)
@@ -25,6 +29,8 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts)
 
 void EditorLayer::AfterUpdate(Vortex::Timestep ts)
 {
+    m_EditorScene->AfterUpdate(ts);
+
     m_ViewportWindow->End();
 }
 

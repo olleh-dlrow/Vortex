@@ -110,7 +110,7 @@ void CameraTest::OnUpdate(Vortex::Timestep ts)
     vw->Begin();
     vw->OnUpdate(ts);
 
-    Vortex::Camera* cam = vw->GetCamera().get();
+    Vortex::Camera* cam = vw->GetCamera();
     Vortex::Renderer::BeginScene(*cam);
     VA->Bind();
     shader->Bind();

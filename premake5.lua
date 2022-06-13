@@ -25,6 +25,7 @@ IncludeDir["ImGui"] = "Vortex/vendor/imgui"
 IncludeDir["glm"] = "Vortex/vendor/glm"
 IncludeDir["stb_image"] = "Vortex/vendor/stb_image"
 IncludeDir["eigen"] = "Vortex/vendor/eigen"
+IncludeDir["libigl"] = "Vortex/vendor/libigl/include"
 
 include "Vortex/vendor/GLFW"
 include "Vortex/vendor/Glad"
@@ -66,7 +67,8 @@ project "Vortex"
 		"%{prj.name}/vendor/stb_image/**.cpp",
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
-        "%{prj.name}/vendor/eigen/Eigen/**"
+        "%{prj.name}/vendor/eigen/Eigen/**",
+        "%{prj.name}/vendor/libigl/include/**.h"
     }
     
     defines
@@ -83,7 +85,8 @@ project "Vortex"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
-        "%{IncludeDir.eigen}"
+        "%{IncludeDir.eigen}",
+        "%{IncludeDir.libigl}"
     }
     
     links
@@ -149,7 +152,8 @@ project "Sandbox"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
-        "%{IncludeDir.eigen}"
+        "%{IncludeDir.eigen}",
+        "%{IncludeDir.libigl}"
     }
     
     links

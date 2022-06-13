@@ -1,6 +1,9 @@
 #pragma once
 
 #include "EditorLayer.h"
+#include <igl/bezier.h>
+#include <Vortex/Scene/PointRendererComponent.h>
+#include <Vortex/Scene/LineRendererComponent.h>
 
 using Vortex::Ref;
 using Vortex::CreateRef;
@@ -19,17 +22,27 @@ using Vortex::Shader;
 
 using std::vector;
 
+static Vortex::PointRendererComponent* pr;
+static Vortex::LineRendererComponent* lr;
+
 static glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
 const static glm::vec4 pointColor1 = glm::vec4(0.2, 0.8, 0.6, 1);
 const static glm::vec4 pointColor2 = glm::vec4(0.2, 0.3, 0.9, 1);
 static ImVec2 worldPos;
 static vector<glm::vec3> positions;
 static vector<glm::vec4> colors;
+
+// add point state
 static bool clicked = false;
+
+// drag point state
+static bool isDragging = false; 
 static bool mouseInPoint = false;
-static bool isDragging = false;
 static int curChosenIndex = 0;
+
+// mouse in window state
 static bool mouseInWindow = false;
+
 static ImVec2 vMin, vMax;
 
 static bool drawLines = false;
@@ -59,7 +72,6 @@ std::vector<float> lagrange(const std::vector<glm::vec3>& input_points,
             }
             ys.push_back(y);
         }
-
     }
     return ys;
 }
@@ -71,7 +83,17 @@ class DrawLineTest : public EditorLayer
 public:
 	DrawLineTest()
 	{
+        const Eigen::MatrixXd C =
+            (Eigen::MatrixXd(4, 2) << 0, 0, 0.5, 0, 0.5, 1, 1, 1).finished();
+        const Eigen::VectorXd T =
+            (Eigen::VectorXd(11, 1) << 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1).finished();
+        Eigen::MatrixXd P;
+        igl::bezier(C, T, P);
 
+        Vortex::Scene* scene = GetEditorScene();
+        auto e1 = scene->AddEntity("e1");
+        pr = e1->AddComponent<Vortex::PointRendererComponent>();
+        lr = e1->AddComponent<Vortex::LineRendererComponent>();
 	}
 
 	inline void OnUpdate(Vortex::Timestep ts) override
@@ -79,7 +101,7 @@ public:
 		Vortex::Camera& cam = GetCamera();
         // cast ray
         ImVec2 scrPos = ImGui::GetMousePos();
-        mouseInWindow = m_ViewportWindow->InWindow(scrPos);
+        mouseInWindow = m_ViewportWindow->IsInside(scrPos);
 
         ImVec2 normPos = m_ViewportWindow->ConvertToNormalizedPos(scrPos);
         Ray r;
@@ -146,7 +168,7 @@ public:
         }
 
         Vortex::Renderer::BeginScene(cam);
-        Renderer::DrawPoints(positions, 1.0f, colors);
+        pr->DrawPoints(positions, 1.0f, colors);
 
         if (drawLines && positions.size() > 1)
         {
@@ -173,7 +195,8 @@ public:
             {
                 points[i] = glm::vec3(xs[i], ys[i], 0);
             }
-            Renderer::DrawLines(points, 2.0f);
+            lr->GetWidth() = 2.0f;
+            lr->DrawLines(points);
         }
 
         Vortex::Renderer::EndScene();
