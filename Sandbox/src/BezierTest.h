@@ -5,106 +5,52 @@
 #include <Vortex/Scene/PointRendererComponent.h>
 #include <Vortex/Scene/LineRendererComponent.h>
 
-using Vortex::Ref;
-using Vortex::CreateRef;
-using Vortex::ViewportWindow;
-using Vortex::VertexArray;
-using Vortex::VertexBuffer;
-using Vortex::BufferLayout;
-using Vortex::Camera;
-using Vortex::OrthoParam;
-using Vortex::Renderer;
-using Vortex::DrawPointConfig;
-using Vortex::DrawLineConfig;
-using Vortex::IndexBuffer;
-using Vortex::Ray;
-using Vortex::Shader;
-
 using std::vector;
 
-static Vortex::PointRendererComponent* pr;
-static Vortex::LineRendererComponent* lr;
-
-static glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
-const static glm::vec4 pointColor1 = glm::vec4(0.2, 0.8, 0.6, 1);
-const static glm::vec4 pointColor2 = glm::vec4(0.2, 0.3, 0.9, 1);
-static ImVec2 worldPos;
-static vector<glm::vec3> positions;
-static vector<glm::vec4> colors;
-
-// add point state
-static bool clicked = false;
-
-// drag point state
-static bool isDragging = false; 
-static bool mouseInPoint = false;
-static int curChosenIndex = 0;
-
-// mouse in window state
-static bool mouseInWindow = false;
-
-static ImVec2 vMin, vMax;
-
-static bool drawLines = false;
-
-std::vector<float> lagrange(const std::vector<glm::vec3>& input_points,
-                            const std::vector<float>& xs)
+class BezierTest : public EditorLayer
 {
-    int length = input_points.size();
-    std::vector<float> ys;
-    if (length >= 2)
-    {
-        for (auto x : xs)
-        {
-            float y = 0.0f;
-            for (int i = 0; i < length; i++)
-            {
-                float temp = input_points[i][1];
-                for (int j = 0; j < length; j++)
-                {
-                    if (i != j)
-                    {
-                        temp *= x - input_points[j][0];
-                        temp *= 1 / (input_points[i][0] - input_points[j][0]);
-                    }
-                }
-                y += temp;
-            }
-            ys.push_back(y);
-        }
-    }
-    return ys;
-}
+    Vortex::PointRendererComponent* pr;
+    Vortex::LineRendererComponent* lr;
 
+    glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
+    const glm::vec4 pointColor1 = glm::vec4(0.2, 0.8, 0.6, 1);
+    const glm::vec4 pointColor2 = glm::vec4(0.2, 0.3, 0.9, 1);
+    ImVec2 worldPos;
+    vector<glm::vec3> positions;
+    vector<glm::vec4> colors;
 
+    vector<glm::vec3> linePoints;
 
-class DrawLineTest : public EditorLayer
-{
+    // add point state
+    bool clicked = false;
+
+    // drag point state
+    bool isDragging = false;
+    bool mouseInPoint = false;
+    int curChosenIndex = 0;
+
+    // mouse in window state
+    bool mouseInWindow = false;
+    bool drawLines = false;
+
 public:
-	DrawLineTest()
-	{
-        const Eigen::MatrixXd C =
-            (Eigen::MatrixXd(4, 2) << 0, 0, 0.5, 0, 0.5, 1, 1, 1).finished();
-        const Eigen::VectorXd T =
-            (Eigen::VectorXd(11, 1) << 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1).finished();
-        Eigen::MatrixXd P;
-        igl::bezier(C, T, P);
-
+    BezierTest()
+    {
         Vortex::Scene* scene = GetEditorScene();
         auto e1 = scene->AddEntity("e1");
         pr = e1->AddComponent<Vortex::PointRendererComponent>();
         lr = e1->AddComponent<Vortex::LineRendererComponent>();
-	}
+    }
 
-	inline void OnUpdate(Vortex::Timestep ts) override
-	{
-		Vortex::Camera& cam = GetCamera();
+    inline void OnUpdate(Vortex::Timestep ts) override
+    {
+        Vortex::Camera& cam = GetCamera();
         // cast ray
         ImVec2 scrPos = ImGui::GetMousePos();
         mouseInWindow = m_ViewportWindow->IsInside(scrPos);
 
         ImVec2 normPos = m_ViewportWindow->ConvertToNormalizedPos(scrPos);
-        Ray r;
+        Vortex::Ray r;
         cam.CastRay(glm::vec2(normPos.x, normPos.y), r);
         worldPos = ImVec2(r.origin.x, r.origin.y);
 
@@ -168,37 +114,44 @@ public:
             }
         }
 
+        ////////////////////////////////////////////
+        // START FROM HERE
+        ////////////////////////////////////////////
+
+        // paint control points
         pr->DrawPoints(positions, 1.0f, colors);
 
-        if (drawLines && positions.size() > 1)
+        if (drawLines && positions.size() > 2)
         {
-            vector<glm::vec3> sortedPositions(positions.begin(), positions.end());
-            std::sort(sortedPositions.begin(), sortedPositions.end(), [](glm::vec3 v1, glm::vec3 v2) {
-                return v1.x < v2.x;
-                });
-
-            float xStart = sortedPositions[0].x;
-            float xEnd = sortedPositions[sortedPositions.size() - 1].x;
-            int cnt = 1000;
-            float eps = (xEnd - xStart) / cnt;
-            vector<float> xs(cnt + 1);
-            float cur = xStart;
-            for (int i = 0; i <= cnt; i++)
+            Eigen::MatrixXf C = Eigen::MatrixXf(positions.size(), 2);
+            for (int i = 0; i < positions.size(); i++)
             {
-                xs[i] = cur;
-                cur += eps;
+                C(i, 0) = positions[i].x;
+                C(i, 1) = positions[i].y;
             }
 
-            auto ys = lagrange(sortedPositions, xs);
-            vector<glm::vec3> points(cnt + 1);
-            for (int i = 0; i < xs.size(); i++)
+            Eigen::VectorXf T = Eigen::VectorXf(1000, 1);
+            T(0, 0) = 0.0f;
+            float eps = 1.0f / 1000.0f;
+            for (int i = 1; i < 1000; i++)
             {
-                points[i] = glm::vec3(xs[i], ys[i], 0);
+                T(i, 0) = glm::clamp(T(i - 1, 0) + eps, 0.0f, 1.0f);
+            }
+
+            Eigen::MatrixXf P;
+            igl::bezier(C, T, P);
+
+            int row = P.rows();
+            if(row != linePoints.size())
+                linePoints.resize(row);
+            for (int i = 0; i < P.rows(); i++)
+            {
+                linePoints[i] = glm::vec3(P(i, 0), P(i, 1), 0.0f);
             }
             lr->GetWidth() = 2.0f;
-            lr->DrawLines(points);
+            lr->DrawLines(linePoints);
         }
-	}
+    }
 
     inline virtual void OnImGuiRender() override
     {
@@ -208,9 +161,8 @@ public:
         ImVec2 winPos = m_ViewportWindow->ConvertToWinPos(scrPos);
         ImGui::DragFloat2("WinPos", (float*)&winPos);
         ImGui::DragFloat2("WorldPos", (float*)&worldPos);
-        ImGui::DragFloat2("vMin", (float*)&vMin);
-        ImGui::DragFloat2("vMax", (float*)&vMax);
-        ImGui::DragInt("in window", (int*)&mouseInWindow);
+        ImGui::Text("MouseInWindow: %d", mouseInWindow ? 1 : 0);
+        ImGui::TextColored(ImVec4(0.8f, 0.3f, 0.2f, 1.0f), "Press E to delete Point");
         if (ImGui::Button("Draw or Not"))
         {
             drawLines = !drawLines;

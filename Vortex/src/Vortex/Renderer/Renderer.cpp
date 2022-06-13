@@ -45,6 +45,7 @@ namespace Vortex {
     // OBSOLETE
     void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
     {
+        VT_CORE_ASSERT(0, "OBSOLETE");
         shader->Bind();
         
         shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
@@ -124,8 +125,10 @@ namespace Vortex {
         s_RendererAPI->DrawLines(VA, attr);
     }
 
+    // OBSOLETE
     void Renderer::DrawLine(const std::pair<glm::vec3, glm::vec3>& ends, float width, const glm::vec3& color)
     {
+        VT_CORE_ASSERT(0, "OBSOLETE");
         static bool initialized = false;
         const int VBSize = 2 * sizeof(glm::vec3);
         static Ref<VertexArray> VA = VertexArray::Create();

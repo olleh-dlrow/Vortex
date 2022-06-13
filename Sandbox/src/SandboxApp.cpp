@@ -12,8 +12,9 @@
 //#include "RayCastTest.h"
 //#include "BatchRenderingTest.h"
 //#include "EditorLayer.h"
-#include "DrawLineTest.h"
+//#include "DrawLineTest.h"
 //#include "SceneTest.h"
+#include "BezierTest.h"
 
 /*
 tips:
@@ -25,7 +26,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new DrawLineTest());
+        PushLayer(new BezierTest());
     }
     ~Sandbox() {
     

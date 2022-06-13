@@ -46,22 +46,6 @@ void Vortex::ViewportWindow::OnImGuiRender()
 		// Because I use the texture from OpenGL, I need to invert the V from the UV.
 		ImGui::Image((ImTextureID)(uint64_t)m_FB->GetTextureID(), m_ContentSize, ImVec2(0, 1), ImVec2(1, 0));
 
-		//ImVec4 tint_col = ImVec4(1, 1, 1, 1);
-		//ImGuiWindow* window = ImGui::GetCurrentWindow();
-		//if (window->SkipItems)
-		//	return;
-
-		//ImVec2 bMax = window->DC.CursorPos;
-		//bMax = ImVec2(bMax.x + 1680, bMax.y + 960);
-		//ImRect bb(window->DC.CursorPos, bMax);
-
-		//ImGui::ItemSize(bb);
-		//if (!ImGui::ItemAdd(bb, 0))
-		//	return;
-
-		//window->DrawList->AddImage((ImTextureID)(uint64_t)m_FB->GetTextureID(), bb.Min, bb.Max, ImVec2(0, 1), ImVec2(1, 0), ImGui::GetColorU32(tint_col));
-		//
-
 		// TEST
 		//{
 		//	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
