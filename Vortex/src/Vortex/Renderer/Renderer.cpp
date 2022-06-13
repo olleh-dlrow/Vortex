@@ -15,9 +15,6 @@ namespace Vortex {
         s_RendererAPI->Init();
         RenderCommand::Init();
         Renderer2D::Init();
-        
-        // init all batches
-        s_SceneData->PointBatch = CreateRef<Batch<Quad1>>(Shader::Create("assets/shaders/Vertex1.glsl"));
     }
 
     void Renderer::Shutdown()
@@ -43,10 +40,9 @@ namespace Vortex {
 
     void Renderer::EndScene()
     {
-        // flush all batches
-        s_SceneData->PointBatch->Flush(s_SceneData->ViewProjectionMatrix);
     }
 
+    // OBSOLETE
     void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
     {
         shader->Bind();
@@ -90,8 +86,10 @@ namespace Vortex {
         s_RendererAPI->DrawLines(vertexArray, attr);
     }
 
+    // OBSOLETE
     void Renderer::DrawLines(const std::vector<glm::vec3> points, float width, const glm::vec3& color)
     {
+        VT_CORE_ASSERT(0, "OBSOLETE");
         static bool initialized = false;
         static uint32_t maxPointCount = 1023;
 
@@ -100,11 +98,11 @@ namespace Vortex {
         static BufferLayout layout = { {Vortex::ShaderDataType::Float3, "a_Position"} };
         static Ref<Shader> shader = Shader::Create("assets/shaders/Line.glsl");
 
-        uint32_t pointCnt = points.size();
+        uint32_t pointCnt = (uint32_t)points.size();
         if (pointCnt > maxPointCount) 
         {
             VT_ASSERT(maxPointCount != 0xffffffff, "MaxPointCount Arrived!");
-            maxPointCount = maxPointCount << 1 + 1;
+            maxPointCount = (maxPointCount << 1) + 1;
             initialized = false;
         }
 
@@ -119,7 +117,7 @@ namespace Vortex {
 
         DrawLineConfig attr(pointCnt, width, color);
         VA->Bind();
-        VB->SetData(&points[0], pointCnt * sizeof(glm::vec3));
+        VB->SetData(&points[0], (uint32_t)pointCnt * sizeof(glm::vec3));
         shader->Bind();
         shader->SetMat4("u_ViewProjection", s_SceneData->ViewProjectionMatrix);
         shader->SetFloat4("u_Color", attr.color);
@@ -173,35 +171,15 @@ namespace Vortex {
         s_RendererAPI->DrawTriangles(vertexArray, attr);
     }
 
+    // OBSOLETE
     void Renderer::DrawPoints(const std::vector<glm::vec3>& positions, float size, const glm::vec4& color)
     {
-        auto batch = s_SceneData->PointBatch;
-        auto VP = s_SceneData->ViewProjectionMatrix;
-        int sz = (int)positions.size();
-        for (int i = 0; i < sz; i++)
-        {
-            Quad1 quad(positions[i], glm::vec2(1, 1) * 0.1f * size, color);
-            if (!batch->TryAddBatchUnit(quad))
-            {
-                batch->Flush(VP);
-                batch->TryAddBatchUnit(quad);
-            }
-        }
+        VT_CORE_ASSERT(0, "OBSOLETE");
     }
 
+    // OBSOLETE
     void Renderer::DrawPoints(const std::vector<glm::vec3>& positions, float size, const std::vector<glm::vec4>& colors)
     {
-        auto batch = s_SceneData->PointBatch;
-        auto VP = s_SceneData->ViewProjectionMatrix;
-        int sz = (int)positions.size();
-        for (int i = 0; i < sz; i++)
-        {
-            Quad1 quad(positions[i], glm::vec2(1, 1) * 0.1f * size, colors[i]);
-            if (!batch->TryAddBatchUnit(quad))
-            {
-                batch->Flush(VP);
-                batch->TryAddBatchUnit(quad);
-            }
-        }
+        VT_CORE_ASSERT(0, "OBSOLETE");
     }
 }

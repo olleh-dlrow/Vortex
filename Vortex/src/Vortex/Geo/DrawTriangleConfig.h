@@ -7,13 +7,13 @@ namespace Vortex
 {
 	struct DrawTriangleConfig
 	{
-		DrawTriangleConfig(uint32_t verticesCount, uint32_t indicesCount, uint32_t m = GL_FILL)
+		DrawTriangleConfig(int verticesCount, int indicesCount, uint32_t m = GL_FILL)
 			:polygonMode(m), vertCnt(verticesCount), indexCnt(indicesCount)
 		{
 
 		}
-		GLenum polygonMode;
-		uint32_t vertCnt;
-		uint32_t indexCnt;
+		GLenum	polygonMode;
+		GLsizei vertCnt;
+		GLsizei indexCnt;
 	};
 }

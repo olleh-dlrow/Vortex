@@ -6,15 +6,13 @@ namespace Vortex
 {
 	template<typename T> class Batch;
 
-
-
 	template<typename V, size_t VCNT, size_t ICNT>
 	class BatchUnit
 	{
 	public:
 		using VertexType = V;
-		constexpr static size_t GetVertexCount() { return VCNT; }
-		constexpr static size_t GetIndexCount() { return ICNT; }
+		constexpr static int GetVertexCount() { return static_cast<int>(VCNT); }
+		constexpr static int GetIndexCount() { return static_cast<int>(ICNT); }
 	protected:
 		std::array<V, VCNT>			m_Vertices;
 	};

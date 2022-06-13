@@ -7,7 +7,7 @@ namespace Vortex
 {
 	struct Vertex0
 	{
-		Vertex0() {};
+		Vertex0() = default;
 		Vertex0(const glm::f32vec3& p, 
 			    const glm::f32vec4& c,
 			    const glm::f32vec2& tex,
@@ -22,7 +22,7 @@ namespace Vortex
 
 	struct Vertex1
 	{
-		Vertex1() {}
+		Vertex1() = default;
 		Vertex1(const glm::f32vec3& p, 
 			    const glm::f32vec4& c)
 		:position(p), color(c) {}
@@ -41,7 +41,7 @@ namespace Vortex
 
 	struct Vertex2
 	{
-		Vertex2() {}
+		Vertex2() = default;
 		Vertex2(const glm::f32vec3& p)
 			:position(p) {}
 

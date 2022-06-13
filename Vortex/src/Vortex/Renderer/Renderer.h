@@ -11,13 +11,8 @@
 
 namespace Vortex {
 
-    struct Vertex1;
-    class Quad1;
-    template <typename T> class Batch;
-
     class Renderer
     {
-        template <typename T> friend class Batch;
     public:
         static void Init();
         static void Shutdown();
@@ -83,7 +78,6 @@ namespace Vortex {
         struct SceneData
         {
             glm::mat4 ViewProjectionMatrix;
-            Ref<Batch<Quad1>> PointBatch;
         };
 
         static Scope<SceneData> s_SceneData;

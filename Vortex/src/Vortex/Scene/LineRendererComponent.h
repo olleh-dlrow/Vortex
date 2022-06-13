@@ -30,6 +30,6 @@ namespace Vortex
 		float								m_Width = 1.0f;
 		glm::vec4							m_Color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
 
-		static Ref < Batch<LinePoint2> >	s_Batch;
+		static Scope < Batch<LinePoint2> >	s_Batch;
 	};
 }

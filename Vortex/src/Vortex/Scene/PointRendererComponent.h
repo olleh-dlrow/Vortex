@@ -21,9 +21,9 @@ namespace Vortex
 		void DrawPoints(const std::vector<glm::vec3>& positions, float size, const std::vector<glm::vec4>& colors);
 
 	private:
-		Ref<Shader>					m_Shader;
+		Ref<Shader>						m_Shader;
 
-		static Ref< Batch<Quad1> >	s_Batch;
+		static Scope< Batch<Quad1> >	s_Batch;
 	};
 }
 

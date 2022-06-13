@@ -5,7 +5,7 @@
 
 namespace Vortex
 {
-	Ref<Batch<Quad1>> PointRendererComponent::s_Batch = nullptr;
+	Scope<Batch<Quad1>> PointRendererComponent::s_Batch = nullptr;
 
 	PointRendererComponent::PointRendererComponent()
 		:m_Shader(Shader::Create("assets/shaders/Vertex1.glsl"))
@@ -13,7 +13,7 @@ namespace Vortex
 		if (s_Batch == nullptr)
 		{
 			// maybe move to the initial process in Scene
-			s_Batch = CreateRef<Batch<Quad1>>();
+			s_Batch = CreateScope<Batch<Quad1>>();
 		}
 	}
 	void PointRendererComponent::Init()

@@ -6,14 +6,14 @@
 
 namespace Vortex
 {
-    Ref < Batch<LinePoint2> >  LineRendererComponent::s_Batch = nullptr;
+    Scope < Batch<LinePoint2> >  LineRendererComponent::s_Batch = nullptr;
 
 	LineRendererComponent::LineRendererComponent()
 		:m_Shader(Shader::Create("assets/shaders/Line.glsl"))
 	{
         if (s_Batch == nullptr)
         {
-            s_Batch = CreateRef< Batch<LinePoint2> >();
+            s_Batch = CreateScope< Batch<LinePoint2> >();
         }
 	}
     void LineRendererComponent::Init()
