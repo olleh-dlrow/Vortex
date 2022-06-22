@@ -18,3 +18,6 @@ imgui.ini
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+
+# wiki
+Vortex.wiki/

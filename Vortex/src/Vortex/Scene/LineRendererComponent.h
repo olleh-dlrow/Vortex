@@ -20,6 +20,7 @@ namespace Vortex
 
 		void Flush();
 
+		// Draw lines immediately
 		void DrawLines(const std::vector<glm::vec3> points);
 
 		float& GetWidth() { return m_Width; }
