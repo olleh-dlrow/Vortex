@@ -24,6 +24,7 @@ namespace Vortex
 
 		void OnEvent(Event& e);
 		void OnUpdate(Timestep ts);
+		// convert screen pos to inner viewport window pos
 		ImVec2 ConvertToWinPos(ImVec2 scrPos);
 		// X+: right, Y+: down
 		ImVec2 ConvertToNormalizedPos(ImVec2 scrPos);

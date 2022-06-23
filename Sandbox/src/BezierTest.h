@@ -148,7 +148,11 @@ public:
             {
                 linePoints[i] = glm::vec3(P(i, 0), P(i, 1), 0.0f);
             }
-            lr->GetWidth() = 2.0f;
+            // glLineWidth(2.0f):
+            // OPENGL error: API_ID_LINE_WIDTH deprecated behavior warning has been generated.
+            // it seems that the opengl of higher version has deprecated this method, who 
+            // encourages us to achieve our own line :(
+            lr->GetWidth() = 1.0f;
             lr->DrawLines(linePoints);
         }
     }
@@ -159,9 +163,9 @@ public:
 
         ImVec2 scrPos = ImGui::GetMousePos();
         ImVec2 winPos = m_ViewportWindow->ConvertToWinPos(scrPos);
-        ImGui::DragFloat2("WinPos", (float*)&winPos);
+        ImGui::DragFloat2("InnerWinPos", (float*)&winPos);
         ImGui::DragFloat2("WorldPos", (float*)&worldPos);
-        ImGui::Text("MouseInWindow: %d", mouseInWindow ? 1 : 0);
+        ImGui::Text("MouseInWindow: %s", mouseInWindow ? "yes" : "no");
         ImGui::TextColored(ImVec4(0.8f, 0.3f, 0.2f, 1.0f), "Press E to delete Point");
         if (ImGui::Button("Draw or Not"))
         {
