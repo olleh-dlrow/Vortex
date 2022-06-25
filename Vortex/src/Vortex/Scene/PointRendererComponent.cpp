@@ -57,4 +57,18 @@ namespace Vortex
 			}
 		}
 	}
+
+	void PointRendererComponent::DrawPoints(const std::vector<glm::vec3>& positions, float size, glm::vec4 color)
+	{
+		int sz = (int)positions.size();
+		for (int i = 0; i < sz; i++)
+		{
+			Quad1 quad(positions[i], glm::vec2(1, 1) * 0.1f * size, color);
+			if (!s_Batch->TryAddBatchUnit(quad))
+			{
+				Flush();
+				s_Batch->TryAddBatchUnit(quad);
+			}
+		}
+	}
 }

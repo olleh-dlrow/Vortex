@@ -20,6 +20,7 @@ namespace Vortex
 		void Begin();
 		void End();
 		void OnImGuiRender();
+		// show config to imGUI, this can used to debug, change config value and so on
 		void RenderConfigGUI();
 
 		void OnEvent(Event& e);

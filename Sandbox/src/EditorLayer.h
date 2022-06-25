@@ -21,7 +21,7 @@ public:
 
 	inline Vortex::Camera& GetCamera() const { return *m_ViewportWindow->GetCamera(); };
 	inline Vortex::Scene* GetEditorScene() { return m_EditorScene.get(); }
-public:
+protected:
 	Vortex::Ref<Vortex::ViewportWindow> m_ViewportWindow;
 	Vortex::Ref<Vortex::Scene>			m_EditorScene;
 };

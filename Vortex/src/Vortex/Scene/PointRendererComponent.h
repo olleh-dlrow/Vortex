@@ -20,6 +20,7 @@ namespace Vortex
 
 		void DrawPoints(const std::vector<glm::vec3>& positions, float size, const std::vector<glm::vec4>& colors);
 
+		void DrawPoints(const std::vector<glm::vec3>& positions, float size, glm::vec4 color);
 	private:
 		Ref<Shader>						m_Shader;
 

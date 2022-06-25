@@ -14,7 +14,8 @@
 //#include "EditorLayer.h"
 //#include "DrawLineTest.h"
 //#include "SceneTest.h"
-#include "BezierTest.h"
+//#include "BezierTest.h"
+#include "CubicSplinesTest.h"
 
 /*
 tips:
@@ -26,7 +27,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new BezierTest());
+        PushLayer(new CubicSplinesTest());
     }
     ~Sandbox() {
     
