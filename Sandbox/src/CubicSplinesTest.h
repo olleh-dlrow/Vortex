@@ -12,12 +12,19 @@ class CubicSplinesTest : public EditorLayer
     class ControlPoint
     {
     public:
+        // tangent mode
+        constexpr static int TAN_NONE = 0;
+        constexpr static int TAN_G0 = 1;
+        constexpr static int TAN_G1 = 2;
+        constexpr static int TAN_G2 = 3;
+
         ControlPoint() {}
         ControlPoint(const glm::vec2& pos):f(pos){}
         glm::vec2 f;            // f(t), equal position
         glm::vec2 Df_iMinusOne;
         glm::vec2 Df_i;
         float t;
+        int tangentMode = TAN_G2;
     };
 
     class CubicSplineFunction
@@ -72,9 +79,13 @@ class CubicSplinesTest : public EditorLayer
     int MAX_CNT_IN_A_SEG = 1000;
     vector<glm::vec3> linePoints;
 
+    // debug for second derivative
     int DDfIdx = 1;
     glm::vec2 leftDDf = INVALID_POINT;
     glm::vec2 rightDDf = INVALID_POINT;
+
+    // draw control points state
+    bool hideControlPoints = false;
 
     // edit point state
     int curEditPointIndex = -1;
@@ -91,7 +102,6 @@ class CubicSplinesTest : public EditorLayer
     bool mouseInWindow = false;
     
     // control tangent state
-    
     glm::vec3 leftTangentPoint = INVALID_POINT;
     glm::vec3 rightTangentPoint = INVALID_POINT;
     bool mouseInLeftTangentPoint = false;
@@ -226,11 +236,11 @@ public:
         return func;
     }
 
-    void CalculateSplineWithTangent(const vector<ControlPoint>& controlPoints, vector<glm::vec3>& output)
+    void CalculateSplinePointsWithTangent(const vector<ControlPoint>& controlPoints, vector<glm::vec3>& output)
     {
         int n = controlPoints.size();
         int neededSize = (n - 1) * MAX_CNT_IN_A_SEG;
-        if (neededSize > output.size())
+        if (neededSize != output.size())
             output.resize(neededSize);
         // for n-1 lines
         int outputIdx = 0;
@@ -320,7 +330,7 @@ public:
                     func_i.ti = pi.t;
                     func_i.ti1 = pi1.t;
                     pi1.Df_iMinusOne = func_i.DF(pi1.t);
-                    CalculateSplineWithTangent(controlPoints, linePoints);
+                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 };
 
                 // set ti+1's second derivative to zero to calculate cubic spline
@@ -348,7 +358,7 @@ public:
                     func_i.ti = pi.t;
                     func_i.ti1 = pi1.t;
                     pi1.Df_iMinusOne = func_i.DF(pi1.t);
-                    CalculateSplineWithTangent(controlPoints, linePoints);
+                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 };
 
                 algo2();
@@ -420,12 +430,20 @@ public:
             }
         }
 
+        // erase point
         if (Vortex::Input::IsKeyPressed(VT_KEY_E))
         {
             if (mouseInPoint && !isDragging)
             {
                 positions.erase(positions.begin() + curChosenIndex);
                 colors.erase(colors.begin() + curChosenIndex);
+                controlPoints.erase(controlPoints.begin() + curChosenIndex);
+                // reset t
+                for (int i = 0; i < controlPoints.size(); i++)
+                {
+                    controlPoints[i].t = i;
+                }
+                CalculateSplinePointsWithTangent(controlPoints, linePoints);
             }
             if (mouseInPoint &&
                 !isDragging &&
@@ -441,7 +459,7 @@ public:
             glm::vec2 newPos = glm::vec2(worldPos.x, worldPos.y);
             positions[curChosenIndex] = glm::vec3(newPos, 0);
             controlPoints[curChosenIndex].f = newPos;
-            CalculateSplineWithTangent(controlPoints, linePoints);
+            CalculateSplinePointsWithTangent(controlPoints, linePoints);
         }
 
         // traverse all points, find current chosen point
@@ -491,7 +509,10 @@ public:
         ////////////////////////////////////////////
 
         // paint control points
-        pr->DrawPoints(positions, 1.0f, colors);
+        if (!hideControlPoints)
+        {
+            pr->DrawPoints(positions, 1.0f, colors);
+        }
 
         canDrawLines = positions.size() > 1;
         // draw tangent control point
@@ -542,9 +563,28 @@ public:
             glm::vec3& rightPoint = positions[curEditPointIndex];
 
             glm::vec2 tangent = rightPoint - leftPoint;
-            controlPoints[curEditPointIndex].Df_iMinusOne = tangent;
+            ControlPoint& p = controlPoints[curEditPointIndex];
+            p.Df_iMinusOne = tangent;
 
-            CalculateSplineWithTangent(controlPoints, linePoints);
+            switch (p.tangentMode)
+            {
+            case ControlPoint::TAN_G0:
+                break;
+            case ControlPoint::TAN_G1:
+                // direction is same
+                p.Df_i = glm::length(p.Df_i) * glm::normalize(p.Df_iMinusOne);
+                CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                break;
+            case ControlPoint::TAN_G2:
+                // value is same
+                p.Df_i = p.Df_iMinusOne;
+                CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                break;
+            default:
+                break;
+            }
+
+            CalculateSplinePointsWithTangent(controlPoints, linePoints);
         }
         if (isDragRightTangentPoint)
         {
@@ -553,9 +593,28 @@ public:
             glm::vec3& leftPoint = positions[curEditPointIndex];
 
             glm::vec2 tangent = rightPoint - leftPoint;
-            controlPoints[curEditPointIndex].Df_i = tangent;
+            ControlPoint& p = controlPoints[curEditPointIndex];
+            p.Df_i = tangent;
 
-            CalculateSplineWithTangent(controlPoints, linePoints);
+            switch (p.tangentMode)
+            {
+            case ControlPoint::TAN_G0:
+                break;
+            case ControlPoint::TAN_G1:
+                // direction is same
+                p.Df_iMinusOne = glm::length(p.Df_iMinusOne) * glm::normalize(p.Df_i);
+                CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                break;
+            case ControlPoint::TAN_G2:
+                // value is same
+                p.Df_iMinusOne = p.Df_i;
+                CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                break;
+            default:
+                break;
+            }
+
+            CalculateSplinePointsWithTangent(controlPoints, linePoints);
         }
 
         // calculate point[DDfIdx] DDf
@@ -596,13 +655,54 @@ public:
             NatualSplines(positions, linePoints);
             curveInitialized = true;
         }
-        if (ImGui::Button("Clear"))
+        if (ImGui::Button("ClearScreen"))
         {
             positions.swap(vector<glm::vec3>());
             controlPoints.swap(vector<ControlPoint>());
             linePoints.swap(vector<glm::vec3>());
             curEditPointIndex = -1;
             curveInitialized = false;
+        }
+
+        ImGui::Checkbox("HideControlPoint", &hideControlPoints);
+
+        if (curEditPointIndex != -1 && ImGui::Button("CancelEdit"))
+        {
+            curEditPointIndex = -1;
+        }
+
+        bool isEditMiddlePoint = curEditPointIndex != -1 &&
+            curEditPointIndex != 0 &&
+            curEditPointIndex != controlPoints.size() - 1;
+
+        if (isEditMiddlePoint)
+        {
+            ControlPoint& p = controlPoints[curEditPointIndex];
+            const char* items[] = {"G0", "G1", "G2"};
+            int curItem = p.tangentMode - 1;
+            bool selectChanged = ImGui::ListBox("TangentMode", &curItem, items, IM_ARRAYSIZE(items));
+            p.tangentMode = curItem + 1;
+
+            if (selectChanged)
+            {
+                switch (p.tangentMode)
+                {
+                case ControlPoint::TAN_G0:
+                    break;
+                case ControlPoint::TAN_G1:
+                    // direction is same
+                    p.Df_i = glm::length(p.Df_i) * glm::normalize(p.Df_iMinusOne);
+                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                    break;
+                case ControlPoint::TAN_G2:
+                    // value is same
+                    p.Df_i = p.Df_iMinusOne;
+                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                    break;
+                default:
+                    break;
+                }
+            }
         }
         ImGui::End();
     }
