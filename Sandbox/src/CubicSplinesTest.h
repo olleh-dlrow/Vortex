@@ -9,18 +9,75 @@ using std::vector;
 
 class CubicSplinesTest : public EditorLayer
 {
+    class ControlPoint
+    {
+    public:
+        ControlPoint() {}
+        ControlPoint(const glm::vec2& pos):f(pos){}
+        glm::vec2 f;            // f(t), equal position
+        glm::vec2 Df_iMinusOne;
+        glm::vec2 Df_i;
+        float t;
+    };
+
+    class CubicSplineFunction
+    {
+    public:
+        float ti = 0;
+        float ti1 = 0;
+        glm::vec2 ai;
+        glm::vec2 bi;
+        glm::vec2 ci;
+        glm::vec2 di;
+
+        glm::vec2 F(float t)
+        {
+            t = t - ti;
+            return ai + bi * t + ci * t * t + di * t * t * t;
+        }
+
+        glm::vec2 DF(float t)
+        {
+            t = t - ti;
+            return bi + 2.0f * ci * t + 3.0f * di * t * t * t;
+        }
+
+        glm::vec2 DDF(float t)
+        {
+            t = t - ti;
+            return 2.0f * ci + 6.0f * di * t * t;
+        }
+    };
+
     Vortex::PointRendererComponent* pr;
     Vortex::LineRendererComponent* lr;
 
-    glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
-    const glm::vec4 pointColor1 = glm::vec4(0.2, 0.8, 0.6, 1);
-    const glm::vec4 pointColor2 = glm::vec4(0.2, 0.3, 0.9, 1);
+    const glm::vec3 INVALID_POINT = glm::vec3(std::numeric_limits<float>::max());
+
+    //glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
+    const glm::vec4 pointColor1 = glm::vec4(0.2, 0.8, 0.6, 1);  // normal point
+    const glm::vec4 pointColor2 = glm::vec4(0.2, 0.3, 0.9, 1);  // mouse in point
+    const glm::vec4 pointColor3 = glm::vec4(0.9, 0.1, 0.1, 1);  // point in edit
+    const glm::vec4 pointColor4 = glm::vec4(1.0, 1.0, 1.0, 1);  // control tangent point
+
+    const glm::vec4 lineColor1 = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f); // normal line
+    const glm::vec4 lineColor2 = glm::vec4(1.0, 1.0, 1.0, 1);   // control tangent
+
     ImVec2 worldPos;
     vector<glm::vec3> positions;
     vector<glm::vec4> colors;
 
-    const int MAX_CNT_IN_A_SEG = 1000;
+    vector<ControlPoint> controlPoints;
+
+    int MAX_CNT_IN_A_SEG = 1000;
     vector<glm::vec3> linePoints;
+
+    int DDfIdx = 1;
+    glm::vec2 leftDDf = INVALID_POINT;
+    glm::vec2 rightDDf = INVALID_POINT;
+
+    // edit point state
+    int curEditPointIndex = -1;
 
     // add point state
     bool clicked = false;
@@ -33,10 +90,20 @@ class CubicSplinesTest : public EditorLayer
     // mouse in window state
     bool mouseInWindow = false;
     
+    // control tangent state
+    
+    glm::vec3 leftTangentPoint = INVALID_POINT;
+    glm::vec3 rightTangentPoint = INVALID_POINT;
+    bool mouseInLeftTangentPoint = false;
+    bool mouseInRightTangentPoint = false;
+    
+    bool isDragTangentPoint = false;
+    bool isDragLeftTangentPoint = false;
+    bool isDragRightTangentPoint = false;
+
     // draw lines state
-    bool drawNaturalSplines = false;
-
-
+    bool curveInitialized = false;
+    bool canDrawLines = false;
 public:
     // the second derivative in two ends is 0.
     // 
@@ -46,7 +113,9 @@ public:
     void NatualSplines(const vector<glm::vec3>& input, vector<glm::vec3>& output)
     {
         int n = input.size();
-        VT_ASSERT(output.size() == (n - 1) * MAX_CNT_IN_A_SEG, "output length is wrong!");
+        int neededSize = (n - 1) * MAX_CNT_IN_A_SEG;
+        if (neededSize > output.size())
+            output.resize(neededSize);
         // AM = B
         Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n, n);
         Eigen::VectorXf B = Eigen::VectorXf::Zero(n);
@@ -55,44 +124,130 @@ public:
         // hi = xi+1 - xi
         for (int i = 0; i < n - 2; i++)
         {
-            float hi = input[i + 1].x - input[i].x;
-            float hi1 = input[i + 2].x - input[i + 1].x;
+            float ti = i, ti1 = i + 1, ti2 = i + 2;
+            float hi = ti1 - ti;
+            float hi1 = ti2 - ti1;
             A(i + 1, i) = hi;
             A(i + 1, i + 1) = 2 * (hi + hi1);
             A(i + 1, i + 2) = hi1;
         }
 
         // construct Vector B
-        B(0) = 0; B(n - 1) = 0;
-        for (int i = 0; i < n - 2; i++)
+        // ftIdx: x->0, y->1, z->2
+        auto calB = [&](int ftIdx) 
         {
-            float hi = input[i + 1].x - input[i].x;
-            float hi1 = input[i + 2].x - input[i + 1].x;
-            B(i + 1) = 6 * ((input[i + 2].y - input[i + 1].y) / hi1 - (input[i + 1].y - input[i].y) / hi);
-        }
+            B(0) = 0; B(n - 1) = 0;
+            for (int i = 0; i < n - 2; i++)
+            {
+                float ti = i, ti1 = i + 1, ti2 = i + 2;
+                float hi = ti1 - ti;
+                float hi1 = ti2 - ti1;
+                float fti = input[i][ftIdx], fti1 = input[i + 1][ftIdx], fti2 = input[i + 2][ftIdx];
+                B(i + 1) = 6 * ((fti2 - fti1) / hi1 - (fti1 - fti) / hi);
+            }
+        };
+
+        Eigen::MatrixXf invA = A.inverse();
         Eigen::VectorXf M;
-        M = A.inverse()* B;
-        
+
+        auto calOutput = [&](int ftIdx)
+        {
+            // for n-1 lines
+            int outputIdx = 0;
+            for (int i = 0; i < n - 1; i++)
+            {
+                float fti = input[i][ftIdx], fti1 = input[i + 1][ftIdx];
+                float ti = i, ti1 = i + 1;
+
+                float mi = M(i), mi1 = M(i + 1);
+                float ai = fti;
+                float hi = ti1 - ti;
+                float bi = (fti1 - fti) / hi - mi * hi / 2 - (mi1 - mi) * hi / 6;
+                float ci = mi / 2;
+                float di = (mi1 - mi) / (6 * hi);
+
+                controlPoints[i].t = ti;
+                controlPoints[i + 1].t = ti1;
+
+                controlPoints[i + 1].Df_iMinusOne[ftIdx] = bi + 2 * ci * hi * hi + 3 * di * hi * hi * hi;
+                controlPoints[i].Df_i[ftIdx] = bi;
+
+                // generate x
+                float eps = (ti1 - ti) / MAX_CNT_IN_A_SEG;
+                float t = ti;
+                for (int tIdx = 0; tIdx < MAX_CNT_IN_A_SEG; tIdx++, t = std::min(t + eps, ti1))
+                {
+                    float dt = t - ti;
+                    output[outputIdx++][ftIdx] = ai + bi * dt + ci * dt * dt + di * dt * dt * dt;
+                }
+            }
+        };
+
+        // X(t)
+        calB(0);
+        M = invA * B;
+        calOutput(0);
+
+        // Y(t)
+        calB(1);
+        M = invA * B;
+        calOutput(1);
+    }
+
+    CubicSplineFunction CalculateSpline(const ControlPoint& pi, const ControlPoint& pi1)
+    {
+        CubicSplineFunction func;
+        float ti = 0;
+        float ti1 = 0;
+        glm::vec2 ai;
+        glm::vec2 bi;
+        glm::vec2 ci;
+        glm::vec2 di;
+
+        ti = pi.t;
+        ti1 = pi1.t;
+        float hi = ti1 - ti;
+        glm::vec2 fi = pi.f;
+        glm::vec2 fi1 = pi1.f;
+        glm::vec2 Dfi = pi.Df_i;
+        glm::vec2 Dfi1 = pi1.Df_iMinusOne;
+
+        ai = fi;
+        bi = Dfi;
+        di = (2.0f * fi + Dfi * hi + Dfi1 * hi - 2.0f * fi1) / (hi * hi * hi);
+        ci = (Dfi1 - Dfi - 3.0f * di * hi * hi) / (2 * hi);
+
+        func.ai = ai;
+        func.bi = bi;
+        func.ci = ci;
+        func.di = di;
+        func.ti = ti;
+        func.ti1 = ti1;
+        return func;
+    }
+
+    void CalculateSplineWithTangent(const vector<ControlPoint>& controlPoints, vector<glm::vec3>& output)
+    {
+        int n = controlPoints.size();
+        int neededSize = (n - 1) * MAX_CNT_IN_A_SEG;
+        if (neededSize > output.size())
+            output.resize(neededSize);
         // for n-1 lines
         int outputIdx = 0;
         for (int i = 0; i < n - 1; i++)
         {
-            float yi = input[i].y, yi1 = input[i + 1].y, xi = input[i].x, xi1 = input[i + 1].x;
-            float mi = M(i), mi1 = M(i + 1);
-            float ai = yi;
-            float hi = xi1 - xi;
-            float bi = (yi1 - yi) / hi - mi * hi / 2 - (mi1 - mi) * hi / 6;
-            float ci = mi / 2;
-            float di = (mi1 - mi) / (6 * hi);
+            const ControlPoint& pi  = controlPoints[i];
+            const ControlPoint& pi1 = controlPoints[i + 1];
+            CubicSplineFunction spline = CalculateSpline(pi, pi1);
 
-            // generate x
-            float eps = (xi1 - xi) / MAX_CNT_IN_A_SEG;
-            float x = xi;
-            for (int xIdx = 0; xIdx < MAX_CNT_IN_A_SEG; xIdx++, x = std::min(x + eps, xi1))
+            float ti = spline.ti;
+            float ti1 = spline.ti1;
+            float eps = (ti1 - ti) / MAX_CNT_IN_A_SEG;
+            
+            float t = ti;
+            for (int tIdx = 0; tIdx < MAX_CNT_IN_A_SEG; tIdx++, t = std::min(t + eps, ti1))
             {
-                float diffX = x - xi;
-                float y = ai + bi * diffX + ci * diffX * diffX + di * diffX * diffX * diffX;
-                output[outputIdx++] = glm::vec3(x, y, 0);
+                output[outputIdx++] = glm::vec3(spline.F(t), 0);
             }
         }
     }
@@ -117,64 +272,215 @@ public:
         cam.CastRay(glm::vec2(normPos.x, normPos.y), r);
         worldPos = ImVec2(r.origin.x, r.origin.y);
 
-        if (!mouseInPoint)
+        // put all if statements in the first level
+        //
+        // handle input event
+        if (Vortex::Input::IsMouseButtonPressed(VT_MOUSE_BUTTON_1))
         {
-            if (mouseInWindow && 
-                m_ViewportWindow->IsFocused() && 
-                !clicked && 
-                Vortex::Input::IsMouseButtonPressed(VT_MOUSE_BUTTON_1))
+            // add point
+            bool canAddPoint = !mouseInPoint &&
+                !mouseInLeftTangentPoint &&
+                !mouseInRightTangentPoint &&
+                mouseInWindow &&
+                m_ViewportWindow->IsFocused() &&
+                !clicked;
+            if (canAddPoint)
             {
-                positions.emplace_back(glm::vec3(worldPos.x, worldPos.y, 0));
+                glm::vec2 newPos = glm::vec2(worldPos.x, worldPos.y);
+                positions.emplace_back(glm::vec3(newPos, 0));
+                controlPoints.emplace_back(newPos);
+
                 colors.emplace_back(pointColor1);
-                clicked = true;
             }
-            if (clicked && Vortex::Input::IsMouseButtonReleased(VT_MOUSE_BUTTON_1))
+            
+            if (canAddPoint && curveInitialized)
             {
-                clicked = false;
+                // use ti's first derivative and second derivative to calculate cubic spline
+                // often appear very large derivative for new point
+                auto algo1 = [&]() {
+                    int curPointIdx = controlPoints.size() - 1;
+                    int lastPointIdx = curPointIdx - 1;
+                    int i = lastPointIdx;
+                    ControlPoint& pi = controlPoints[i];
+                    ControlPoint& pi1 = controlPoints[i + 1];
+                    // necessary
+                    pi1.t = i + 1;
+                    CubicSplineFunction func_iMinusOne = CalculateSpline(controlPoints[i - 1], controlPoints[i]);
+                    CubicSplineFunction func_i;
+                    float hi = pi1.t - pi.t;
+                    glm::vec2 fi = pi.f;
+                    glm::vec2 fi1 = pi1.f;
+                    glm::vec2 Dfi = func_iMinusOne.DF(pi.t);
+                    pi.Df_i = pi.Df_iMinusOne;
+                    glm::vec2 DDfi = func_iMinusOne.DDF(pi.t);
+                    func_i.ai = fi;
+                    func_i.bi = Dfi;
+                    func_i.ci = DDfi / 2.0f;
+                    func_i.di = (fi1 - func_i.ai - func_i.bi * hi - func_i.ci * hi * hi) / (hi * hi * hi);
+                    func_i.ti = pi.t;
+                    func_i.ti1 = pi1.t;
+                    pi1.Df_iMinusOne = func_i.DF(pi1.t);
+                    CalculateSplineWithTangent(controlPoints, linePoints);
+                };
+
+                // set ti+1's second derivative to zero to calculate cubic spline
+                // the effect is better
+                auto algo2 = [&]() {
+                    int curPointIdx = controlPoints.size() - 1;
+                    int lastPointIdx = curPointIdx - 1;
+                    int i = lastPointIdx;
+                    ControlPoint& pi = controlPoints[i];
+                    ControlPoint& pi1 = controlPoints[i + 1];
+                    // necessary
+                    pi1.t = i + 1;
+                    CubicSplineFunction func_iMinusOne = CalculateSpline(controlPoints[i - 1], controlPoints[i]);
+                    CubicSplineFunction func_i;
+                    float hi = pi1.t - pi.t;
+                    glm::vec2 fi = pi.f;
+                    glm::vec2 fi1 = pi1.f;
+                    glm::vec2 Dfi = func_iMinusOne.DF(pi.t);
+                    pi.Df_i = pi.Df_iMinusOne;
+                    glm::vec2 DDfi = func_iMinusOne.DDF(pi.t);
+                    func_i.ai = fi;
+                    func_i.bi = Dfi;
+                    func_i.di = (func_i.ai + func_i.bi * hi - fi1) / (2.0f * hi * hi * hi);
+                    func_i.ci = -3.0f * func_i.di * hi;
+                    func_i.ti = pi.t;
+                    func_i.ti1 = pi1.t;
+                    pi1.Df_iMinusOne = func_i.DF(pi1.t);
+                    CalculateSplineWithTangent(controlPoints, linePoints);
+                };
+
+                algo2();
             }
-        }
-        else
-        {
-            if (!isDragging && Vortex::Input::IsKeyPressed(VT_KEY_E))
+
+            // drag tangent point
+            if (mouseInLeftTangentPoint &&
+                !clicked &&
+                !isDragLeftTangentPoint &&
+                !isDragRightTangentPoint
+                )
             {
-                positions.erase(positions.begin() + curChosenIndex);
+                isDragLeftTangentPoint = true;
             }
-            if (Vortex::Input::IsMouseButtonPressed(VT_MOUSE_BUTTON_1))
+            if (mouseInRightTangentPoint &&
+                !clicked &&
+                !isDragLeftTangentPoint &&
+                !isDragRightTangentPoint
+                )
+            {
+                isDragRightTangentPoint = true;
+            }
+
+            // drag this point, this should put before edit this point
+            if (mouseInPoint &&
+                !mouseInLeftTangentPoint &&
+                !mouseInRightTangentPoint &&
+                !clicked &&
+                !isDragging &&
+                curEditPointIndex == curChosenIndex
+                )
             {
                 isDragging = true;
             }
+            // edit this point
+            if (mouseInPoint && // mouse in point
+                !mouseInLeftTangentPoint &&
+                !mouseInRightTangentPoint &&
+                !clicked &&     // first click
+                curEditPointIndex != curChosenIndex // this point is not editting
+                )
+            {
+                curEditPointIndex = curChosenIndex;
+                colors[curEditPointIndex] = pointColor3;
+            }
+            // this button has clicked, enter repeat state
+            if (!clicked)
+            {
+                clicked = true;
+            }
         }
-        if (isDragging)
+        if (Vortex::Input::IsMouseButtonReleased(VT_MOUSE_BUTTON_1))
         {
-            positions[curChosenIndex] = glm::vec3(worldPos.x, worldPos.y, 0);
-            if (Vortex::Input::IsMouseButtonReleased(VT_MOUSE_BUTTON_1))
+            if (clicked)
+            {
+                clicked = false;
+            }
+            if (isDragging)
             {
                 isDragging = false;
             }
+            if (isDragLeftTangentPoint)
+            {
+                isDragLeftTangentPoint = false;
+            }
+            if (isDragRightTangentPoint)
+            {
+                isDragRightTangentPoint = false;
+            }
         }
 
-        mouseInPoint = false;
-        float size = 0.1f;
+        if (Vortex::Input::IsKeyPressed(VT_KEY_E))
+        {
+            if (mouseInPoint && !isDragging)
+            {
+                positions.erase(positions.begin() + curChosenIndex);
+                colors.erase(colors.begin() + curChosenIndex);
+            }
+            if (mouseInPoint &&
+                !isDragging &&
+                curEditPointIndex == curChosenIndex // this point is editting
+                )
+            {
+                curEditPointIndex = -1;
+            }
+        }
+
+        if (isDragging)
+        {
+            glm::vec2 newPos = glm::vec2(worldPos.x, worldPos.y);
+            positions[curChosenIndex] = glm::vec3(newPos, 0);
+            controlPoints[curChosenIndex].f = newPos;
+            CalculateSplineWithTangent(controlPoints, linePoints);
+        }
+
+        // traverse all points, find current chosen point
+        mouseInPoint = false; 
+        auto checkMouseInPoint = [&](const glm::vec3& pos)
+        {
+            constexpr float size = Vortex::PointRendererComponent::UNIT_POINT_SIZE;
+            glm::mat4 I = glm::identity<glm::mat4>();
+            glm::vec3 vMin = glm::vec3(-0.5, -0.5, 0);
+            glm::vec3 vMax = glm::vec3(0.5, 0.5, 0);
+            // multiply model matrix, convert to world coordinate
+            vMin = glm::translate(I, pos) * glm::scale(I, { size, size, 1.0f }) * glm::vec4(vMin, 1);
+            vMax = glm::translate(I, pos) * glm::scale(I, { size, size, 1.0f }) * glm::vec4(vMax, 1);
+            // mouse in point i
+            return worldPos.x >= vMin.x && worldPos.x <= vMax.x && worldPos.y >= vMin.y &&
+                worldPos.y <= vMax.y;
+        };
+       
         glm::mat4 I = glm::identity<glm::mat4>();
         for (int i = 0; i < positions.size(); i++)
         {
             glm::vec3& pos = positions[i];
+            bool inPointI = checkMouseInPoint(pos);
 
-            glm::vec3 vMin = glm::vec3(-0.5, -0.5, 0);
-            glm::vec3 vMax = glm::vec3(0.5, 0.5, 0);
-            vMin = glm::translate(I, pos) * glm::scale(I, { size, size, 1.0f }) * glm::vec4(vMin, 1);
-            vMax = glm::translate(I, pos) * glm::scale(I, { size, size, 1.0f }) * glm::vec4(vMax, 1);
-            if (worldPos.x >= vMin.x && worldPos.x <= vMax.x && worldPos.y >= vMin.y &&
-                worldPos.y <= vMax.y)
+            if (inPointI)
             {
                 mouseInPoint = true;
-                if (!isDragging)
-                {
-                    colors[i] = pointColor2;
-                    curChosenIndex = i;
-                }
             }
-            else
+            if (inPointI && !isDragging)
+            {
+                curChosenIndex = i;
+            }
+            if (inPointI && curChosenIndex != curEditPointIndex)
+            {
+                colors[i] = pointColor2;
+            }
+            if (!inPointI &&
+                curEditPointIndex != i // this point is not editting
+                )
             {
                 colors[i] = pointColor1;
             }
@@ -187,26 +493,83 @@ public:
         // paint control points
         pr->DrawPoints(positions, 1.0f, colors);
 
-        // sort input positions
-        vector<glm::vec3> sortedPositions(positions);
-        std::sort(sortedPositions.begin(), sortedPositions.end(),
-            [](const glm::vec3& v1, const glm::vec3& v2) {
-                return v1.x < v2.x;
-            });
+        canDrawLines = positions.size() > 1;
+        // draw tangent control point
+        bool canDrawTangent = canDrawLines &&
+            curEditPointIndex != -1;
 
-        if (positions.size() > 1)
+        // draw left tangent
+        if (canDrawTangent && curEditPointIndex != 0)
         {
-            int curLinePointsSize = (positions.size() - 1) * MAX_CNT_IN_A_SEG;
-            if (curLinePointsSize != linePoints.size())
-                linePoints.resize(curLinePointsSize);
+            glm::vec2 tangent = controlPoints[curEditPointIndex].Df_iMinusOne;
+            glm::vec3 rightPoint = positions[curEditPointIndex];
+            glm::vec3 leftPoint = rightPoint - glm::vec3(tangent, 0);
+            lr->GetColor() = lineColor2;
+            lr->DrawLines({ leftPoint, rightPoint });
+            pr->DrawPoints({ leftPoint }, 1.0f, pointColor4);
 
-            if (drawNaturalSplines)
-            {
-                NatualSplines(sortedPositions, linePoints);
-                lr->DrawLines(linePoints);
-            }
-
+            leftTangentPoint = leftPoint;
+            mouseInLeftTangentPoint = checkMouseInPoint(leftTangentPoint);
         }
+        if (curEditPointIndex == 0)
+        {
+            leftTangentPoint = INVALID_POINT;
+        }
+
+        // draw right tangent
+        if (canDrawTangent && curEditPointIndex != positions.size() - 1)
+        {
+            glm::vec2 tangent = controlPoints[curEditPointIndex].Df_i;
+            glm::vec3 leftPoint = positions[curEditPointIndex];
+            glm::vec3 rightPoint = leftPoint + glm::vec3(tangent, 0);
+            lr->GetColor() = lineColor2;
+            lr->DrawLines({ leftPoint, rightPoint });
+            pr->DrawPoints({ rightPoint }, 1.0f, pointColor4);
+
+            rightTangentPoint = rightPoint;
+            mouseInRightTangentPoint = checkMouseInPoint(rightTangentPoint);
+        }
+        if (curEditPointIndex == positions.size() - 1)
+        {
+            rightTangentPoint = INVALID_POINT;
+        }
+
+        // drag tangent point
+        if (isDragLeftTangentPoint)
+        {
+            leftTangentPoint = glm::vec3(worldPos.x, worldPos.y, 0);
+            glm::vec3& leftPoint = leftTangentPoint;
+            glm::vec3& rightPoint = positions[curEditPointIndex];
+
+            glm::vec2 tangent = rightPoint - leftPoint;
+            controlPoints[curEditPointIndex].Df_iMinusOne = tangent;
+
+            CalculateSplineWithTangent(controlPoints, linePoints);
+        }
+        if (isDragRightTangentPoint)
+        {
+            rightTangentPoint = glm::vec3(worldPos.x, worldPos.y, 0);
+            glm::vec3& rightPoint = rightTangentPoint;
+            glm::vec3& leftPoint = positions[curEditPointIndex];
+
+            glm::vec2 tangent = rightPoint - leftPoint;
+            controlPoints[curEditPointIndex].Df_i = tangent;
+
+            CalculateSplineWithTangent(controlPoints, linePoints);
+        }
+
+        // calculate point[DDfIdx] DDf
+        if (positions.size() > 3)
+        {
+            CubicSplineFunction leftFunc = CalculateSpline(controlPoints[DDfIdx - 1], controlPoints[DDfIdx]);
+            CubicSplineFunction rightFunc = CalculateSpline(controlPoints[DDfIdx], controlPoints[DDfIdx + 1]);
+
+            leftDDf = leftFunc.DDF(DDfIdx);
+            rightDDf = rightFunc.DDF(DDfIdx);
+        }
+
+        lr->GetColor() = lineColor1;
+        lr->DrawLines(linePoints);
     }
 
     inline virtual void OnImGuiRender() override
@@ -218,11 +581,28 @@ public:
         ImGui::DragFloat2("InnerWinPos", (float*)&winPos);
         ImGui::DragFloat2("WorldPos", (float*)&worldPos);
         ImGui::Text("MouseInWindow: %s", mouseInWindow ? "yes" : "no");
+        ImGui::Text("clicked: %s", clicked ? "yes" : "no");
+        ImGui::Text("MouseInPoint: %s", mouseInPoint ? "yes" : "no");
+        ImGui::DragInt("MaxPointCnt", &MAX_CNT_IN_A_SEG, 10, 10, 100000);
+        ImGui::DragInt("DDfIdx", &DDfIdx, 1, 1, positions.size() - 2);
+        ImGui::DragFloat2("LeftDDF", (float*)&leftDDf);
+        ImGui::DragFloat2("RightDDF", (float*)&rightDDf);
+
+
+        // operation
         ImGui::TextColored(ImVec4(0.8f, 0.3f, 0.2f, 1.0f), "Press E to delete Point");
-        ImGui::Checkbox("Natural Spline", &drawNaturalSplines);
+        if (!curveInitialized && canDrawLines && ImGui::Button("DrawSpline"))
+        {
+            NatualSplines(positions, linePoints);
+            curveInitialized = true;
+        }
         if (ImGui::Button("Clear"))
         {
             positions.swap(vector<glm::vec3>());
+            controlPoints.swap(vector<ControlPoint>());
+            linePoints.swap(vector<glm::vec3>());
+            curEditPointIndex = -1;
+            curveInitialized = false;
         }
         ImGui::End();
     }

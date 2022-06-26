@@ -63,7 +63,7 @@ namespace Vortex
 		int sz = (int)positions.size();
 		for (int i = 0; i < sz; i++)
 		{
-			Quad1 quad(positions[i], glm::vec2(1, 1) * 0.1f * size, color);
+			Quad1 quad(positions[i], glm::vec2(1, 1) * UNIT_POINT_SIZE * size, color);
 			if (!s_Batch->TryAddBatchUnit(quad))
 			{
 				Flush();
