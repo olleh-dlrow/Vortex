@@ -70,6 +70,8 @@ class CubicSplinesTest : public EditorLayer
     const glm::vec4 lineColor1 = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f); // normal line
     const glm::vec4 lineColor2 = glm::vec4(1.0, 1.0, 1.0, 1);   // control tangent
 
+    float lineWidth = 1.0f;
+
     ImVec2 worldPos;
     vector<glm::vec3> positions;
     vector<glm::vec4> colors;
@@ -507,6 +509,7 @@ public:
         ////////////////////////////////////////////
         // START FROM HERE
         ////////////////////////////////////////////
+        lr->GetWidth() = lineWidth;
 
         // paint control points
         if (!hideControlPoints)
@@ -646,7 +649,7 @@ public:
         ImGui::DragInt("DDfIdx", &DDfIdx, 1, 1, positions.size() - 2);
         ImGui::DragFloat2("LeftDDF", (float*)&leftDDf);
         ImGui::DragFloat2("RightDDF", (float*)&rightDDf);
-
+        ImGui::DragFloat("LineWidth", &lineWidth);
 
         // operation
         ImGui::TextColored(ImVec4(0.8f, 0.3f, 0.2f, 1.0f), "Press E to delete Point");
@@ -655,14 +658,7 @@ public:
             NatualSplines(positions, linePoints);
             curveInitialized = true;
         }
-        if (ImGui::Button("ClearScreen"))
-        {
-            positions.swap(vector<glm::vec3>());
-            controlPoints.swap(vector<ControlPoint>());
-            linePoints.swap(vector<glm::vec3>());
-            curEditPointIndex = -1;
-            curveInitialized = false;
-        }
+
 
         ImGui::Checkbox("HideControlPoint", &hideControlPoints);
 
@@ -703,6 +699,15 @@ public:
                     break;
                 }
             }
+        }
+
+        if (ImGui::Button("ClearScreen"))
+        {
+            positions.swap(vector<glm::vec3>());
+            controlPoints.swap(vector<ControlPoint>());
+            linePoints.swap(vector<glm::vec3>());
+            curEditPointIndex = -1;
+            curveInitialized = false;
         }
         ImGui::End();
     }

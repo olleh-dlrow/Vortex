@@ -83,6 +83,8 @@ namespace Vortex
             glLineWidth(attr.width);
         else
             glLineWidth(1.0f);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glEnable(GL_LINE_SMOOTH);
         glDrawArrays(attr.mode, 0, attr.pointCount);
     }
 
