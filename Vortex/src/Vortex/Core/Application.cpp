@@ -57,7 +57,7 @@ namespace Vortex {
             it--;
             (*it)->PreEvent(e);
             (*it)->OnEvent(e);
-            (*it)->AfterEvent(e);
+            (*it)->PostEvent(e);
 
         }
     }
@@ -79,7 +79,7 @@ namespace Vortex {
                 {
                     layer->PreUpdate(timestep);
                     layer->OnUpdate(timestep);
-                    layer->AfterUpdate(timestep);
+                    layer->PostUpdate(timestep);
                 }
             }
 
@@ -88,7 +88,7 @@ namespace Vortex {
             {
                 layer->PreImGuiRender();
                 layer->OnImGuiRender();
-                layer->AfterImGuiRender();
+                layer->PostImGuiRender();
             }
 
             m_ImGuiLayer->End();

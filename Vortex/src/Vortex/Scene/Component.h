@@ -14,7 +14,7 @@ namespace Vortex
 
 		virtual void Init() {};
 		virtual void OnUpdate(Timestep ts) {}
-		virtual void AfterUpdate(Timestep ts) {}
+		virtual void PostUpdate(Timestep ts) {}
 
 		void SetEntity(Entity* e) 
 		{

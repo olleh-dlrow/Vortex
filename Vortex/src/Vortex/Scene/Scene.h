@@ -20,7 +20,7 @@ namespace Vortex
 
 		void OnUpdate(Timestep ts);
 
-		void AfterUpdate(Timestep ts);
+		void PostUpdate(Timestep ts);
 
 		Entity* AddEntity(const std::string& name);
 

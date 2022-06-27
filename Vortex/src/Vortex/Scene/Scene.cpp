@@ -24,11 +24,11 @@ void Vortex::Scene::OnUpdate(Timestep ts)
 	}
 }
 
-void Vortex::Scene::AfterUpdate(Timestep ts)
+void Vortex::Scene::PostUpdate(Timestep ts)
 {
 	for (auto& e : m_Entities)
 	{
-		e->AfterUpdate(ts);
+		e->PostUpdate(ts);
 	}
 }
 

@@ -16,7 +16,7 @@ namespace Vortex
 
 		virtual void Init() override;
 
-		virtual void AfterUpdate(Timestep ts) override;
+		virtual void PostUpdate(Timestep ts) override;
 
 		void Flush();
 

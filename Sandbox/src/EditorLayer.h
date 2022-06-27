@@ -11,7 +11,7 @@ public:
 
 	virtual void PreUpdate(Vortex::Timestep ts) override;
 	virtual void OnUpdate(Vortex::Timestep ts) override;
-	virtual void AfterUpdate(Vortex::Timestep ts) override;
+	virtual void PostUpdate(Vortex::Timestep ts) override;
 
 	virtual void PreImGuiRender() override;
 	virtual void OnImGuiRender() override;

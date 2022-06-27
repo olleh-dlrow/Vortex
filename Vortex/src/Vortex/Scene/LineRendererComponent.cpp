@@ -19,7 +19,7 @@ namespace Vortex
     void LineRendererComponent::Init()
     {
     }
-    void LineRendererComponent::AfterUpdate(Timestep ts)
+    void LineRendererComponent::PostUpdate(Timestep ts)
     {
 
     }

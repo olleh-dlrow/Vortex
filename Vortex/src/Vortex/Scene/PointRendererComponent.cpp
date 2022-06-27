@@ -24,7 +24,7 @@ namespace Vortex
 
 	}
 
-	void PointRendererComponent::AfterUpdate(Timestep ts)
+	void PointRendererComponent::PostUpdate(Timestep ts)
 	{
 		Flush();
 	}

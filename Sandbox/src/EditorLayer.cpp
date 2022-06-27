@@ -27,9 +27,9 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts)
 
 }
 
-void EditorLayer::AfterUpdate(Vortex::Timestep ts)
+void EditorLayer::PostUpdate(Vortex::Timestep ts)
 {
-    m_EditorScene->AfterUpdate(ts);
+    m_EditorScene->PostUpdate(ts);
 
     m_ViewportWindow->End();
 }

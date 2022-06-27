@@ -14,17 +14,19 @@ namespace Vortex {
 
 		virtual void OnAttach() {}    //tips: set the env of layer
 		virtual void OnDetach() {}    //tips: cancel the env of layer
+
+		// provide convenience for wrap needed codes like XXXBegin() and XXXEnd()
 		virtual void PreUpdate(Timestep ts) {}
 		virtual void OnUpdate(Timestep ts) {}
-		virtual void AfterUpdate(Timestep ts) {}
+		virtual void PostUpdate(Timestep ts) {}
 
 		virtual void PreImGuiRender() {}
 		virtual void OnImGuiRender() {}
-		virtual void AfterImGuiRender() {}
+		virtual void PostImGuiRender() {}
 
 		virtual void PreEvent(Event& event) {}
 		virtual void OnEvent(Event& event) {}
-		virtual void AfterEvent(Event& event) {}
+		virtual void PostEvent(Event& event) {}
 		
 
 		const std::string& GetName() const { return m_DebugName; }

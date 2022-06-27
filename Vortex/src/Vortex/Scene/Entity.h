@@ -64,11 +64,11 @@ namespace Vortex
             }
         }
 
-        void AfterUpdate(Timestep ts)
+        void PostUpdate(Timestep ts)
         {
             for (auto& c : m_Components)
             {
-                c->AfterUpdate(ts);
+                c->PostUpdate(ts);
             }
         }
 
