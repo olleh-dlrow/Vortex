@@ -71,4 +71,13 @@ namespace Vortex
 			}
 		}
 	}
+	void PointRendererComponent::DrawPoint(glm::vec3 position, float size, glm::vec4 color)
+	{
+		Quad1 quad(position, glm::vec2(1, 1) * UNIT_POINT_SIZE * size, color);
+		if (!s_Batch->TryAddBatchUnit(quad))
+		{
+			Flush();
+			s_Batch->TryAddBatchUnit(quad);
+		}
+	}
 }

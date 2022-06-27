@@ -576,12 +576,10 @@ public:
             case ControlPoint::TAN_G1:
                 // direction is same
                 p.Df_i = glm::length(p.Df_i) * glm::normalize(p.Df_iMinusOne);
-                CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 break;
             case ControlPoint::TAN_G2:
                 // value is same
                 p.Df_i = p.Df_iMinusOne;
-                CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 break;
             default:
                 break;
@@ -606,12 +604,10 @@ public:
             case ControlPoint::TAN_G1:
                 // direction is same
                 p.Df_iMinusOne = glm::length(p.Df_iMinusOne) * glm::normalize(p.Df_i);
-                CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 break;
             case ControlPoint::TAN_G2:
                 // value is same
                 p.Df_iMinusOne = p.Df_i;
-                CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 break;
             default:
                 break;
@@ -621,7 +617,7 @@ public:
         }
 
         // calculate point[DDfIdx] DDf
-        if (positions.size() > 3)
+        if (positions.size() >= 3)
         {
             CubicSplineFunction leftFunc = CalculateSpline(controlPoints[DDfIdx - 1], controlPoints[DDfIdx]);
             CubicSplineFunction rightFunc = CalculateSpline(controlPoints[DDfIdx], controlPoints[DDfIdx + 1]);

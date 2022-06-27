@@ -22,6 +22,8 @@ namespace Vortex
 
 		void DrawPoints(const std::vector<glm::vec3>& positions, float size, glm::vec4 color);
 		
+		void DrawPoint(glm::vec3 position, float size, glm::vec4 color);
+
 		constexpr static float			UNIT_POINT_SIZE = 0.1f;
 	private:
 
