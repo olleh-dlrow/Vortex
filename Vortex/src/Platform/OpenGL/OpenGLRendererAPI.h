@@ -19,5 +19,7 @@ namespace Vortex
 
         virtual void DrawLines(const Ref<VertexArray>& vertexArray, DrawLineConfig attr) override;
         virtual void DrawPoints(const Ref<VertexArray>& vertexArray, DrawPointConfig attr) override;
+
+        bool m_supportLineWidth = true;
     };
 }

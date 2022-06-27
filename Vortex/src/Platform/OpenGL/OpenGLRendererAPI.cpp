@@ -34,6 +34,12 @@ namespace Vortex
 
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
 #endif
+        // for intel graphics, glLineWidth is deprecated
+        std::string rendererName = std::string((const char*)glGetString(GL_RENDERER));
+        if (rendererName.find("Intel") != std::string::npos)
+        {
+            m_supportLineWidth = false;
+        }
 
         // open blend effect
         glEnable(GL_BLEND);
@@ -79,10 +85,14 @@ namespace Vortex
 
     void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, DrawLineConfig attr)
     {
-        if (attr.width > 0.0f)
-            glLineWidth(attr.width);
-        else
-            glLineWidth(1.0f);
+        if (m_supportLineWidth)
+        {
+            if (attr.width > 0.0f)
+                glLineWidth(attr.width);
+            else
+                glLineWidth(1.0f);
+        }
+
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         glEnable(GL_LINE_SMOOTH);
         glDrawArrays(attr.mode, 0, attr.pointCount);
