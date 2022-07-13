@@ -14,7 +14,7 @@ namespace Vortex {
 
         // update glfw, swap opengl buffers
         void OnUpdate() override;
-        unsigned int Width() const override {return m_Data.Width;}
+        unsigned int GetWidth() const override {return m_Data.Width;}
         unsigned int GetHeight() const override {return m_Data.Height;}
 
         void SetEventCallback(const EventCallbackFn& callback) override {m_Data.EventCallback = callback;}

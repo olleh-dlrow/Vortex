@@ -58,8 +58,8 @@ public:
 		// set camera position and mode
 		Camera& cam = GetCamera();
 		cam.SetProjectionMode(false);
-		cam.Position() = glm::vec3(0, 0, 50);
-		cam.MovementSpeed() = 12.5f;
+		cam.m_Position = glm::vec3(0, 0, 50);
+		cam.m_MovementSpeed = 12.5f;
 
 		// get vertices list
 		mesh = scene->mMeshes[0];

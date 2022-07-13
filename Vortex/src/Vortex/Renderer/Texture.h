@@ -6,12 +6,17 @@
 
 namespace Vortex
 {
+    struct TextureMeta;
+    class Texture;
+
+    using TexPair = Pair<TextureMeta, Ref<Texture> >;
+
     class Texture
     {
     public:
         virtual ~Texture() = default;
 
-        virtual uint32_t Width() const = 0;
+        virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
         virtual uint32_t GetID() const = 0;
 
@@ -27,5 +32,27 @@ namespace Vortex
     public:
         static Ref<Texture2D> Create(uint32_t width, uint32_t height);
         static Ref<Texture2D> Create(const std::string& path);
+    };
+
+    // store information about some texture
+    struct TextureMeta
+    {
+        // implement copy on write, false means reference to other's memory
+        // the loaded texture is put in library, and not auto unload
+        // the copyed texture is possessed by its creator, will auto destroy 
+        // when its creator destroyed
+        bool isCopyed;
+    };
+
+
+    class TextureLibrary
+    {
+    public:
+        Ref<Texture> Load(const std::string& filepath);
+        bool Exists(const std::string& filepath);
+
+    private:
+        // key: path, value: pair of texture meta and texture ptr
+        std::unordered_map<std::string, TexPair > m_Textures;
     };
 }

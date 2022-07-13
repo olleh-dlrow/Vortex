@@ -29,4 +29,18 @@ namespace Vortex
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
+    Ref<Texture> TextureLibrary::Load(const std::string& filepath)
+    {
+        Ref<Texture> tex = Texture2D::Create(filepath);
+        m_Textures[filepath] = TexPair{TextureMeta{false}, tex};
+        return tex;
+    }
+    bool TextureLibrary::Exists(const std::string& filepath)
+    {
+        if (m_Textures.count(filepath) > 0)
+        {
+            return true;
+        }
+        return false;
+    }
 }

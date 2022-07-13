@@ -174,7 +174,7 @@ namespace Vortex
 	// OBSOLETE
 	bool Camera::OnWindowResized(WindowResizeEvent& e)
 	{
-		m_Aspect = static_cast<float>(e.Width()) / e.GetHeight();;
+		m_Aspect = static_cast<float>(e.GetWidth()) / e.GetHeight();;
 		return false;
 	}
 

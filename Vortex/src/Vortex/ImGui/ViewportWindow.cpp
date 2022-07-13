@@ -6,7 +6,7 @@ Vortex::ViewportWindow::ViewportWindow(const std::string& winName,
 									   const glm::vec4& clearColor)
 	:m_WindowName(winName), m_Camera(cam), m_IsFocused(false), m_ClearColor(clearColor)
 {
-	int width = Application::Get().GetWindow().Width();
+	int width = Application::Get().GetWindow().GetWidth();
 	int height = Application::Get().GetWindow().GetHeight();
 	m_FB = Vortex::FrameBuffer::Create(width, height);
 }

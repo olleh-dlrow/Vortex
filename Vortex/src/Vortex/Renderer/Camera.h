@@ -50,10 +50,6 @@ namespace Vortex
 		void RenderConfigGUI();
 
 		void SetProjectionMode(bool ortho) { m_ProjMode = ortho ? CameraProjMode::Orthographic : CameraProjMode::Perspective; }
-		glm::vec3& Position() { return m_Position; }
-		float& Yaw() { return m_Yaw; }
-		float& Pitch() { return m_Pitch; }
-		float& MovementSpeed() { return m_MovementSpeed; }
 
 	private:
 		void Init();
@@ -65,12 +61,9 @@ namespace Vortex
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 		bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 		bool OnKeyPressed(KeyPressedEvent& e);
-	private:
-		CameraProjMode			m_ProjMode;
+		
+	public:
 		glm::vec3				m_Position;
-		glm::vec3				m_Front;
-		glm::vec3				m_Up;
-		glm::vec3				m_Right;
 		glm::vec3				m_WorldUp;
 		float					m_Yaw;
 		float					m_Pitch;
@@ -82,6 +75,11 @@ namespace Vortex
 		float					m_Aspect;
 		PerspParam				m_PerspParam;
 		OrthoParam				m_OrthoParam;
+	private:
+		CameraProjMode			m_ProjMode;
+		glm::vec3				m_Front;
+		glm::vec3				m_Up;
+		glm::vec3				m_Right;
 		// rotate
 		bool					m_IsRotating = false;
 		float					m_LastMouseX = 0;

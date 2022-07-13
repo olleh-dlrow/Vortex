@@ -70,4 +70,16 @@ namespace Vortex
 		glm::f32vec3 tangent;	// u vector
 		glm::f32vec3 biTangent; // v vector
 	};
+
+	struct MeshVertex
+	{
+		MeshVertex() = default;
+
+		glm::f32vec3 position;
+		glm::f32vec3 normal;
+		glm::f32vec4 color;
+		glm::f32vec2 texCoord;
+		glm::f32vec3 tangent;	// u vector
+		glm::f32vec3 biTangent; // v vector
+	};
 };

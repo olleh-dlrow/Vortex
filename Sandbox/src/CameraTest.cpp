@@ -84,12 +84,12 @@ CameraTest::CameraTest()
 
     shader = Vortex::Shader::Create("assets/shaders/Cube.glsl");
 
-    uint32_t width = Vortex::Application::Get().GetWindow().Width();
+    uint32_t width = Vortex::Application::Get().GetWindow().GetWidth();
     uint32_t height = Vortex::Application::Get().GetWindow().GetHeight();
 
 
     Vortex::Ref<Vortex::Camera> cam = Vortex::CreateRef<Vortex::Camera>(Vortex::OrthoParam(), glm::vec3(0.0f, 0.0f, 3.0f),
-        static_cast<float>(Vortex::Application::Get().GetWindow().Width()));
+        static_cast<float>(Vortex::Application::Get().GetWindow().GetWidth()));
     vw = Vortex::CreateRef<Vortex::ViewportWindow>("vw1", cam);
 }
 

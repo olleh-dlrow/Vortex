@@ -102,7 +102,7 @@ namespace Vortex {
 
     bool Application::OnWindowResize(WindowResizeEvent& e)
     {
-        if(e.Width() == 0 || e.GetHeight() == 0)
+        if(e.GetWidth() == 0 || e.GetHeight() == 0)
         {
             m_Minimized = true;
             return false;

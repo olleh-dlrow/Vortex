@@ -59,5 +59,8 @@ namespace Vortex
 	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
+
+	template <typename T1, typename T2>
+	using Pair = std::pair<T1, T2>;
 	
 } // namespace Vortex
