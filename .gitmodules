@@ -16,3 +16,6 @@
 [submodule "Vortex/vendor/libigl"]
 	path = Vortex/vendor/libigl
 	url = https://github.com/olleh-dlrow/libigl.git
+[submodule "Vortex/vendor/assimp"]
+	path = Vortex/vendor/assimp
+	url = https://github.com/olleh-dlrow/assimp.git

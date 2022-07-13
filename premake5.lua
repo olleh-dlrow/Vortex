@@ -26,6 +26,7 @@ IncludeDir["glm"] = "Vortex/vendor/glm"
 IncludeDir["stb_image"] = "Vortex/vendor/stb_image"
 IncludeDir["eigen"] = "Vortex/vendor/eigen"
 IncludeDir["libigl"] = "Vortex/vendor/libigl/include"
+IncludeDir['assimp'] = "Vortex/vendor/assimp/include"
 
 include "Vortex/vendor/GLFW"
 include "Vortex/vendor/Glad"
@@ -68,7 +69,8 @@ project "Vortex"
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
         "%{prj.name}/vendor/eigen/Eigen/**",
-        "%{prj.name}/vendor/libigl/include/**.h"
+        "%{prj.name}/vendor/libigl/include/**.h",
+        "%{prj.name}/vendor/assimp/include/**.h"
     }
     
     defines
@@ -86,7 +88,8 @@ project "Vortex"
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.eigen}",
-        "%{IncludeDir.libigl}"
+        "%{IncludeDir.libigl}",
+        "%{IncludeDir.assimp}"
     }
     
     links
@@ -94,9 +97,16 @@ project "Vortex"
         "GLFW",
         "Glad",
         "ImGui",
-        "opengl32.lib"
+        "opengl32.lib",
+        -- directly use compiled lib and dll files, if needed in the future, I may compile the source code in Vortex project 
+        "assimp-vc143-mt.lib"
     }
     
+    libdirs
+    {
+        "%{prj.name}/vendor/libs"
+    }
+
     filter "system:windows"
         systemversion "latest"
         
@@ -153,7 +163,8 @@ project "Sandbox"
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.eigen}",
-        "%{IncludeDir.libigl}"
+        "%{IncludeDir.libigl}",
+        "%{IncludeDir.assimp}"
     }
     
     links
@@ -161,6 +172,11 @@ project "Sandbox"
         "Vortex"
     }
     
+    debugenvs
+    {
+        "PATH=%{wks.location}/vendor/dlls"
+    }
+
     filter "system:windows"
         systemversion "latest"
         
