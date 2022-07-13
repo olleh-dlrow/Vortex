@@ -41,6 +41,8 @@ namespace Vortex {
                
         static void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr);
      
+        static void DrawTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr);
+
         static void DrawTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr);
 
         static void DrawPoints(const std::vector<glm::vec3>&    positions,

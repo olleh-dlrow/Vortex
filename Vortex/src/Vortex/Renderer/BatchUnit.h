@@ -17,6 +17,9 @@ namespace Vortex
 		std::array<V, VCNT>			m_Vertices;
 	};
 
+
+
+
 	template<typename V>
 	class LinePoint : public BatchUnit<V, 1, 0>
 	{
@@ -32,6 +35,39 @@ namespace Vortex
 		{
 			m_Vertices[0].position = p;
 		}
+	};
+
+
+
+
+
+	template<typename V>
+	class Triangle : public BatchUnit<V, 3, 0>
+	{
+	public:
+
+	};
+
+	class Triangle1 : public Triangle<Vertex1>
+	{
+		friend class Batch<Triangle1>;
+	public:
+		Triangle1(std::array<glm::vec3, 3> vertPos,
+			      std::array<glm::vec4, 3> cols)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				m_Vertices[i].position = vertPos[i];
+				m_Vertices[i].color = cols[i];
+			}
+		}
+	};
+
+	class Triangle3 : public Triangle<Vertex3>
+	{
+		friend class Batch<Triangle3>;
+	public:
+		
 	};
 
 	template<typename V>

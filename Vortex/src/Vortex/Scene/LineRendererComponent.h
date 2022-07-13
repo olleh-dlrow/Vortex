@@ -23,8 +23,8 @@ namespace Vortex
 		// Draw lines immediately
 		void DrawLines(const std::vector<glm::vec3> points);
 
-		float& GetWidth() { return m_Width; }
-		glm::vec4& GetColor() { return m_Color; }
+		float& Width() { return m_Width; }
+		glm::vec4& Color() { return m_Color; }
 
 	protected:
 		Ref<Shader>							m_Shader;

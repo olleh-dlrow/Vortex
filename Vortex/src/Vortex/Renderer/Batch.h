@@ -23,6 +23,8 @@ namespace Vortex
 			Init();
 		}
 
+		// OBSOLETE
+		// don't put shader in batch, they have no relation
 		Batch(const Ref<Shader>& shader, int maxUnitCount = 10000)
 			:m_Shader(shader), m_MaxUnitCount(maxUnitCount), m_FreeVertexBufferBaseIndex(0)
 		{
@@ -41,6 +43,13 @@ namespace Vortex
 			{
 				AddVertexToCPU(unit.m_Vertices[i]);
 			}
+			return true;
+		}
+
+		bool TryAddVertexToCPU(const V& vertex)
+		{
+			if (m_FreeVertexBufferBaseIndex >= m_TempVertexBuffer.size())return false;
+			m_TempVertexBuffer[m_FreeVertexBufferBaseIndex++] = vertex;
 			return true;
 		}
 
@@ -107,6 +116,7 @@ namespace Vortex
 			m_TempVertexBuffer[m_FreeVertexBufferBaseIndex++] = vertex;
 		}
 
+	public:
 		Ref<VertexArray>		m_VertexArray;
 		Ref<VertexBuffer>		m_VertexBuffer;
 		Ref<IndexBuffer>		m_IndexBuffer;

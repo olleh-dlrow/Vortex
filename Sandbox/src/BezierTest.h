@@ -152,7 +152,7 @@ public:
             // OPENGL error: API_ID_LINE_WIDTH deprecated behavior warning has been generated.
             // it seems that the opengl of higher version has deprecated this method, who 
             // encourages us to achieve our own line :(
-            lr->GetWidth() = 1.0f;
+            lr->Width() = 1.0f;
             lr->DrawLines(linePoints);
         }
     }

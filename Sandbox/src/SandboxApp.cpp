@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "TemplateLayer.h"
+//#include "TemplateLayer.h"
 //#include "ExampleLayer.h"
 //#include "RayCastTest.h"
 //#include "BatchRenderingTest.h"
@@ -16,6 +16,7 @@
 //#include "SceneTest.h"
 //#include "BezierTest.h"
 //#include "CubicSplinesTest.h"
+#include "ModelImportTest.h"
 
 /*
 tips:
@@ -27,7 +28,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new TemplateLayer());
+        PushLayer(new ModelImportTest());
     }
     ~Sandbox() {
     

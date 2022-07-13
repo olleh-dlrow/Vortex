@@ -5,6 +5,7 @@
 
 namespace Vortex
 {
+	// position, color, texcoord, normal
 	struct Vertex0
 	{
 		Vertex0() = default;
@@ -20,6 +21,7 @@ namespace Vortex
 		glm::f32vec3 normal;
 	};
 
+	// position, color
 	struct Vertex1
 	{
 		Vertex1() = default;
@@ -39,6 +41,7 @@ namespace Vortex
 		}
 	};
 
+	// position
 	struct Vertex2
 	{
 		Vertex2() = default;
@@ -53,5 +56,18 @@ namespace Vortex
 				{ShaderDataType::Float3, "a_Position"},
 				});
 		}
+	};
+
+	// position, normal, color, texCoord, tangent, biTangent
+	struct Vertex3
+	{
+		Vertex3() = default;
+		
+		glm::f32vec3 position;
+		glm::f32vec3 normal;
+		glm::f32vec4 color;
+		glm::f32vec2 texCoord;
+		glm::f32vec3 tangent;	// u vector
+		glm::f32vec3 biTangent; // v vector
 	};
 };

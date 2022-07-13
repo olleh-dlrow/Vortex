@@ -528,7 +528,7 @@ public:
             glm::vec2 tangent = controlPoints[curEditPointIndex].Df_iMinusOne;
             glm::vec3 rightPoint = positions[curEditPointIndex];
             glm::vec3 leftPoint = rightPoint - glm::vec3(tangent, 0);
-            lr->GetColor() = lineColor2;
+            lr->Color() = lineColor2;
             lr->DrawLines({ leftPoint, rightPoint });
             pr->DrawPoints({ leftPoint }, 1.0f, pointColor4);
 
@@ -546,7 +546,7 @@ public:
             glm::vec2 tangent = controlPoints[curEditPointIndex].Df_i;
             glm::vec3 leftPoint = positions[curEditPointIndex];
             glm::vec3 rightPoint = leftPoint + glm::vec3(tangent, 0);
-            lr->GetColor() = lineColor2;
+            lr->Color() = lineColor2;
             lr->DrawLines({ leftPoint, rightPoint });
             pr->DrawPoints({ rightPoint }, 1.0f, pointColor4);
 
@@ -626,7 +626,7 @@ public:
             rightDDf = rightFunc.DDF(DDfIdx);
         }
 
-        lr->GetColor() = lineColor1;
+        lr->Color() = lineColor1;
         lr->DrawLines(linePoints);
     }
 

@@ -82,6 +82,11 @@ namespace Vortex {
         s_RendererAPI->DrawIndexedTriangles(vertexArray, attr);
     }
 
+    void Renderer::DrawTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
+    {
+        s_RendererAPI->DrawTriangles(vertexArray, attr);
+    }
+
     void Renderer::DrawLines(const Ref<VertexArray>& vertexArray, DrawLineConfig attr)
     {
         s_RendererAPI->DrawLines(vertexArray, attr);
@@ -167,6 +172,7 @@ namespace Vortex {
         s_RendererAPI->DrawPoints(vertexArray, attr);
     }
 
+    // OBSOLETE
     void Renderer::DrawTriangles(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, DrawTriangleConfig attr)
     {
         vertexArray->Bind();

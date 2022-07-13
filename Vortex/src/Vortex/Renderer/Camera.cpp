@@ -8,12 +8,10 @@ namespace Vortex
 {
 	void Camera::Init()
 	{
-		m_Front = glm::vec3(0, 0, -1.0f);
 		m_WorldUp = glm::vec3(0, 1.0f, 0);
-		m_Right = glm::cross(m_Front, m_WorldUp);
-		m_Up = glm::cross(m_Right, m_Front);
 		m_Yaw = -90.0f;
 		m_Pitch = 0.0f;
+		ReCalculateCameraVectors();
 		m_MovementSpeed = 2.5f;
 		m_MoveSensitivity = 0.1f;
 		m_ZoomSensitivity = 0.5f;
@@ -176,7 +174,7 @@ namespace Vortex
 	// OBSOLETE
 	bool Camera::OnWindowResized(WindowResizeEvent& e)
 	{
-		m_Aspect = static_cast<float>(e.GetWidth()) / e.GetHeight();;
+		m_Aspect = static_cast<float>(e.Width()) / e.GetHeight();;
 		return false;
 	}
 

@@ -21,6 +21,7 @@ namespace Vortex
 
 		virtual const std::string &GetName() const = 0;
 
+        // filepath: relative to Sandbox/
         static Ref<Shader> Create(const std::string &filepath);
         static Ref<Shader> Create(const std::string &name,
                                   const std::string &vertexSrc,

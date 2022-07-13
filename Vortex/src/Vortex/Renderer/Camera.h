@@ -48,6 +48,13 @@ namespace Vortex
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 		void RenderConfigGUI();
+
+		void SetProjectionMode(bool ortho) { m_ProjMode = ortho ? CameraProjMode::Orthographic : CameraProjMode::Perspective; }
+		glm::vec3& Position() { return m_Position; }
+		float& Yaw() { return m_Yaw; }
+		float& Pitch() { return m_Pitch; }
+		float& MovementSpeed() { return m_MovementSpeed; }
+
 	private:
 		void Init();
 		void PerspectiveModeHandleInput(Timestep ts);

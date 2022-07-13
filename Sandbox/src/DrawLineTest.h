@@ -195,7 +195,7 @@ public:
             {
                 points[i] = glm::vec3(xs[i], ys[i], 0);
             }
-            lr->GetWidth() = 2.0f;
+            lr->Width() = 2.0f;
             lr->DrawLines(points);
         }
 	}

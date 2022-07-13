@@ -149,7 +149,7 @@ namespace Vortex
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
         virtual uint32_t GetTextureID() const = 0;
-        virtual uint32_t GetWidth() const = 0;
+        virtual uint32_t Width() const = 0;
         virtual uint32_t GetHeight() const = 0;
 
         static Ref<FrameBuffer> Create(uint32_t width, uint32_t height);

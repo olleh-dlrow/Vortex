@@ -53,7 +53,7 @@ namespace Vortex
 
         virtual void Bind() const;
         virtual void Unbind() const;
-        virtual uint32_t GetWidth() const override { return m_Width; } 
+        virtual uint32_t Width() const override { return m_Width; } 
         virtual uint32_t GetHeight() const override { return m_Height; }
         virtual uint32_t GetTextureID() const override { return m_Tex2d->GetID(); }
     private:
