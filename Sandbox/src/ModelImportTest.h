@@ -4,6 +4,9 @@
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
+#include <Vortex/Scene/SceneImporter.h>
+#include <Vortex/Scene/MeshComponent.h>
+#include <Vortex/Scene/MeshRendererComponent.h>
 
 using Vortex::Ref;
 using Vortex::CreateRef;
@@ -24,84 +27,99 @@ using Vortex::Vertex1;
 using Vortex::Triangle1;
 using Vortex::Batch;
 
+using Vortex::Mesh;
+using Vortex::MeshComponent;
+using Vortex::MeshRendererComponent;
+using Vortex::Material;
+using Vortex::Scene;
+using Vortex::Entity;
+
 class ModelImportTest: public EditorLayer 
 {
 	Ref<Batch<Triangle1>> batch;
 	Ref<Shader> shader;
 	aiMesh* mesh;
+
+	std::vector<MeshRendererComponent*> comps;
 public:
 	ModelImportTest()
 	{
-#pragma region ReadScene
 		std::string filename = "assets/models/utah-teapot-obj/utah-teapot.obj";
-		// Create an instance of the Importer class
-		Assimp::Importer importer;
-
-		// And have it read the given file with some example postprocessing
-		// Usually - if speed is not the most important aspect for you - you'll
-		// probably to request more postprocessing than we do in this example.
-		const aiScene* scene = importer.ReadFile(filename,
-			aiProcess_CalcTangentSpace |
-			aiProcess_Triangulate |
-			aiProcess_JoinIdenticalVertices |
-			aiProcess_SortByPType);
-
-		// If the import failed, report it
-		if (nullptr == scene) {
-			VT_ERROR(importer.GetErrorString());
-			return;
-		}
+		std::string filename2 = "assets/models/45-acp-smith-and-wesson-with-animation-obj/45-acp-smith-and-wesson-with-animation.obj";
 		
-		OutputMeshesInfo(scene);
-#pragma endregion
-		
+		Vortex::SceneImporter sceneImporter(filename2.c_str());
+		VT_INFO(sceneImporter.GetNodesInfo());
+		VT_INFO(sceneImporter.GetMeshesInfo());
+
+		std::vector<Ref<Mesh>> meshes;
+		std::vector <Ref<Material>> mats;
+		sceneImporter.ImportMeshAndMat(meshes, mats);
+
+		// create shader and set value
+		shader = Shader::Create("assets/shaders/Mesh.glsl");
+
 		// set camera position and mode
 		Camera& cam = GetCamera();
 		cam.SetProjectionMode(false);
 		cam.m_Position = glm::vec3(0, 0, 50);
 		cam.m_MovementSpeed = 12.5f;
 
-		// get vertices list
-		mesh = scene->mMeshes[0];
-		batch = CreateRef<Batch<Triangle1>>(mesh->mNumFaces);
-		glm::vec4 white = glm::vec4(1, 1, 1, 1);
-		// set vertex's color
-		// add vertex to batch
-		for (int i = 0; i < mesh->mNumFaces; i++)
+		// create entity, init mesh component and mesh renderercomponent
+		Scene* scene = GetEditorScene();
+		glm::vec4 colors[5] = {
+			{1, 0, 0, 1},	// red
+			{0, 1, 0, 1},	// green
+			{0, 0, 1, 1},	// blue
+			{1, 1, 0, 1},	// yellow
+			{1, 0, 1, 1}	// puple
+		};
+		for (int i = 0; i < meshes.size(); i++)
 		{
-			aiFace* face = mesh->mFaces + i;
-			VT_CORE_ASSERT(face->mNumIndices == 3, "face not triangle!");
-			std::array<glm::vec3, 3> pos;
-			for (int j = 0; j < 3; j++)
+			Mesh* mesh = meshes[i].get();
+			// statistic
+			VT_INFO(mesh->StatisticVertex());
+			
+			// set mesh color to white
+			for (int j = 0; j < mesh->m_Vertices.size(); j++)
 			{
-				int idx = face->mIndices[j];
-				auto& position = mesh->mVertices[idx];
-				pos[j] = glm::vec3(position.x, position.y, position.z);
+				auto& vert = mesh->m_Vertices[j];
+				//if (mesh->m_Name == "Gun_trigger")
+				//	vert.color = glm::vec4(1, 0, 0, 1);
+				vert.color = colors[i];
 			}
-			Triangle1 tri(pos, { white, white, white });
-			batch->TryAddBatchUnit(tri);
+
+			auto e = scene->AddEntity("Entity" + std::to_string(i));
+			
+			auto mc = e->AddComponent<MeshComponent>();
+			mc->m_Mesh = meshes[i];
+
+			// init mesh renderer comp, set shader, mat, mesh
+			auto mr = e->AddComponent<MeshRendererComponent>();
+			mr->SetMeshComponent(mc);
+			mats[i]->m_Shader = shader;
+			mr->m_Material = mats[i];
+
+			// set config material callback
+			auto callback = [this](const Material& mat)
+			{
+				auto& shader = mat.m_Shader;
+				shader->SetMat4("u_ViewProjection", GetCamera().GetViewProjMatrix());
+				shader->SetMat4("u_Transform", glm::identity<glm::mat4>());
+			};
+
+			mr->m_ConfigMatCallback = callback;
+
+			// add to comps list
+			comps.push_back(mr);
 		}
-
-		// create shader and set value
-		shader = Shader::Create("assets/shaders/Vertex1.glsl");
-		// mesh
-
-		// mesh component
-		
-		// mesh renderer component
-
 	}
 
 	virtual void OnUpdate(Vortex::Timestep ts) override
 	{
-		batch->m_VertexBuffer->SetData(&batch->m_TempVertexBuffer[0], batch->GetTempBufferBatchUnitCount() * sizeof(Triangle1));
-		Camera& cam = GetCamera();
-		batch->m_VertexArray->Bind();
-		shader->Bind();
-		shader->SetMat4("u_ViewProjection", cam.GetViewProjMatrix());
-		Vortex::DrawTriangleConfig attr(batch->GetTempBufferVertexCount(), 0);
-		Renderer::DrawTriangles(batch->m_VertexArray, attr);
-		// batch->m_FreeVertexBufferBaseIndex = 0;
+		for (auto mr : comps)
+		{
+			mr->DrawMesh();
+		}
 	}
 
 	void OutputMeshesInfo(const aiScene* scene)
@@ -137,13 +155,7 @@ public:
 
 	void OnImGuiRender() override
 	{
-		ImGui::Begin("Debug");
-		{
-			ImGui::DragInt("TempVertexCnt", &batch->m_FreeVertexBufferBaseIndex);
-		}
-		ImGui::End();
-	}
 
-protected:
+	}
 
 };

@@ -10,8 +10,9 @@ namespace Vortex
 	{
 	public:
 		MeshComponent();
+		MeshComponent(const Ref<Mesh>& mesh);
 
-	protected:
+	public:
 		Ref<Mesh>	m_Mesh;
 	};
 }

@@ -5,24 +5,37 @@
 #include "MeshComponent.h"
 #include "Vortex/Renderer/Material.h"
 #include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/Renderer.h"
 
 namespace Vortex
 {
+	using CfgMatFn = std::function<void(Material& mat)>;
+
 	class MeshRendererComponent : public Component
 	{
 	public:
-		MeshRendererComponent();
+		MeshRendererComponent() = default;
+		MeshRendererComponent(MeshComponent* comp);
 
 		// set mesh, and update the size of buffer
 		void SetMeshComponent(MeshComponent* comp);
+
 		void DrawMesh();
-		Ref<Material>& MeshMat() { return m_Material; };
+
+
+	protected:
+		void ResetMesh(MeshComponent* comp);
+
+	public:
+		Ref<Material>		m_Material;
+		CfgMatFn			m_ConfigMatCallback;
 
 	protected:
 		MeshComponent*		m_MeshComp;
-		Ref<Material>		m_Material;
 		Ref<VertexArray>	m_VertexArray;
 		Ref<VertexBuffer>	m_VertexBuffer;
 		Ref<IndexBuffer>	m_IndexBuffer;
+
+		int					m_VertexBufferSize;
 	};
 }

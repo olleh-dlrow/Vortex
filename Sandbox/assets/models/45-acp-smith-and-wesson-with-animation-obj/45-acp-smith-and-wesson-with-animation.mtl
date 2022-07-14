@@ -1,0 +1,43 @@
+# Blender MTL File: 'None'
+# Material Count: 4
+
+newmtl Fire_001__handgun_Fire_png
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.960000 0.960000 0.960000
+Ks 0.100000 0.100000 0.100000
+Ni 1.000000
+d 0.000000
+illum 2
+map_Kd handgun_Fire.png
+map_Ke handgun_Fire.png
+map_d handgun_Fire.png
+
+newmtl Silver
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.678431 0.678431 0.678431
+Ks 0.071765 0.070588 0.069804
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd handgun_C.jpg
+
+newmtl Silver1
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.678431 0.678431 0.670588
+Ks 0.071765 0.070588 0.069804
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd handgun_C.jpg
+
+newmtl handgun__handgun_S_jpg
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.019608 0.019608 0.019608
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2

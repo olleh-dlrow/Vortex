@@ -49,7 +49,11 @@ namespace Vortex
     {
     public:
         Ref<Texture> Load(const std::string& filepath);
+        Ref<Texture> Get(const std::string& filepath);
         bool Exists(const std::string& filepath);
+
+    public:
+        static TextureLibrary& Instance();
 
     private:
         // key: path, value: pair of texture meta and texture ptr

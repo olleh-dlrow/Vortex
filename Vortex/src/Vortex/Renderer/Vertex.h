@@ -69,6 +69,18 @@ namespace Vortex
 		glm::f32vec2 texCoord;
 		glm::f32vec3 tangent;	// u vector
 		glm::f32vec3 biTangent; // v vector
+
+		static BufferLayout GetLayout()
+		{
+			return BufferLayout({
+				{ShaderDataType::Float3, "a_Position"},
+				{ShaderDataType::Float3, "a_Normal"},
+				{ShaderDataType::Float4, "a_Color"},
+				{ShaderDataType::Float2, "a_TexCoord"},
+				{ShaderDataType::Float3, "a_Tangent"},
+				{ShaderDataType::Float3, "a_BiTangent"}
+				});
+		}
 	};
 
 	struct MeshVertex
@@ -81,5 +93,17 @@ namespace Vortex
 		glm::f32vec2 texCoord;
 		glm::f32vec3 tangent;	// u vector
 		glm::f32vec3 biTangent; // v vector
+
+		static BufferLayout GetLayout()
+		{
+			return BufferLayout({
+				{ShaderDataType::Float3, "a_Position"},
+				{ShaderDataType::Float3, "a_Normal"},
+				{ShaderDataType::Float4, "a_Color"},
+				{ShaderDataType::Float2, "a_TexCoord"},
+				{ShaderDataType::Float3, "a_Tangent"},
+				{ShaderDataType::Float3, "a_BiTangent"}
+			});
+		}
 	};
 };

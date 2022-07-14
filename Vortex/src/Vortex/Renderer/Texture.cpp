@@ -35,6 +35,10 @@ namespace Vortex
         m_Textures[filepath] = TexPair{TextureMeta{false}, tex};
         return tex;
     }
+    Ref<Texture> TextureLibrary::Get(const std::string& filepath)
+    {
+        return m_Textures[filepath].second;
+    }
     bool TextureLibrary::Exists(const std::string& filepath)
     {
         if (m_Textures.count(filepath) > 0)
@@ -42,5 +46,10 @@ namespace Vortex
             return true;
         }
         return false;
+    }
+    TextureLibrary& TextureLibrary::Instance()
+    {
+        static TextureLibrary instance;
+        return instance;
     }
 }
