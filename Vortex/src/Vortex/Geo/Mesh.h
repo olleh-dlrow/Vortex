@@ -16,6 +16,6 @@ namespace Vortex
 
 		std::string				m_Name;
 		std::vector<MeshVertex> m_Vertices;
-		std::vector<int>		m_Indices;
+		std::vector<uint32_t>	m_Indices;
 	};
 }

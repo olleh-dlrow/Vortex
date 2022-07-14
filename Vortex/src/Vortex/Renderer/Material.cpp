@@ -1,5 +1,6 @@
 #include "vtpch.h"
 #include "Material.h"
+#include "glad/glad.h"
 
 namespace Vortex
 {
@@ -28,6 +29,7 @@ namespace Vortex
 			Texture* tex = p.second.second.get();
 			tex->Bind(slotIdx);
 			m_Shader->SetInt(p.first, slotIdx);
+			slotIdx++;
 		}
 	}
 	void Material::SetFloat(const std::string& name, float val)

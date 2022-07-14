@@ -37,5 +37,5 @@ uniform sampler2D texture_height1;
 
 void main()
 {
-    color = v_Color;
+    color = texture(texture_diffuse1, v_TexCoord);
 }

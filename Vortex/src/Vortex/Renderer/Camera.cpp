@@ -161,7 +161,7 @@ namespace Vortex
 		if (m_ProjMode == CameraProjMode::Perspective)
 		{
 			m_PerspParam.degFOV -= e.GetYOffset() * m_ZoomSensitivity * 2;
-			m_PerspParam.degFOV = glm::clamp(m_PerspParam.degFOV, 1.0f, 89.0f);
+			m_PerspParam.degFOV = glm::clamp(m_PerspParam.degFOV, 0.05f, 89.0f);
 		}
 		if (m_ProjMode == CameraProjMode::Orthographic)
 		{

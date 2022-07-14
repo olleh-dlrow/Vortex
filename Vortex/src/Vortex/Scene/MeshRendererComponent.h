@@ -29,9 +29,9 @@ namespace Vortex
 	public:
 		Ref<Material>		m_Material;
 		CfgMatFn			m_ConfigMatCallback;
-
-	protected:
+		DrawTriangleConfig	m_DrawCfg;
 		MeshComponent*		m_MeshComp;
+	protected:
 		Ref<VertexArray>	m_VertexArray;
 		Ref<VertexBuffer>	m_VertexBuffer;
 		Ref<IndexBuffer>	m_IndexBuffer;
