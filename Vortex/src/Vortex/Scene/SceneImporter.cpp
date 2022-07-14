@@ -11,10 +11,12 @@ namespace Vortex
 		m_Dirpath = fp.substr(0, idx);
 
 		m_Scene = m_Importer.ReadFile(filepath,
-			aiProcess_CalcTangentSpace |
-			aiProcess_Triangulate |
-			aiProcess_JoinIdenticalVertices |
-			aiProcess_SortByPType);
+			aiProcessPreset_TargetRealtime_MaxQuality
+			//aiProcess_CalcTangentSpace |
+			//aiProcess_Triangulate |
+			//aiProcess_JoinIdenticalVertices |
+			//aiProcess_SortByPType
+		);
 
 		// If the import failed, report it
 		if (nullptr == m_Scene) {
