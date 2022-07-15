@@ -73,10 +73,23 @@ class CubicSplinesTest : public EditorLayer
     float lineWidth = 1.0f;
 
     ImVec2 worldPos;
-    vector<glm::vec3> positions;
-    vector<glm::vec4> colors;
+    //vector<glm::vec3> positions;
+    //vector<glm::vec4> colors;
 
-    vector<ControlPoint> controlPoints;
+    //vector<ControlPoint> controlPoints;
+
+    // multiple lines
+    using PosList = vector<glm::vec3>;
+    using ColList = vector<glm::vec4>;
+    using CtlList = vector<ControlPoint>;
+
+    vector<PosList> posLists;
+    vector<ColList> colorLists;
+    vector<CtlList> ctlPointLists;
+    int curLineIndex = -1;
+
+    // add, finish, delete line state
+    bool isAddingLine;
 
     int MAX_CNT_IN_A_SEG = 1000;
     vector<glm::vec3> linePoints;
@@ -124,9 +137,13 @@ public:
     // the less the movement of other points.
     void NatualSplines(const vector<glm::vec3>& input, vector<glm::vec3>& output)
     {
+        auto& positions = posLists[curLineIndex];
+        auto& colors = colorLists[curLineIndex];
+        auto& controlPoints = ctlPointLists[curLineIndex];
+
         int n = input.size();
-        int neededSize = (n - 1) * MAX_CNT_IN_A_SEG;
-        if (neededSize > output.size())
+        int neededSize = std::max(0, (n - 1) * MAX_CNT_IN_A_SEG);
+        if (neededSize != output.size())
             output.resize(neededSize);
         // AM = B
         Eigen::MatrixXf A = Eigen::MatrixXf::Zero(n, n);
@@ -241,7 +258,7 @@ public:
     void CalculateSplinePointsWithTangent(const vector<ControlPoint>& controlPoints, vector<glm::vec3>& output)
     {
         int n = controlPoints.size();
-        int neededSize = (n - 1) * MAX_CNT_IN_A_SEG;
+        int neededSize = std::max(0, (n - 1) * MAX_CNT_IN_A_SEG);
         if (neededSize != output.size())
             output.resize(neededSize);
         // for n-1 lines
@@ -264,17 +281,33 @@ public:
         }
     }
 
+    void AddLine()
+    {
+        posLists.push_back(PosList());
+        colorLists.push_back(ColList());
+        ctlPointLists.push_back(CtlList());
+        curLineIndex = posLists.size() - 1;
+        curEditPointIndex = -1;
+    }
+
     CubicSplinesTest()
     {
         Vortex::Scene* scene = GetEditorScene();
         auto e1 = scene->AddEntity("e1");
         pr = e1->AddComponent<Vortex::PointRendererComponent>();
         lr = e1->AddComponent<Vortex::LineRendererComponent>();
+
+        // add first line
+        AddLine();
     }
 
     inline void OnUpdate(Vortex::Timestep ts) override
     {
         EditorLayer::OnUpdate(ts);
+
+        auto& positions = posLists[curLineIndex];
+        auto& colors = colorLists[curLineIndex];
+        auto& controlPoints = ctlPointLists[curLineIndex];
 
         Vortex::Camera& cam = GetCamera();
         // cast ray
@@ -334,7 +367,7 @@ public:
                     func_i.ti = pi.t;
                     func_i.ti1 = pi1.t;
                     pi1.Df_iMinusOne = func_i.DF(pi1.t);
-                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                    // CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 };
 
                 // set ti+1's second derivative to zero to calculate cubic spline
@@ -362,7 +395,7 @@ public:
                     func_i.ti = pi.t;
                     func_i.ti1 = pi1.t;
                     pi1.Df_iMinusOne = func_i.DF(pi1.t);
-                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                    // CalculateSplinePointsWithTangent(controlPoints, linePoints);
                 };
 
                 algo2();
@@ -447,7 +480,7 @@ public:
                 {
                     controlPoints[i].t = i;
                 }
-                CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                // CalculateSplinePointsWithTangent(controlPoints, linePoints);
             }
             if (mouseInPoint &&
                 !isDragging &&
@@ -456,6 +489,11 @@ public:
             {
                 curEditPointIndex = -1;
             }
+            // check cur point size
+            if(positions.size() == 0)
+            {
+                curveInitialized = false;
+            }
         }
 
         if (isDragging)
@@ -463,7 +501,7 @@ public:
             glm::vec2 newPos = glm::vec2(worldPos.x, worldPos.y);
             positions[curChosenIndex] = glm::vec3(newPos, 0);
             controlPoints[curChosenIndex].f = newPos;
-            CalculateSplinePointsWithTangent(controlPoints, linePoints);
+            // CalculateSplinePointsWithTangent(controlPoints, linePoints);
         }
 
         // traverse all points, find current chosen point
@@ -587,7 +625,7 @@ public:
                 break;
             }
 
-            CalculateSplinePointsWithTangent(controlPoints, linePoints);
+            // CalculateSplinePointsWithTangent(controlPoints, linePoints);
         }
         if (isDragRightTangentPoint)
         {
@@ -615,7 +653,7 @@ public:
                 break;
             }
 
-            CalculateSplinePointsWithTangent(controlPoints, linePoints);
+            // CalculateSplinePointsWithTangent(controlPoints, linePoints);
         }
 
         // calculate point[DDfIdx] DDf
@@ -628,12 +666,29 @@ public:
             rightDDf = rightFunc.DDF(DDfIdx);
         }
 
-        lr->m_Color = lineColor1;
-        lr->DrawLines(linePoints);
+        for (int i = 0; i < ctlPointLists.size(); i++)
+        {
+            lr->m_Color = lineColor1;
+            // not current line
+            if (i != curLineIndex)
+            {
+                CalculateSplinePointsWithTangent(ctlPointLists[i], linePoints);
+                lr->DrawLines(linePoints);
+            }
+            if (i == curLineIndex && curveInitialized)
+            {
+                CalculateSplinePointsWithTangent(ctlPointLists[i], linePoints);
+                lr->DrawLines(linePoints);
+            }
+        }
     }
 
     inline virtual void OnImGuiRender() override
     {
+        auto& positions = posLists[curLineIndex];
+        auto& colors = colorLists[curLineIndex];
+        auto& controlPoints = ctlPointLists[curLineIndex];
+
         ImGui::Begin("Debug");
 
         ImVec2 scrPos = ImGui::GetMousePos();
@@ -657,6 +712,35 @@ public:
             curveInitialized = true;
         }
 
+        // add line
+        if (curveInitialized && ImGui::Button("Add Line"))
+        {
+            AddLine();
+            curveInitialized = false;
+        }
+
+        // chose current edit line
+        if (posLists.size() > 0)
+        {
+            const char** items = new const char*[posLists.size()];
+            for (int i = 0; i < posLists.size(); i++)
+            {
+                char* item = new char[10];
+                sprintf(item, "Line%d", i + 1);
+                items[i] = item;
+            }
+            if (ImGui::ListBox("Lines", &curLineIndex, items, posLists.size()))
+            {
+                // cancel edit
+                curEditPointIndex = -1;
+            }
+            for (int i = 0; i < posLists.size(); i++)
+            {
+                delete[] items[i];
+            }
+            delete[] items;
+        }
+        
 
         ImGui::Checkbox("HideControlPoint", &hideControlPoints);
 
@@ -686,12 +770,12 @@ public:
                 case ControlPoint::TAN_G1:
                     // direction is same
                     p.Df_i = glm::length(p.Df_i) * glm::normalize(p.Df_iMinusOne);
-                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                    // CalculateSplinePointsWithTangent(controlPoints, linePoints);
                     break;
                 case ControlPoint::TAN_G2:
                     // value is same
                     p.Df_i = p.Df_iMinusOne;
-                    CalculateSplinePointsWithTangent(controlPoints, linePoints);
+                    // CalculateSplinePointsWithTangent(controlPoints, linePoints);
                     break;
                 default:
                     break;
@@ -699,7 +783,7 @@ public:
             }
         }
 
-        if (ImGui::Button("ClearScreen"))
+        if (ImGui::Button("Clear Current Line"))
         {
             positions.swap(vector<glm::vec3>());
             controlPoints.swap(vector<ControlPoint>());
@@ -707,6 +791,7 @@ public:
             curEditPointIndex = -1;
             curveInitialized = false;
         }
+
         ImGui::End();
     }
 };
