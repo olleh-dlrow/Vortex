@@ -11,6 +11,7 @@ namespace Vortex
 	{
 	public:
 		Material();
+		Material(const std::string& name);
 
 		// add texture to map, not set shader
 		void AddTexture(const std::string& name, const Ref<Texture>& tex);
@@ -36,8 +37,13 @@ namespace Vortex
 		void SetMat4(const std::string& name, const glm::mat4& val);
 		glm::mat4 GetMat4(const std::string& name);
 
+		// warning!!!
+		// can't appear the same name label in window, or they will change values together
+		void RenderConfigGUI();
+
 		Ref<Shader>									m_Shader;
 	private:
+		std::string									m_Name;
 		// key: name, value: TextureMeta, Texture ptr
 		std::unordered_map<std::string, TexPair>	m_Textures;
 

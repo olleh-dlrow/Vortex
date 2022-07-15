@@ -237,9 +237,9 @@ namespace Vortex
 	void Camera::RenderConfigGUI()
 	{
 		Vortex::Camera& cam = *this;
-		std::string mode = cam.m_ProjMode == Vortex::CameraProjMode::Perspective ? "Persp" : "Ortho";
-
-		ImGui::Begin("Camera");
+		std::string mode = cam.m_ProjMode == Vortex::CameraProjMode::Perspective ? "Perspective" : "Orthographic";
+		
+		ImGui::Text("Camera Config");
 		ImGui::Text("MODE: %s", mode.c_str());
 		if (ImGui::Button("Persp"))
 		{
@@ -255,7 +255,6 @@ namespace Vortex
 		ImGui::DragFloat3("up", glm::value_ptr(cam.m_Up));
 		ImGui::DragFloat3("world up", glm::value_ptr(cam.m_WorldUp));
 
-		// ImGui::DragFloat("zoomLv", &cam.m_OrthoParam.zoomLevel);
 		ImGui::SliderFloat("zoomLv", &cam.m_OrthoParam.zoomLevel, 0.1f, 100.0f);
 
 		ImGui::DragFloat("fov",   &cam.m_PerspParam.degFOV);
@@ -267,7 +266,5 @@ namespace Vortex
 		ImGui::DragFloat("speed", &cam.m_MovementSpeed);
 		ImGui::DragFloat("moveSen", &cam.m_MoveSensitivity);
 		ImGui::DragFloat("zoomSen", &cam.m_ZoomSensitivity);
-
-		ImGui::End();
 	}
 }

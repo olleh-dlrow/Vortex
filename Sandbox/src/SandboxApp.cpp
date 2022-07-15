@@ -17,6 +17,7 @@
 //#include "BezierTest.h"
 #include "CubicSplinesTest.h"
 //#include "ModelImportTest.h"
+//#include "BlingPhongTest.h"
 
 /*
 tips:

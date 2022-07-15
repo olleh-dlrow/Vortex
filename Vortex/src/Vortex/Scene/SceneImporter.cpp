@@ -298,7 +298,7 @@ namespace Vortex
 		{
 			aiMaterial* aiMat = m_Scene->mMaterials[inMesh->mMaterialIndex];
 
-			outMat = CreateRef<Material>();
+			outMat = CreateRef<Material>(std::string(aiMat->GetName().C_Str()));
 			// diffuse
 			ParseAssimpTextures(aiMat, aiTextureType_DIFFUSE, outMat);
 			// specular

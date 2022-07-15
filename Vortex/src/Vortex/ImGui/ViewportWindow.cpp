@@ -77,10 +77,9 @@ void Vortex::ViewportWindow::OnImGuiRender()
 
 void Vortex::ViewportWindow::RenderConfigGUI()
 {
-	ImGui::Begin(("Cfg_" + m_WindowName).c_str());
+	ImGui::Text(("Cfg_" + m_WindowName).c_str());
 	ImGui::ColorEdit4("Clear Color", (float*)&m_ClearColor);
 	ImGui::Text("IsFocused: %s", m_IsFocused ? "Yes" : "No");
-	ImGui::End();
 }
 
 void Vortex::ViewportWindow::OnEvent(Event& e)

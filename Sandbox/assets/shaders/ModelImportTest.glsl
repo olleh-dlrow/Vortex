@@ -37,6 +37,6 @@ uniform sampler2D texture_height1;
 
 void main()
 {
-    // color = texture(texture_diffuse1, v_TexCoord);
-    color = vec4(v_TexCoord.x, v_TexCoord.y, 0.0, 1.0);
+    color = texture(texture_diffuse1, v_TexCoord);
+    // color = vec4(v_TexCoord.x, v_TexCoord.y, 0.0, 1.0);
 }

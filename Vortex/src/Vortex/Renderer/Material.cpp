@@ -1,10 +1,17 @@
 #include "vtpch.h"
 #include "Material.h"
 #include "glad/glad.h"
+#include "imgui.h"
+#include "glm/gtc/type_ptr.hpp"
 
 namespace Vortex
 {
 	Material::Material()
+	{
+
+	}
+	Material::Material(const std::string& name)
+		:m_Name(name)
 	{
 
 	}
@@ -111,5 +118,41 @@ namespace Vortex
 		return m_Mat4Props[name];
 	}
 
-
+	void Material::RenderConfigGUI()
+	{
+		ImGui::Text("Material Name: %s", m_Name.c_str());
+		// display properties
+		// float, float3, float4, int, texture
+		float v_speed = 0.05f;
+		m_Shader->Bind();
+		for (auto& pf : m_FloatProps)
+		{
+			float v = GetFloat(pf.first);
+			ImGui::DragFloat(pf.first.c_str(), &v, v_speed);
+			SetFloat(pf.first, v);
+		}
+		for (auto& pf3 : m_Float3Props)
+		{
+			glm::vec3 v = GetFloat3(pf3.first);
+			ImGui::DragFloat3(pf3.first.c_str(), glm::value_ptr(v), v_speed);
+			SetFloat3(pf3.first, v);
+		}
+		for (auto& pf4 : m_Float4Props)
+		{
+			glm::vec4 v = GetFloat4(pf4.first);
+			ImGui::DragFloat4(pf4.first.c_str(), glm::value_ptr(v), v_speed);
+			SetFloat4(pf4.first, v);
+		}
+		for (auto& pi : m_IntProps)
+		{
+			int v = GetInt(pi.first);
+			ImGui::DragInt(pi.first.c_str(), &v);
+			SetInt(pi.first, v);
+		}
+		for (auto& tex : m_Textures)
+		{
+			ImGui::Text("Texture: %s", tex.first.c_str());
+		}
+		m_Shader->Unbind();
+	}
 }

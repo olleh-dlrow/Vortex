@@ -19,16 +19,16 @@ using Vortex::Material;
 using Vortex::Scene;
 using Vortex::Entity;
 
-class ModelImportTest: public EditorLayer 
-{
+class BlingPhongTest : public EditorLayer
+{	
 	std::vector<MeshRendererComponent*> comps;
-	bool drawLine;
+	bool drawLine = false;
 public:
-	ModelImportTest()
+	BlingPhongTest()
 	{
 		std::string filename = "assets/models/utah-teapot-obj/utah-teapot.obj";
 		std::string filename2 = "assets/models/45-acp-smith-and-wesson-with-animation-obj/45-acp-smith-and-wesson-with-animation.obj";
-		
+
 		Vortex::SceneImporter sceneImporter(filename2.c_str());
 		VT_INFO(sceneImporter.GetNodesInfo());
 		VT_INFO(sceneImporter.GetMeshesInfo());
@@ -37,58 +37,47 @@ public:
 		std::vector <Ref<Material>> mats;
 		sceneImporter.ImportMeshAndMat(meshes, mats);
 
-		// create shader and set value
-		Ref<Shader> shader = Shader::Create("assets/shaders/ModelImportTest.glsl");
-
 		// set camera position and mode
 		Camera& cam = GetCamera();
 		cam.SetProjectionMode(false);
 		cam.m_Position = glm::vec3(0, 0, 5);
-		cam.m_MovementSpeed = 2.0f;
+		cam.m_MovementSpeed = 12.0f;
 
 		// create entity, init mesh component and mesh renderercomponent
 		Scene* scene = GetEditorScene();
-		glm::vec4 colors[5] = {
-			{1, 0, 0, 1},	// red
-			{0, 1, 0, 1},	// green
-			{0, 0, 1, 1},	// blue
-			{1, 1, 0, 1},	// yellow
-			{1, 0, 1, 1}	// puple
-		};
 		for (int i = 0; i < meshes.size(); i++)
 		{
 			Mesh* mesh = meshes[i].get();
 
-			// statistic
-			// VT_INFO(mesh->StatisticVertex());
-			
-			// set mesh color to white
-			for (int j = 0; j < mesh->m_Vertices.size(); j++)
-			{
-				auto& vert = mesh->m_Vertices[j];
-				vert.color = colors[i % 5];
-			}
-
 			auto e = scene->AddEntity("Entity" + std::to_string(i));
-			
+
 			auto mc = e->AddComponent<MeshComponent>();
 			mc->m_Mesh = meshes[i];
 
 			// init mesh renderer comp, set shader, mat, mesh
 			auto mr = e->AddComponent<MeshRendererComponent>();
 			mr->SetMeshComponent(mc);
-			mats[i]->m_Shader = shader;
-			mr->m_Material = mats[i];
+			mats[i]->m_Shader = Shader::Create("assets/shaders/BlingPhongTest.glsl");
+			// set all meshes' material the same in convenience to adjust parameters
+			mr->m_Material = mats[1];
+
+			mats[i]->m_Shader->Bind();
+			mats[i]->SetFloat3("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+			mats[i]->SetFloat3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+			mats[i]->SetFloat3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
 
 			// set config material callback
 			auto callback = [this](Material& mat)
 			{
+				glm::mat4 I = glm::identity<glm::mat4>();
+				glm::mat4 trans = I;// glm::scale(I, glm::vec3(0.1, 0.1, 0.1));
 				mat.SetMat4("u_ViewProjection", GetCamera().GetViewProjMatrix());
-				mat.SetMat4("u_Transform", glm::identity<glm::mat4>());
+				mat.SetMat4("u_Transform", trans);
+
+				mat.SetFloat3("viewPos", GetCamera().m_Position);
 			};
 
 			mr->m_ConfigMatCallback = callback;
-			mr->m_DrawCfg.polygonMode = GL_LINE;
 			// add to comps list
 			comps.push_back(mr);
 		}
@@ -119,6 +108,26 @@ public:
 			}
 			ImGui::Text("Mode");
 			ImGui::Checkbox("DrawLine", &drawLine);
+		
+			auto getIdx = [&]()->int{
+				static int curItem = 0;
+				char** items = new char* [comps.size()];
+				for (int i = 0; i < comps.size(); i++)
+				{
+					char* item = new char[20];
+					sprintf(item, "%s", comps[i]->m_MeshComp->m_Mesh->m_Name.c_str());
+					items[i] = item;
+				}
+				ImGui::Combo("Meshes", &curItem, items, comps.size());
+				for (int i = 0; i < comps.size(); i++)
+				{
+					delete[] items[i];
+				}
+				delete[] items;
+				return curItem;
+			};
+
+			comps[getIdx()]->m_Material->RenderConfigGUI();
 		}
 		ImGui::End();
 	}

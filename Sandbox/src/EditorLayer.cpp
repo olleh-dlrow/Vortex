@@ -34,9 +34,15 @@ void EditorLayer::PostUpdate(Vortex::Timestep ts)
 
 void EditorLayer::PreImGuiRender()
 {
+    // render window
     m_ViewportWindow->OnImGuiRender();
-    m_ViewportWindow->GetCamera()->RenderConfigGUI();
-    m_ViewportWindow->RenderConfigGUI();
+
+    ImGui::Begin("Viewport Window Config");
+    {
+        m_ViewportWindow->GetCamera()->RenderConfigGUI();
+        m_ViewportWindow->RenderConfigGUI();
+    }
+    ImGui::End();
     ImGui::ShowDemoWindow();
 }
 
