@@ -73,7 +73,7 @@ namespace Vortex
 
     void OpenGLRendererAPI::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
     {
-        // glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
+        glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
         glDrawElements(GL_TRIANGLES, attr.indexCnt, GL_UNSIGNED_INT, nullptr);
     }
 

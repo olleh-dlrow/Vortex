@@ -41,19 +41,10 @@ class ModelImportTest: public EditorLayer
 	aiMesh* mesh;
 
 	std::vector<MeshRendererComponent*> comps;
-	std::unordered_map<std::string, bool> visible;
+	bool drawLine;
 public:
 	ModelImportTest()
 	{
-		//visible = {
-		//	{"Cube_002", true},
-		//	{"Gun", true},
-		//	{"Gun_trigger", true},
-		//	{"muzzle_fire", true},
-		//	{"Cube_005", true},
-
-		//};
-
 		std::string filename = "assets/models/utah-teapot-obj/utah-teapot.obj";
 		std::string filename2 = "assets/models/45-acp-smith-and-wesson-with-animation-obj/45-acp-smith-and-wesson-with-animation.obj";
 		
@@ -71,7 +62,7 @@ public:
 		// set camera position and mode
 		Camera& cam = GetCamera();
 		cam.SetProjectionMode(false);
-		cam.m_Position = glm::vec3(0, 0, 50);
+		cam.m_Position = glm::vec3(0, 0, 5);
 		cam.m_MovementSpeed = 2.0f;
 
 		// create entity, init mesh component and mesh renderercomponent
@@ -86,8 +77,6 @@ public:
 		for (int i = 0; i < meshes.size(); i++)
 		{
 			Mesh* mesh = meshes[i].get();
-			// init visible
-			visible[mesh->m_Name] = true;
 
 			// statistic
 			// VT_INFO(mesh->StatisticVertex());
@@ -96,9 +85,7 @@ public:
 			for (int j = 0; j < mesh->m_Vertices.size(); j++)
 			{
 				auto& vert = mesh->m_Vertices[j];
-				//if (mesh->m_Name == "Gun_trigger")
-				//	vert.color = glm::vec4(1, 0, 0, 1);
-				vert.color = colors[i];
+				vert.color = colors[i % 5];
 			}
 
 			auto e = scene->AddEntity("Entity" + std::to_string(i));
@@ -121,7 +108,7 @@ public:
 			};
 
 			mr->m_ConfigMatCallback = callback;
-
+			mr->m_DrawCfg.polygonMode = GL_LINE;
 			// add to comps list
 			comps.push_back(mr);
 		}
@@ -130,36 +117,10 @@ public:
 	virtual void OnUpdate(Vortex::Timestep ts) override
 	{
 		EditorLayer::OnUpdate(ts);
-	}
 
-	void OutputMeshesInfo(const aiScene* scene)
-	{
-		// get mesh info
-		if (scene->HasMeshes())
+		for (auto& c : comps)
 		{
-			VT_INFO("Mesh Count: {}", scene->mNumMeshes);
-			for (int i = 0; i < scene->mNumMeshes; i++)
-			{
-				auto curMesh = scene->mMeshes[i];
-				VT_INFO("\tMesh name: {}", curMesh->mName.C_Str());
-				if (curMesh->HasPositions())
-				{
-					VT_INFO("\tVertices Count: {}", curMesh->mNumVertices);
-				}
-				if (curMesh->HasNormals())
-				{
-					VT_INFO("\tHas Normals");
-				}
-				if (curMesh->HasFaces())
-				{
-					VT_INFO("\tFaces Count: {}", curMesh->mNumFaces);
-				}
-				if (curMesh->HasTextureCoords(0))
-				{
-					VT_INFO("Has TextureCoords");
-					//VT_INFO("\tNormals Count: {}", curMesh->texture);
-				}
-			}
+			c->m_DrawCfg.polygonMode = drawLine ? GL_LINE : GL_FILL;
 		}
 	}
 
@@ -167,6 +128,7 @@ public:
 	{
 		ImGui::Begin("Debug");
 		{
+			ImGui::Text("Meshes");
 			for (auto& c : comps)
 			{
 				bool v = c->GetEnableValue();
@@ -175,8 +137,9 @@ public:
 					c->SetEnableValue(v);
 				}
 			}
+			ImGui::Text("Mode");
+			ImGui::Checkbox("DrawLine", &drawLine);
 		}
 		ImGui::End();
 	}
-
 };
