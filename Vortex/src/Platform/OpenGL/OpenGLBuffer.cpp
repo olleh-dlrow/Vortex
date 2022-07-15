@@ -90,10 +90,34 @@ namespace Vortex
     }
 
     /////////////////////////////////////////////////////////////////////////////
+    // RenderBuffer //////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+    OpenGLRenderBuffer::OpenGLRenderBuffer(uint32_t width, uint32_t height)
+    {
+        glGenRenderbuffers(1, &m_RendererID);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
+        // use a single renderbuffer object for both a depth AND stencil buffer.
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); 
+    }
+
+    OpenGLRenderBuffer::~OpenGLRenderBuffer()
+    {
+        glDeleteRenderbuffers(1, &m_RendererID);
+    }
+
+    void OpenGLRenderBuffer::Bind() const
+    {
+        glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
+    }
+
+    void OpenGLRenderBuffer::Unbind() const
+    {
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////
     // FrameBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
-
-
     OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height)
         :m_Width(width), m_Height(height)
     {
@@ -101,7 +125,6 @@ namespace Vortex
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
         m_Tex2d = OpenGLTexture2D::Create(width, height);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Tex2d->GetID(), 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
     OpenGLFrameBuffer::~OpenGLFrameBuffer()
     {
@@ -114,5 +137,13 @@ namespace Vortex
     void OpenGLFrameBuffer::Unbind() const
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+    void OpenGLFrameBuffer::AttachRenderBuffer(const Ref<RenderBuffer>& rb) const
+    {
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb->GetID());
+    }
+    bool OpenGLFrameBuffer::CheckStatus() const
+    {
+        return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
     }
 }

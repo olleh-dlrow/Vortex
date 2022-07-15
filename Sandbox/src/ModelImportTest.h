@@ -45,14 +45,14 @@ class ModelImportTest: public EditorLayer
 public:
 	ModelImportTest()
 	{
-		visible = {
-			{"Cube_002", true},
-			{"Gun", true},
-			{"Gun_trigger", true},
-			{"muzzle_fire", true},
-			{"Cube_005", true},
+		//visible = {
+		//	{"Cube_002", true},
+		//	{"Gun", true},
+		//	{"Gun_trigger", true},
+		//	{"muzzle_fire", true},
+		//	{"Cube_005", true},
 
-		};
+		//};
 
 		std::string filename = "assets/models/utah-teapot-obj/utah-teapot.obj";
 		std::string filename2 = "assets/models/45-acp-smith-and-wesson-with-animation-obj/45-acp-smith-and-wesson-with-animation.obj";
@@ -71,7 +71,7 @@ public:
 		// set camera position and mode
 		Camera& cam = GetCamera();
 		cam.SetProjectionMode(false);
-		cam.m_Position = glm::vec3(0, 0, 5);
+		cam.m_Position = glm::vec3(0, 0, 50);
 		cam.m_MovementSpeed = 2.0f;
 
 		// create entity, init mesh component and mesh renderercomponent
@@ -86,6 +86,9 @@ public:
 		for (int i = 0; i < meshes.size(); i++)
 		{
 			Mesh* mesh = meshes[i].get();
+			// init visible
+			visible[mesh->m_Name] = true;
+
 			// statistic
 			// VT_INFO(mesh->StatisticVertex());
 			
@@ -126,16 +129,7 @@ public:
 
 	virtual void OnUpdate(Vortex::Timestep ts) override
 	{
-		for (auto mr : comps)
-		{
-			// mr->m_DrawCfg.polygonMode = GL_LINE;
-			// if (mr->m_MeshComp->m_Mesh->m_Name != "Cube_002")continue;
-			for (auto& p : visible)
-			{
-				if(mr->m_MeshComp->m_Mesh->m_Name == p.first && p.second)
-					mr->DrawMesh();
-			}
-		}
+		EditorLayer::OnUpdate(ts);
 	}
 
 	void OutputMeshesInfo(const aiScene* scene)
@@ -173,9 +167,13 @@ public:
 	{
 		ImGui::Begin("Debug");
 		{
-			for (auto& p : visible)
+			for (auto& c : comps)
 			{
-				ImGui::Checkbox(p.first.c_str(), &p.second);
+				bool v = c->GetEnableValue();
+				if (ImGui::Checkbox(c->m_MeshComp->m_Mesh->m_Name.c_str(), &v))
+				{
+					c->SetEnableValue(v);
+				}
 			}
 		}
 		ImGui::End();

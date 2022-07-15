@@ -16,6 +16,12 @@ namespace Vortex
 		virtual void OnUpdate(Timestep ts) {}
 		virtual void PostUpdate(Timestep ts) {}
 
+		virtual void OnEnable() {}
+		virtual void OnDisable() {}
+
+		void SetEnableValue(bool enabled) { m_Enabled = enabled; if (enabled)OnEnable(); else OnDisable(); }
+		bool GetEnableValue() const { return m_Enabled; }
+
 		void SetEntity(Entity* e) 
 		{
 			m_Entity = e;
@@ -30,6 +36,7 @@ namespace Vortex
 			return guid++;
 		}
 
+		bool						  m_Enabled = true;
 		const uint64_t                m_GUID = GetGUID();
 		Entity*						  m_Entity;
 	};

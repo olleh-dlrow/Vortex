@@ -41,6 +41,8 @@ public:
 
 	virtual void OnUpdate(Vortex::Timestep ts) override
 	{
+		EditorLayer::OnUpdate(ts);
+
 		pr->DrawPoints(positions, 1.0f, colors);
 	}
 

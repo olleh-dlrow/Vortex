@@ -17,13 +17,15 @@ namespace Vortex
 		MeshRendererComponent() = default;
 		MeshRendererComponent(MeshComponent* comp);
 
+		void OnUpdate(Timestep ts) override;
+		void PostUpdate(Timestep ts) override;
+
+
 		// set mesh, and update the size of buffer
 		void SetMeshComponent(MeshComponent* comp);
 
-		void DrawMesh();
-
-
 	protected:
+		void DrawMesh();
 		void ResetMesh(MeshComponent* comp);
 
 	public:

@@ -141,6 +141,18 @@ namespace Vortex
         static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
     };
 
+    class RenderBuffer
+    {
+    public:
+        virtual ~RenderBuffer() {};
+
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
+        virtual uint32_t GetID() const = 0;
+
+        static Ref<RenderBuffer> Create(uint32_t width, uint32_t height);
+    };
+
     class FrameBuffer 
     {
     public:
@@ -148,6 +160,8 @@ namespace Vortex
 
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
+        virtual void AttachRenderBuffer(const Ref<RenderBuffer>& rb) const = 0;
+        virtual bool CheckStatus() const = 0;
         virtual uint32_t GetTextureID() const = 0;
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;

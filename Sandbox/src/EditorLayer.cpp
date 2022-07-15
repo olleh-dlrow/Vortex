@@ -10,8 +10,6 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::PreUpdate(Vortex::Timestep ts)
 {
-    m_ViewportWindow->OnUpdate(ts);
-
     // background
     Vortex::Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
     // clear glfw background and imgui 
@@ -19,12 +17,12 @@ void EditorLayer::PreUpdate(Vortex::Timestep ts)
     // start render in viewport window
     m_ViewportWindow->Begin();
 
-    m_EditorScene->OnUpdate(ts);
+    m_ViewportWindow->OnUpdate(ts);
 }
 
 void EditorLayer::OnUpdate(Vortex::Timestep ts)
 {
-
+    m_EditorScene->OnUpdate(ts);
 }
 
 void EditorLayer::PostUpdate(Vortex::Timestep ts)

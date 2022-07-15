@@ -1,6 +1,8 @@
 #include "vtpch.h"
 #include "ViewportWindow.h"
 
+// the whole off-screen render reference to:
+// https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/5.1.framebuffers/framebuffers.cpp
 Vortex::ViewportWindow::ViewportWindow(const std::string& winName, 
 									   const Ref<Camera>& cam,
 									   const glm::vec4& clearColor)
@@ -9,11 +11,19 @@ Vortex::ViewportWindow::ViewportWindow(const std::string& winName,
 	int width = Application::Get().GetWindow().GetWidth();
 	int height = Application::Get().GetWindow().GetHeight();
 	m_FB = Vortex::FrameBuffer::Create(width, height);
+	m_RB = Vortex::RenderBuffer::Create(width, height);
+	m_FB->AttachRenderBuffer(m_RB);
+	if (!m_FB->CheckStatus())
+	{
+		VT_CORE_ASSERT(0, "FrameBuffer is not complete");
+	}
+	m_FB->Unbind();
 }
 
 void Vortex::ViewportWindow::Begin()
 {
 	m_FB->Bind();
+	Renderer::SetDepthTest(true);
 	Renderer::SetClearColor(m_ClearColor);
 	Renderer::Clear();
 }
@@ -21,6 +31,7 @@ void Vortex::ViewportWindow::Begin()
 void Vortex::ViewportWindow::End()
 {
 	m_FB->Unbind();
+	Renderer::SetDepthTest(false);
 }
 
 void Vortex::ViewportWindow::OnImGuiRender()

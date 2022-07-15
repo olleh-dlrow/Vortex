@@ -274,6 +274,8 @@ public:
 
     inline void OnUpdate(Vortex::Timestep ts) override
     {
+        EditorLayer::OnUpdate(ts);
+
         Vortex::Camera& cam = GetCamera();
         // cast ray
         ImVec2 scrPos = ImGui::GetMousePos();

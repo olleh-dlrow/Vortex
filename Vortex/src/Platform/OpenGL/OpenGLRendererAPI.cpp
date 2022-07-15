@@ -44,7 +44,7 @@ namespace Vortex
         // open blend effect
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+        
         // This affected the mix of texture
         glEnable(GL_DEPTH_TEST);
     }
@@ -64,9 +64,16 @@ namespace Vortex
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    void OpenGLRendererAPI::SetDepthTest(bool enable)
+    {
+        if (enable)
+            glEnable(GL_DEPTH_TEST);
+        else glDisable(GL_DEPTH_TEST);
+    }
+
     void OpenGLRendererAPI::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
+        // glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
         glDrawElements(GL_TRIANGLES, attr.indexCnt, GL_UNSIGNED_INT, nullptr);
     }
 

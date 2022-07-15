@@ -11,6 +11,17 @@ namespace Vortex
 	{
 		ResetMesh(comp);
 	}
+
+	void MeshRendererComponent::OnUpdate(Timestep ts)
+	{
+		
+	}
+
+	void MeshRendererComponent::PostUpdate(Timestep ts)
+	{
+		DrawMesh();
+	}
+
 	void MeshRendererComponent::DrawMesh()
 	{
 		auto& mesh = m_MeshComp->m_Mesh;

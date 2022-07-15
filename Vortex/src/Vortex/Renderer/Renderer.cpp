@@ -13,13 +13,20 @@ namespace Vortex {
     void Renderer::Init()
     {
         s_RendererAPI->Init();
-        RenderCommand::Init();
-        Renderer2D::Init();
+        // OBSOLETE
+        //RenderCommand::Init();
+        //Renderer2D::Init();
     }
 
     void Renderer::Shutdown()
     {
-        Renderer2D::Shutdown();
+        // OBSOLETE
+        //Renderer2D::Shutdown();
+    }
+
+    void Renderer::SetDepthTest(bool enable)
+    {
+        s_RendererAPI->SetDepthTest(enable);
     }
 
     // OBSOLETE

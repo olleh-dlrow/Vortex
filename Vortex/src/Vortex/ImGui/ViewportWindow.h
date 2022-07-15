@@ -50,6 +50,7 @@ namespace Vortex
 		ImVec2						m_AbsContentPos;	// screen pos of top-left content
 		Ref<Camera>					m_Camera;
 		Ref<FrameBuffer>			m_FB;
+		Ref<RenderBuffer>			m_RB;
 		bool						m_IsFocused;
 		glm::vec4					m_ClearColor;
 	};

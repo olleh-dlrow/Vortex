@@ -60,7 +60,8 @@ namespace Vortex
         {
             for (auto& c : m_Components)
             {
-                c->OnUpdate(ts);
+                if(c->GetEnableValue())
+                    c->OnUpdate(ts);
             }
         }
 
@@ -68,7 +69,8 @@ namespace Vortex
         {
             for (auto& c : m_Components)
             {
-                c->PostUpdate(ts);
+                if (c->GetEnableValue())
+                    c->PostUpdate(ts);
             }
         }
 
