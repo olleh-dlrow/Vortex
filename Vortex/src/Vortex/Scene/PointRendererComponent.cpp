@@ -32,7 +32,7 @@ namespace Vortex
 	{
 		// vertex buffer is empty, don't flush repeatly!
 		if (s_Batch->m_FreeVertexBufferBaseIndex == 0)return;
-		s_Batch->m_VertexBuffer->SetData(&s_Batch->m_TempVertexBuffer[0], s_Batch->m_FreeVertexBufferBaseIndex * sizeof(Quad1));
+		s_Batch->m_VertexBuffer->SetData(&s_Batch->m_TempVertexBuffer[0], s_Batch->m_FreeVertexBufferBaseIndex * sizeof(Quad1::VertexType));
 
 		Camera* cam = GetEntity()->GetScene()->GetInnerCamera();
 

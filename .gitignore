@@ -10,7 +10,7 @@ bin-int/
 Sandbox/**.json
 
 # imgui files
-imgui.ini
+# imgui.ini
 
 # Visual Studio files and folder
 .vs/

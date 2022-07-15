@@ -62,13 +62,13 @@ class CubicSplinesTest : public EditorLayer
     const glm::vec3 INVALID_POINT = glm::vec3(std::numeric_limits<float>::max());
 
     //glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
-    const glm::vec4 pointColor1 = glm::vec4(0.2, 0.8, 0.6, 1);  // normal point
-    const glm::vec4 pointColor2 = glm::vec4(0.2, 0.3, 0.9, 1);  // mouse in point
-    const glm::vec4 pointColor3 = glm::vec4(0.9, 0.1, 0.1, 1);  // point in edit
-    const glm::vec4 pointColor4 = glm::vec4(1.0, 1.0, 1.0, 1);  // control tangent point
+    glm::vec4 pointColor1 = glm::vec4(0.2, 0.8, 0.6, 1);  // normal point
+    glm::vec4 pointColor2 = glm::vec4(0.2, 0.3, 0.9, 1);  // mouse in point
+    glm::vec4 pointColor3 = glm::vec4(0.9, 0.1, 0.1, 1);  // point in edit
+    glm::vec4 pointColor4 = glm::vec4(1.0, 1.0, 1.0, 1);  // control tangent point
 
-    const glm::vec4 lineColor1 = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f); // normal line
-    const glm::vec4 lineColor2 = glm::vec4(1.0, 1.0, 1.0, 1);   // control tangent
+    glm::vec4 lineColor1 = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f); // normal line
+    glm::vec4 lineColor2 = glm::vec4(1.0, 1.0, 1.0, 1);   // control tangent
 
     float lineWidth = 1.0f;
 
@@ -299,6 +299,12 @@ public:
 
         // add first line
         AddLine();
+    }
+
+    // https://blog.mapbox.com/drawing-antialiased-lines-with-opengl-8766f34192dc
+    void DrawLinesTest(const PosList& positions)
+    {
+        
     }
 
     inline void OnUpdate(Vortex::Timestep ts) override
@@ -670,15 +676,12 @@ public:
         {
             lr->m_Color = lineColor1;
             // not current line
-            if (i != curLineIndex)
+            if (i != curLineIndex || (i == curLineIndex && curveInitialized))
             {
                 CalculateSplinePointsWithTangent(ctlPointLists[i], linePoints);
-                lr->DrawLines(linePoints);
-            }
-            if (i == curLineIndex && curveInitialized)
-            {
-                CalculateSplinePointsWithTangent(ctlPointLists[i], linePoints);
-                lr->DrawLines(linePoints);
+                //lr->DrawLines(linePoints);
+                //pr->DrawPoints(linePoints, lineWidth, lineColor1);
+                DrawLinesTest(linePoints);
             }
         }
     }
@@ -703,7 +706,8 @@ public:
         ImGui::DragFloat2("LeftDDF", (float*)&leftDDf);
         ImGui::DragFloat2("RightDDF", (float*)&rightDDf);
         ImGui::DragFloat("LineWidth", &lineWidth);
-
+        ImGui::ColorEdit4("LineColor", (float*)&lineColor1);
+        ImGui::DragInt("SegLinePointCnt", &MAX_CNT_IN_A_SEG);
         // operation
         ImGui::TextColored(ImVec4(0.8f, 0.3f, 0.2f, 1.0f), "Press E to delete Point");
         if (!curveInitialized && canDrawLines && ImGui::Button("DrawSpline"))
