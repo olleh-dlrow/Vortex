@@ -1,5 +1,9 @@
 # Vortex Engine
 
+![image-20220717011307579](README/image-20220717011307579.png)
+
+The logo above is painted by this renderer : )
+
 a mini render engine used for studying and testing
 
 ## Support
