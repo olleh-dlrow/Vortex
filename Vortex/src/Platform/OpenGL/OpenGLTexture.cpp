@@ -10,15 +10,23 @@ namespace Vortex
     {
         m_InternalFormat = GL_RGBA8;
         m_DataFormat = GL_RGBA;
+        
+        //glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
+        //glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-        glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
+        // TEST MSAA
+        glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_RendererID);
+        glTextureStorage2DMultisample(m_RendererID, 4, m_InternalFormat, width, height, GL_TRUE);
+        //glGenTextures(1, &m_RendererID);
+        //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_RendererID);
+        //glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, m_Width, m_Height, GL_TRUE);
+        //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+        
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path)

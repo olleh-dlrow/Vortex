@@ -53,5 +53,12 @@ namespace Vortex
 		Ref<RenderBuffer>			m_RB;
 		bool						m_IsFocused;
 		glm::vec4					m_ClearColor;
+		unsigned int intermediateFBO;
+		unsigned int screenTexture;
+		Ref<VertexArray>			m_ScreenVertexArray;
+		Ref<VertexBuffer>			m_ScreenVertexBuffer;
+		Ref<Shader>					m_ScreenShader;
+		unsigned int finalScreenFBO;
+		unsigned int finalScreenTexture;
 	};
 }

@@ -97,8 +97,11 @@ namespace Vortex
         glGenRenderbuffers(1, &m_RendererID);
         glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
         // use a single renderbuffer object for both a depth AND stencil buffer.
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); 
-    }
+        //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); 
+        // TEST MSAA
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }   
 
     OpenGLRenderBuffer::~OpenGLRenderBuffer()
     {
@@ -123,8 +126,12 @@ namespace Vortex
     {
         glGenFramebuffers(1, &m_RendererID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+        
         m_Tex2d = OpenGLTexture2D::Create(width, height);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Tex2d->GetID(), 0);
+        
+        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Tex2d->GetID(), 0);
+        // TEST MSAA
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_Tex2d->GetID(), 0);
     }
     OpenGLFrameBuffer::~OpenGLFrameBuffer()
     {

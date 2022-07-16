@@ -72,6 +72,7 @@ namespace Vortex
         virtual uint32_t GetWidth() const override { return m_Width; } 
         virtual uint32_t GetHeight() const override { return m_Height; }
         virtual uint32_t GetTextureID() const override { return m_Tex2d->GetID(); }
+        virtual uint32_t GetID() const override { return m_RendererID; }
     private:
         uint32_t m_RendererID;
         Ref<Texture2D> m_Tex2d;

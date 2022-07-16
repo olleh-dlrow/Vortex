@@ -86,12 +86,13 @@ class CubicSplinesTest : public EditorLayer
     vector<PosList> posLists;
     vector<ColList> colorLists;
     vector<CtlList> ctlPointLists;
+    vector<bool>    curvesInitStates;
     int curLineIndex = -1;
 
     // add, finish, delete line state
     bool isAddingLine;
 
-    int MAX_CNT_IN_A_SEG = 1000;
+    int MAX_LINE_CNT_IN_A_SEG = 20;
     vector<glm::vec3> linePoints;
 
     // debug for second derivative
@@ -142,7 +143,7 @@ public:
         auto& controlPoints = ctlPointLists[curLineIndex];
 
         int n = input.size();
-        int neededSize = std::max(0, (n - 1) * MAX_CNT_IN_A_SEG);
+        int neededSize = std::max(0, (n - 1) * (MAX_LINE_CNT_IN_A_SEG) + 1);
         if (neededSize != output.size())
             output.resize(neededSize);
         // AM = B
@@ -202,14 +203,15 @@ public:
                 controlPoints[i].Df_i[ftIdx] = bi;
 
                 // generate x
-                float eps = (ti1 - ti) / MAX_CNT_IN_A_SEG;
+                float eps = (ti1 - ti) / MAX_LINE_CNT_IN_A_SEG;
                 float t = ti;
-                for (int tIdx = 0; tIdx < MAX_CNT_IN_A_SEG; tIdx++, t = std::min(t + eps, ti1))
+                for (int tIdx = 0; tIdx < MAX_LINE_CNT_IN_A_SEG; tIdx++, t = std::min(t + eps, ti1))
                 {
                     float dt = t - ti;
                     output[outputIdx++][ftIdx] = ai + bi * dt + ci * dt * dt + di * dt * dt * dt;
                 }
             }
+            output[outputIdx] = glm::vec3(controlPoints[n - 1].f, 0);
         };
 
         // X(t)
@@ -258,7 +260,8 @@ public:
     void CalculateSplinePointsWithTangent(const vector<ControlPoint>& controlPoints, vector<glm::vec3>& output)
     {
         int n = controlPoints.size();
-        int neededSize = std::max(0, (n - 1) * MAX_CNT_IN_A_SEG);
+        // seg count * line cnt in one seg + final point
+        int neededSize = std::max(0, (n - 1) * (MAX_LINE_CNT_IN_A_SEG) + 1);
         if (neededSize != output.size())
             output.resize(neededSize);
         // for n-1 lines
@@ -271,14 +274,23 @@ public:
 
             float ti = spline.ti;
             float ti1 = spline.ti1;
-            float eps = (ti1 - ti) / MAX_CNT_IN_A_SEG;
+            float eps = (ti1 - ti) / MAX_LINE_CNT_IN_A_SEG;
             
             float t = ti;
-            for (int tIdx = 0; tIdx < MAX_CNT_IN_A_SEG; tIdx++, t = std::min(t + eps, ti1))
+            for (int tIdx = 0; tIdx < MAX_LINE_CNT_IN_A_SEG; tIdx++, t = std::min(t + eps, ti1))
             {
                 output[outputIdx++] = glm::vec3(spline.F(t), 0);
             }
         }
+        output[outputIdx] = glm::vec3(controlPoints[n - 1].f, 0);
+    }
+
+    void SetCurrentLineIndex(int idx)
+    {
+        if (curLineIndex != -1)
+            curvesInitStates[curLineIndex] = curveInitialized;
+        curLineIndex = idx;
+        curveInitialized = curvesInitStates[idx];
     }
 
     void AddLine()
@@ -286,7 +298,8 @@ public:
         posLists.push_back(PosList());
         colorLists.push_back(ColList());
         ctlPointLists.push_back(CtlList());
-        curLineIndex = posLists.size() - 1;
+        curvesInitStates.push_back(false);
+        SetCurrentLineIndex(posLists.size() - 1);
         curEditPointIndex = -1;
     }
 
@@ -304,7 +317,45 @@ public:
     // https://blog.mapbox.com/drawing-antialiased-lines-with-opengl-8766f34192dc
     void DrawLinesTest(const PosList& positions)
     {
+        uint32_t len = positions.size();
+        uint32_t vbSize = len * 2 * sizeof(glm::vec3);
+        // calculate draw positions
+        PosList drawPositions(len * 2);
+        float width = lineWidth * 0.01f;
+        for (int i = 0; i < len; i++)
+        {
+            glm::vec2 lastNorm(0), nextNorm(0);
+            if(i != 0)
+            {
+                glm::vec2 dir = positions[i] - positions[i - 1];
+                lastNorm = glm::vec2(-dir.y, dir.x);
+                lastNorm = glm::normalize(lastNorm);
+            }
+            if (i != len - 1)
+            {
+                glm::vec2 dir = positions[i + 1] - positions[i];
+                nextNorm = glm::vec2(-dir.y, dir.x);
+                nextNorm = glm::normalize(nextNorm);
+            }
+            glm::vec2 avgNorm = glm::normalize(lastNorm + nextNorm) * width;
+            drawPositions[i * 2] = positions[i] + glm::vec3(avgNorm, 0);
+            drawPositions[i * 2 + 1] = positions[i] + glm::vec3(-avgNorm, 0);
+        }
+        Vortex::Ref<Vortex::VertexArray> VA = Vortex::VertexArray::Create();
+        Vortex::Ref<Vortex::VertexBuffer> VB = Vortex::VertexBuffer::Create((float*)&drawPositions[0], vbSize);
+        Vortex::BufferLayout layout = {
+            {Vortex::ShaderDataType::Float3, "a_Position"}
+        };
         
+        VB->SetLayout(layout);
+        VA->Bind();
+        VA->AddVertexBuffer(VB);
+        Vortex::Ref<Vortex::Shader> shader = Vortex::Shader::Create("assets/shaders/Line.glsl");
+        shader->Bind();
+        shader->SetFloat4("u_Color", lineColor1);
+        shader->SetMat4("u_ViewProjection", GetCamera().GetViewProjMatrix());
+        // Vortex::DrawTriangleConfig attr(len * 2, GL_TRIANGLE_STRIP);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, len * 2);
     }
 
     inline void OnUpdate(Vortex::Timestep ts) override
@@ -701,13 +752,13 @@ public:
         ImGui::Text("MouseInWindow: %s", mouseInWindow ? "yes" : "no");
         ImGui::Text("clicked: %s", clicked ? "yes" : "no");
         ImGui::Text("MouseInPoint: %s", mouseInPoint ? "yes" : "no");
-        ImGui::DragInt("MaxPointCnt", &MAX_CNT_IN_A_SEG, 10, 10, 100000);
+        ImGui::DragInt("MaxPointCnt", &MAX_LINE_CNT_IN_A_SEG, 10, 10, 100000);
         ImGui::DragInt("DDfIdx", &DDfIdx, 1, 1, positions.size() - 2);
         ImGui::DragFloat2("LeftDDF", (float*)&leftDDf);
         ImGui::DragFloat2("RightDDF", (float*)&rightDDf);
         ImGui::DragFloat("LineWidth", &lineWidth);
         ImGui::ColorEdit4("LineColor", (float*)&lineColor1);
-        ImGui::DragInt("SegLinePointCnt", &MAX_CNT_IN_A_SEG);
+        ImGui::DragInt("SegLinePointCnt", &MAX_LINE_CNT_IN_A_SEG);
         // operation
         ImGui::TextColored(ImVec4(0.8f, 0.3f, 0.2f, 1.0f), "Press E to delete Point");
         if (!curveInitialized && canDrawLines && ImGui::Button("DrawSpline"))
@@ -717,7 +768,7 @@ public:
         }
 
         // add line
-        if (curveInitialized && ImGui::Button("Add Line"))
+        if (/*curveInitialized &&*/ ImGui::Button("Add Line"))
         {
             AddLine();
             curveInitialized = false;
@@ -733,10 +784,12 @@ public:
                 sprintf(item, "Line%d", i + 1);
                 items[i] = item;
             }
-            if (ImGui::ListBox("Lines", &curLineIndex, items, posLists.size()))
+            int idx = curLineIndex;
+            if (ImGui::ListBox("Lines", &idx, items, posLists.size()))
             {
                 // cancel edit
                 curEditPointIndex = -1;
+                SetCurrentLineIndex(idx);
             }
             for (int i = 0; i < posLists.size(); i++)
             {

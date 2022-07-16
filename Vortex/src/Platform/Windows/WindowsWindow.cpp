@@ -54,7 +54,9 @@ namespace Vortex {
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
-
+        // open multiple samples
+        glfwWindowHint(GLFW_SAMPLES, 4);
+        
         //set glfw callbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
             {
