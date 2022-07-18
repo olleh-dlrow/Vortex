@@ -25,4 +25,5 @@ public:
 protected:
 	Vortex::Ref<Vortex::ViewportWindow> m_ViewportWindow;
 	Vortex::Ref<Vortex::Scene>			m_EditorScene;
+	Vortex::Ref<Vortex::Shader>			m_DefaultScreenShader;
 };

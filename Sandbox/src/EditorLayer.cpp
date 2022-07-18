@@ -8,6 +8,8 @@ EditorLayer::EditorLayer()
 
     m_EditorScene = Vortex::CreateRef<Vortex::Scene>(m_ViewportWindow.get());
     m_EditorScene->Init();
+
+    m_DefaultScreenShader = Vortex::Shader::Create("assets/shaders/DefaultScreen.glsl");
 }
 
 void EditorLayer::PreUpdate(Vortex::Timestep ts)
@@ -36,7 +38,9 @@ void EditorLayer::PostUpdate(Vortex::Timestep ts)
 
 void EditorLayer::OnPostProcess(Vortex::Texture2D& renderTexture)
 {
-
+    m_DefaultScreenShader->Bind();
+    m_DefaultScreenShader->SetInt("screenTexture", 0);
+    renderTexture.Bind();
 }
 
 void EditorLayer::PreImGuiRender()
