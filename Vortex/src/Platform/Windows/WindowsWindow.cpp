@@ -51,11 +51,12 @@ namespace Vortex {
         // create and initialize graphics context
         m_Context = GraphicsContext::Create(m_Window);
         m_Context->Init();
-
+        
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
         // open multiple samples
-        glfwWindowHint(GLFW_SAMPLES, 4);
+        if(m_Context->GetMSAA())
+            glfwWindowHint(GLFW_SAMPLES, m_Context->GetMSAANSamples());
         
         //set glfw callbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)

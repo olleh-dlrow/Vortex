@@ -51,7 +51,7 @@ namespace Vortex {
     private:
         std::unique_ptr<Window> m_Window;
         ImGuiLayer* m_ImGuiLayer;
-        LayerStack m_LayerStack;
+        LayerStack  m_LayerStack;
 
         float m_LastFrameTime = 0.0f;
 

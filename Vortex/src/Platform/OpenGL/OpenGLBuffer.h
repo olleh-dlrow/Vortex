@@ -48,7 +48,7 @@ namespace Vortex
     class OpenGLRenderBuffer : public RenderBuffer
     {
     public:
-        OpenGLRenderBuffer(uint32_t width, uint32_t height);
+        OpenGLRenderBuffer(uint32_t width, uint32_t height, bool MSAAOpened = false);
         virtual ~OpenGLRenderBuffer();
 
         virtual void Bind() const;
@@ -57,26 +57,31 @@ namespace Vortex
         
     private:
         uint32_t m_RendererID;
+        bool     m_MSAAOpened;
     };
 
     class OpenGLFrameBuffer : public FrameBuffer
     {
     public:
-        OpenGLFrameBuffer(uint32_t width, uint32_t height);
+        OpenGLFrameBuffer(uint32_t width, uint32_t height, bool MSAAOpened = false);
         virtual ~OpenGLFrameBuffer();
 
-        virtual void Bind() const;
-        virtual void Unbind() const;
+        virtual void Bind(FrameBufferState state) const override;
+        virtual void Unbind() const override;
         virtual void AttachRenderBuffer(const Ref<RenderBuffer>& rb) const override;
         virtual bool CheckStatus() const override;
         virtual uint32_t GetWidth() const override { return m_Width; } 
         virtual uint32_t GetHeight() const override { return m_Height; }
         virtual uint32_t GetTextureID() const override { return m_Tex2d->GetID(); }
         virtual uint32_t GetID() const override { return m_RendererID; }
+        virtual Texture2D& GetInnerTexture() override { return *m_Tex2d; }
+
+        static void BlitImpl(FrameBuffer& src, FrameBuffer& dst);
     private:
-        uint32_t m_RendererID;
-        Ref<Texture2D> m_Tex2d;
-        uint32_t m_Width;
-        uint32_t m_Height;
+        uint32_t        m_RendererID;
+        Ref<Texture2D>  m_Tex2d;
+        uint32_t        m_Width;
+        uint32_t        m_Height;
+        bool            m_MSAAOpened;
     };
 }

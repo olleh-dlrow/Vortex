@@ -9,7 +9,7 @@ namespace Vortex
     class OpenGLTexture2D : public Texture2D
     {
     public:
-        OpenGLTexture2D(uint32_t width, uint32_t height);
+        OpenGLTexture2D(uint32_t width, uint32_t height, bool MSAAOpened = false);
         OpenGLTexture2D(const std::string& path);
         virtual ~OpenGLTexture2D();
 
@@ -21,6 +21,7 @@ namespace Vortex
         virtual void SetData(void* data, uint32_t size) override;
 
         virtual void Bind(uint32_t slot = 0) const override;
+        virtual void Unbind(uint32_t slot = 0) const override;
 
         virtual bool operator==(const Texture& other) const override
         {
@@ -28,10 +29,26 @@ namespace Vortex
         }
 
     private:
-        std::string m_Path;
-        uint32_t m_Width, m_Height;
-        uint32_t m_RendererID;
-        GLenum m_InternalFormat;
-        GLenum m_DataFormat;
+        std::string         m_Path;
+        uint32_t            m_Width, m_Height;
+        uint32_t            m_RendererID;
+        GLenum              m_InternalFormat;
+        GLenum              m_DataFormat;
+        bool                m_MSAAOpened;
     };
+
+    //class OpenGLMultisampleTexture2D : public MultisampleTexture2D
+    //{
+    //public:
+    //    OpenGLMultisampleTexture2D(uint32_t width, uint32_t height);
+    //    virtual ~OpenGLMultisampleTexture2D();
+
+    //    inline virtual uint32_t GetWidth() const override { return m_Width; }
+    //    inline virtual uint32_t GetHeight() const override { return m_Height; }
+    //    inline virtual uint32_t GetID() const override { return m_RendererID; }
+
+    //private:
+    //    uint32_t            m_Width, m_Height;
+    //    uint32_t            m_RendererID;
+    //};
 }

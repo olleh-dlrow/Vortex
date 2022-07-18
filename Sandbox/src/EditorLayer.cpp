@@ -4,6 +4,8 @@ EditorLayer::EditorLayer()
 {
 	Vortex::Ref<Vortex::Camera> cam = Vortex::CreateRef<Vortex::Camera>(Vortex::OrthoParam(), glm::vec3(0, 0, 5.0f));
 	m_ViewportWindow = Vortex::CreateRef<Vortex::ViewportWindow>("Viewport", cam);
+    m_ViewportWindow->m_OnPostProcessCallback = VT_BIND_EVENT_FN(EditorLayer::OnPostProcess);
+
     m_EditorScene = Vortex::CreateRef<Vortex::Scene>(m_ViewportWindow.get());
     m_EditorScene->Init();
 }
@@ -30,6 +32,11 @@ void EditorLayer::PostUpdate(Vortex::Timestep ts)
     m_EditorScene->PostUpdate(ts);
 
     m_ViewportWindow->End();
+}
+
+void EditorLayer::OnPostProcess(Vortex::Texture2D& renderTexture)
+{
+
 }
 
 void EditorLayer::PreImGuiRender()

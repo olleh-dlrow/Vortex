@@ -4,6 +4,7 @@
 
 #include "Vortex/Core/Core.h"
 #include "Vortex/Events/Event.h"
+#include "Vortex/Renderer/GraphicsContext.h"
 
 namespace Vortex {
     
@@ -42,6 +43,7 @@ namespace Vortex {
         virtual bool IsVSync() const = 0;
 
         virtual void* GetNativeWindow() const = 0;
+        virtual GraphicsContext& GetGraphicsContext() = 0;
 
         static Scope<Window> Create(const WindowProps& props = WindowProps());
     };

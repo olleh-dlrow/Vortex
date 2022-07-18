@@ -59,6 +59,8 @@ class CubicSplinesTest : public EditorLayer
     Vortex::PointRendererComponent* pr;
     Vortex::LineRendererComponent* lr;
 
+    Vortex::Ref<Vortex::Shader> screenShader;
+
     const glm::vec3 INVALID_POINT = glm::vec3(std::numeric_limits<float>::max());
 
     //glm::vec3 color = glm::vec3(0.3f, 0.8f, 0.2f);
@@ -312,6 +314,19 @@ public:
 
         // add first line
         AddLine();
+
+        // postprocess
+        screenShader = Vortex::Shader::Create("assets/shaders/Screen.glsl");
+    }
+
+    float offset = 1.0f / 300.0f;
+
+    virtual void OnPostProcess(Vortex::Texture2D& renderTexture)
+    {
+        screenShader->Bind();
+        screenShader->SetFloat("offset", offset);
+        screenShader->SetInt("screenTexture", 0);
+        renderTexture.Bind();
     }
 
     // https://blog.mapbox.com/drawing-antialiased-lines-with-opengl-8766f34192dc
@@ -759,6 +774,8 @@ public:
         ImGui::DragFloat("LineWidth", &lineWidth);
         ImGui::ColorEdit4("LineColor", (float*)&lineColor1);
         ImGui::DragInt("SegLinePointCnt", &MAX_LINE_CNT_IN_A_SEG);
+        ImGui::DragFloat("Offset", &offset, 0.001f);
+
         // operation
         ImGui::TextColored(ImVec4(0.8f, 0.3f, 0.2f, 1.0f), "Press E to delete Point");
         if (!curveInitialized && canDrawLines && ImGui::Button("DrawSpline"))

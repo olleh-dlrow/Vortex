@@ -35,11 +35,18 @@ namespace Vortex
                            (versionMajor == 4 && versionMinor >= 5),
                        "Vortex requires at least OpenGL version 4.5!");
 #endif
+        // set MSAA state
+        SetMSAA(true);
     }
 
     void OpenGLContext::SwapBuffers()
     {
         glfwSwapBuffers(m_WindowHandle);
+    }
+
+    void OpenGLContext::SetMSAA(bool open)
+    {
+        m_MSAAOpened = open;
     }
 
 }

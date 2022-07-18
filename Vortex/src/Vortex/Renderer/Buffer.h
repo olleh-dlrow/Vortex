@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Vortex/Renderer/Texture.h"
 
 namespace Vortex 
 {
@@ -150,7 +151,15 @@ namespace Vortex
         virtual void Unbind() const = 0;
         virtual uint32_t GetID() const = 0;
 
-        static Ref<RenderBuffer> Create(uint32_t width, uint32_t height);
+        static Ref<RenderBuffer> Create(uint32_t width, uint32_t height, bool MSAAOpened = false);
+    };
+
+    enum class FrameBufferState
+    {
+        NONE,
+        READ,
+        DRAW,
+        BOTH
     };
 
     class FrameBuffer 
@@ -158,7 +167,7 @@ namespace Vortex
     public:
         virtual ~FrameBuffer() {}
 
-        virtual void Bind() const = 0;
+        virtual void Bind(FrameBufferState state = FrameBufferState::BOTH) const = 0;
         virtual void Unbind() const = 0;
         virtual void AttachRenderBuffer(const Ref<RenderBuffer>& rb) const = 0;
         virtual bool CheckStatus() const = 0;
@@ -166,7 +175,9 @@ namespace Vortex
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
         virtual uint32_t GetID() const = 0;
+        virtual Texture2D& GetInnerTexture() = 0;
 
-        static Ref<FrameBuffer> Create(uint32_t width, uint32_t height);
+        static Ref<FrameBuffer> Create(uint32_t width, uint32_t height, bool MSAAOpened = false);
+        static void Blit(FrameBuffer& src, FrameBuffer& dst);
     };
 }

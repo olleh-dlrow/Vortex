@@ -22,7 +22,7 @@ namespace Vortex {
         bool IsVSync() const override;
 
         virtual void* GetNativeWindow() const {return m_Window;}
-
+        virtual GraphicsContext& GetGraphicsContext() override { return *m_Context; }
     private:
         virtual void Init(const WindowProps& props);
 		virtual void Shutdown();

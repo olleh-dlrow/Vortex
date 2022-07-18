@@ -1,6 +1,7 @@
 #include "vtpch.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
+#include "Vortex/Core/Application.h"
 #include <glad/glad.h>
 
 namespace Vortex 
@@ -92,14 +93,22 @@ namespace Vortex
     /////////////////////////////////////////////////////////////////////////////
     // RenderBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
-    OpenGLRenderBuffer::OpenGLRenderBuffer(uint32_t width, uint32_t height)
+    OpenGLRenderBuffer::OpenGLRenderBuffer(uint32_t width, uint32_t height, bool MSAAOpened)
+        :m_MSAAOpened(MSAAOpened)
     {
         glGenRenderbuffers(1, &m_RendererID);
         glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
-        // use a single renderbuffer object for both a depth AND stencil buffer.
-        //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); 
-        // TEST MSAA
-        glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, width, height);
+        if (!MSAAOpened)
+        {
+            //use a single renderbuffer object for both a depth AND stencil buffer.
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); 
+        }
+        else
+        {
+            // TEST MSAA
+            int nSamples = Application::Get().GetWindow().GetGraphicsContext().GetMSAANSamples();
+            glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, width, height);
+        }
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }   
 
@@ -121,25 +130,44 @@ namespace Vortex
     /////////////////////////////////////////////////////////////////////////////
     // FrameBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
-    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height)
-        :m_Width(width), m_Height(height)
+    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height, bool MSAAOpened)
+        :m_Width(width), m_Height(height), m_MSAAOpened(MSAAOpened)
     {
         glGenFramebuffers(1, &m_RendererID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
         
-        m_Tex2d = OpenGLTexture2D::Create(width, height);
+        m_Tex2d = OpenGLTexture2D::Create(width, height, MSAAOpened);
         
-        // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Tex2d->GetID(), 0);
-        // TEST MSAA
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_Tex2d->GetID(), 0);
+        if (MSAAOpened)
+        {
+            // TEST MSAA
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_Tex2d->GetID(), 0);
+        }
+        else
+        {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Tex2d->GetID(), 0);
+        }
     }
     OpenGLFrameBuffer::~OpenGLFrameBuffer()
     {
         glDeleteFramebuffers(1, &m_RendererID);
     }
-    void OpenGLFrameBuffer::Bind() const
+    void OpenGLFrameBuffer::Bind(FrameBufferState state) const
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+        switch (state)
+        {
+        case FrameBufferState::BOTH:
+            glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+            break;
+        case FrameBufferState::READ:
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
+            break;
+        case FrameBufferState::DRAW:
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_RendererID);
+            break;
+        default:
+            break;
+        }
     }
     void OpenGLFrameBuffer::Unbind() const
     {
@@ -152,5 +180,11 @@ namespace Vortex
     bool OpenGLFrameBuffer::CheckStatus() const
     {
         return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+    }
+    void OpenGLFrameBuffer::BlitImpl(FrameBuffer& src, FrameBuffer& dst)
+    {
+        src.Bind(FrameBufferState::READ);
+        dst.Bind(FrameBufferState::DRAW);
+        glBlitFramebuffer(0, 0, src.GetWidth(), src.GetHeight(), 0, 0, dst.GetWidth(), dst.GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
 }

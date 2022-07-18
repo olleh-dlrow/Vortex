@@ -12,6 +12,7 @@ public:
 	virtual void PreUpdate(Vortex::Timestep ts) override;
 	virtual void OnUpdate(Vortex::Timestep ts) override;
 	virtual void PostUpdate(Vortex::Timestep ts) override;
+	virtual void OnPostProcess(Vortex::Texture2D& renderTexture);
 
 	virtual void PreImGuiRender() override;
 	virtual void OnImGuiRender() override;
