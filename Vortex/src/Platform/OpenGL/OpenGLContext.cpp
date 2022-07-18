@@ -43,10 +43,4 @@ namespace Vortex
     {
         glfwSwapBuffers(m_WindowHandle);
     }
-
-    void OpenGLContext::SetMSAA(bool open)
-    {
-        m_MSAAOpened = open;
-    }
-
 }

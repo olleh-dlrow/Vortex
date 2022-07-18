@@ -54,9 +54,9 @@ namespace Vortex {
         
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
-        // open multiple samples
-        if(m_Context->GetMSAA())
-            glfwWindowHint(GLFW_SAMPLES, m_Context->GetMSAANSamples());
+        // open multiple samples, the effect is low, so we don't use this but opengl's MSAA
+        //if(m_Context->GetMSAA())
+        //  glfwWindowHint(GLFW_SAMPLES, m_Context->GetMSAANSamples());
         
         //set glfw callbacks
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)

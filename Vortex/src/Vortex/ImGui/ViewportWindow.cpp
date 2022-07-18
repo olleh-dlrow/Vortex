@@ -1,22 +1,49 @@
 #include "vtpch.h"
 #include "ViewportWindow.h"
+#include "Vortex/Events/GraphicsEvent.h"
 
 namespace Vortex
 {
 
 	// the whole off-screen render reference to:
 	// https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/5.1.framebuffers/framebuffers.cpp
-	
-	// wait to implement:
-	// when change the MSAA state and MSAA samples, we should recreate fb, rb and their textures
 	Vortex::ViewportWindow::ViewportWindow(const std::string& winName,
 		const Ref<Camera>& cam,
 		const glm::vec4& clearColor)
 		:m_WindowName(winName), m_Camera(cam), m_IsFocused(false), m_ClearColor(clearColor)
 	{
+		m_MSAAOpened = Application::Get().GetWindow().GetGraphicsContext().GetMSAA();
+
+		CreateFrameBuffers();
+
+		// create screen quad
+		float quadVertices[] = {   // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+			// positions   // texCoords
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			-1.0f, -1.0f,  0.0f, 0.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+			 1.0f,  1.0f,  1.0f, 1.0f
+		};
+		m_ScreenVertexArray = VertexArray::Create();
+		m_ScreenVertexBuffer = VertexBuffer::Create(quadVertices, sizeof(quadVertices));
+		BufferLayout layout = {
+			{ShaderDataType::Float2, "aPos"},
+			{ShaderDataType::Float2, "aTexCoords"}
+		};
+		m_ScreenVertexBuffer->SetLayout(layout);
+		m_ScreenVertexArray->AddVertexBuffer(m_ScreenVertexBuffer);
+		m_ScreenVertexArray->Unbind();
+	}
+
+	
+	void ViewportWindow::CreateFrameBuffers()
+	{
 		int width = Application::Get().GetWindow().GetWidth();
 		int height = Application::Get().GetWindow().GetHeight();
-		m_MSAAOpened = Application::Get().GetWindow().GetGraphicsContext().GetMSAA();
+
 		m_FB = FrameBuffer::Create(width, height, m_MSAAOpened);
 		m_RB = RenderBuffer::Create(width, height, m_MSAAOpened);
 		m_FB->AttachRenderBuffer(m_RB);
@@ -45,27 +72,6 @@ namespace Vortex
 		{
 			VT_CORE_ASSERT(0, "FinalScreen FrameBuffer is not complete");
 		}
-
-		// create screen quad
-		float quadVertices[] = {   // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-			// positions   // texCoords
-			-1.0f,  1.0f,  0.0f, 1.0f,
-			-1.0f, -1.0f,  0.0f, 0.0f,
-			 1.0f, -1.0f,  1.0f, 0.0f,
-
-			-1.0f,  1.0f,  0.0f, 1.0f,
-			 1.0f, -1.0f,  1.0f, 0.0f,
-			 1.0f,  1.0f,  1.0f, 1.0f
-		};
-		m_ScreenVertexArray = VertexArray::Create();
-		m_ScreenVertexBuffer = VertexBuffer::Create(quadVertices, sizeof(quadVertices));
-		BufferLayout layout = {
-			{ShaderDataType::Float2, "aPos"},
-			{ShaderDataType::Float2, "aTexCoords"}
-		};
-		m_ScreenVertexBuffer->SetLayout(layout);
-		m_ScreenVertexArray->AddVertexBuffer(m_ScreenVertexBuffer);
-		m_ScreenVertexArray->Unbind();
 	}
 
 	void Vortex::ViewportWindow::Begin()
@@ -149,6 +155,15 @@ namespace Vortex
 		ImGui::Text(("Cfg_" + m_WindowName).c_str());
 		ImGui::ColorEdit4("Clear Color", (float*)&m_ClearColor);
 		ImGui::Text("IsFocused: %s", m_IsFocused ? "Yes" : "No");
+		if (ImGui::Checkbox("MSAA", &m_MSAAOpened))
+		{
+			Application::Get().GetWindow().GetGraphicsContext().SetMSAA(m_MSAAOpened);
+		}
+		int nSamples = Application::Get().GetWindow().GetGraphicsContext().GetMSAANSamples();
+		if (ImGui::InputInt("Samples", &nSamples, 1))
+		{
+			Application::Get().GetWindow().GetGraphicsContext().SetMSAANSamples(nSamples);
+		}
 	}
 
 	void Vortex::ViewportWindow::OnEvent(Event& e)
@@ -157,6 +172,15 @@ namespace Vortex
 		{
 			m_Camera->OnEvent(e);
 		}
+
+		// handle MSAA event
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<MSAAClosedEvent>(
+			VT_BIND_EVENT_FN(ViewportWindow::OnMSAAChanged));
+		dispatcher.Dispatch<MSAAOpenedEvent>(
+			VT_BIND_EVENT_FN(ViewportWindow::OnMSAAChanged));
+		dispatcher.Dispatch<MSAANSamplesChangedEvent>(
+			VT_BIND_EVENT_FN(ViewportWindow::OnMSAAChanged));
 	}
 
 	void Vortex::ViewportWindow::OnUpdate(Timestep ts)
@@ -180,5 +204,10 @@ namespace Vortex
 		ImVec2 winPos = ConvertToWinPos(scrPos);
 		ImVec2 sz = GetContentSize();
 		return ImVec2(winPos.x / sz.x, winPos.y / sz.y);
+	}
+	bool ViewportWindow::OnMSAAChanged(Event& e)
+	{
+		CreateFrameBuffers();
+		return true;
 	}
 }

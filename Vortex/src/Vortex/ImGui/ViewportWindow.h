@@ -20,6 +20,8 @@ namespace Vortex
 					   const Ref<Camera>& cam,
 					   const glm::vec4& clearColor=glm::vec4(0.1f, 0.1f, 0.1f, 1));
 		~ViewportWindow() {};
+		// create fb according to MSAAOpened
+		void CreateFrameBuffers();
 		void Begin();
 		void End();
 		void OnImGuiRender();
@@ -32,6 +34,8 @@ namespace Vortex
 		ImVec2 ConvertToWinPos(ImVec2 scrPos);
 		// X+: right, Y+: down
 		ImVec2 ConvertToNormalizedPos(ImVec2 scrPos);
+
+		bool OnMSAAChanged(Event& e);
 
 		inline Ref<Camera> GetCamera() const { return m_Camera; }
 		inline Camera* GetCamera() { return m_Camera.get(); }
