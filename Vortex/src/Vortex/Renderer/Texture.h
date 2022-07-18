@@ -35,11 +35,6 @@ namespace Vortex
         static Ref<Texture2D> Create(const std::string& path);
     };
 
-    class MultisampleTexture2D : public Texture2D
-    {
-
-    };
-
     // store information about some texture
     struct TextureMeta
     {

@@ -12,8 +12,6 @@ namespace Vortex
         m_InternalFormat = GL_RGBA8;
         m_DataFormat = GL_RGBA;
         
-        m_MSAAOpened = MSAAOpened;
-
         if (!MSAAOpened)
         {
             glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
@@ -31,15 +29,11 @@ namespace Vortex
             glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_RendererID);
             int nSamples = Application::Get().GetWindow().GetGraphicsContext().GetMSAANSamples();
             glTextureStorage2DMultisample(m_RendererID, nSamples, m_InternalFormat, width, height, GL_TRUE);
-            //glGenTextures(1, &m_RendererID);
-            //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_RendererID);
-            //glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, m_Width, m_Height, GL_TRUE);
-            //glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
         }
     }
 
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
-        : m_Path(path), m_MSAAOpened(false)
+        : m_Path(path)
     {
         int width, height, channels;
         stbi_set_flip_vertically_on_load(1);
@@ -101,12 +95,4 @@ namespace Vortex
     {
         glBindTextureUnit(slot, 0);
     }
-    //OpenGLMultisampleTexture2D::OpenGLMultisampleTexture2D(uint32_t width, uint32_t height)
-    //{
-    //    
-    //}
-    //OpenGLMultisampleTexture2D::~OpenGLMultisampleTexture2D()
-    //{
-    //    glDeleteTextures(1, &m_RendererID);
-    //}
 }

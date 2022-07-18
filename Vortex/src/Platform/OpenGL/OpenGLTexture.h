@@ -34,21 +34,6 @@ namespace Vortex
         uint32_t            m_RendererID;
         GLenum              m_InternalFormat;
         GLenum              m_DataFormat;
-        bool                m_MSAAOpened;
     };
 
-    //class OpenGLMultisampleTexture2D : public MultisampleTexture2D
-    //{
-    //public:
-    //    OpenGLMultisampleTexture2D(uint32_t width, uint32_t height);
-    //    virtual ~OpenGLMultisampleTexture2D();
-
-    //    inline virtual uint32_t GetWidth() const override { return m_Width; }
-    //    inline virtual uint32_t GetHeight() const override { return m_Height; }
-    //    inline virtual uint32_t GetID() const override { return m_RendererID; }
-
-    //private:
-    //    uint32_t            m_Width, m_Height;
-    //    uint32_t            m_RendererID;
-    //};
 }

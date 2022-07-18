@@ -58,18 +58,15 @@ namespace Vortex
 		
 		Ref<FrameBuffer>			m_FB;				// rendered first to this frame buffer
 		Ref<RenderBuffer>			m_RB;
-		bool						m_MSAAOpened;
 		Ref<FrameBuffer>			m_DownsampleFB;		// used for msaa to downsample
 		
 		Ref<FrameBuffer>			m_FinalScreenFB;	// final screen framebuffer after postprocess
+		bool						m_MSAAOpened;
+
 		bool						m_IsFocused;
 		glm::vec4					m_ClearColor;
 		Ref<VertexArray>			m_ScreenVertexArray;
 		Ref<VertexBuffer>			m_ScreenVertexBuffer;
 		Ref<Shader>					m_ScreenShader;
-		unsigned int intermediateFBO;
-		unsigned int screenTexture;
-		unsigned int finalScreenFBO;
-		unsigned int finalScreenTexture;
 	};
 }

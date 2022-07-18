@@ -94,7 +94,6 @@ namespace Vortex
     // RenderBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
     OpenGLRenderBuffer::OpenGLRenderBuffer(uint32_t width, uint32_t height, bool MSAAOpened)
-        :m_MSAAOpened(MSAAOpened)
     {
         glGenRenderbuffers(1, &m_RendererID);
         glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
@@ -131,7 +130,7 @@ namespace Vortex
     // FrameBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
     OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height, bool MSAAOpened)
-        :m_Width(width), m_Height(height), m_MSAAOpened(MSAAOpened)
+        :m_Width(width), m_Height(height)
     {
         glGenFramebuffers(1, &m_RendererID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);

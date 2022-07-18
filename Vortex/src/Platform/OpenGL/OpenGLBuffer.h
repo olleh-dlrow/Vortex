@@ -57,7 +57,6 @@ namespace Vortex
         
     private:
         uint32_t m_RendererID;
-        bool     m_MSAAOpened;
     };
 
     class OpenGLFrameBuffer : public FrameBuffer
@@ -82,6 +81,5 @@ namespace Vortex
         Ref<Texture2D>  m_Tex2d;
         uint32_t        m_Width;
         uint32_t        m_Height;
-        bool            m_MSAAOpened;
     };
 }
