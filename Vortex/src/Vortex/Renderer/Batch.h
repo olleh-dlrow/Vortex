@@ -18,7 +18,7 @@ namespace Vortex
 		using V = typename BU::VertexType;
 
 		Batch(int maxUnitCount = 10000)
-			:m_MaxUnitCount(maxUnitCount), m_FreeVertexBufferBaseIndex(0)
+			:m_MaxUnitCount(std::max(5, maxUnitCount)), m_FreeVertexBufferBaseIndex(0)
 		{
 			Init();
 		}

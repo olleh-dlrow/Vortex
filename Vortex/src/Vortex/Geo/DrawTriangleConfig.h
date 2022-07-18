@@ -8,13 +8,14 @@ namespace Vortex
 	struct DrawTriangleConfig
 	{
 		DrawTriangleConfig() {}
-		DrawTriangleConfig(int verticesCount, int indicesCount, uint32_t m = GL_FILL)
-			:polygonMode(m), vertCnt(verticesCount), indexCnt(indicesCount)
+		DrawTriangleConfig(int verticesCount, int indicesCount, uint32_t _polygonMode = GL_FILL, GLenum triMode = GL_TRIANGLES)
+			:triangleMode(triMode), polygonMode(_polygonMode), vertCnt(verticesCount), indexCnt(indicesCount)
 		{
 
 		}
-		GLenum	polygonMode;
-		GLsizei vertCnt;
-		GLsizei indexCnt;
+		GLenum  triangleMode = GL_TRIANGLES;
+		GLenum	polygonMode  = GL_FILL;
+		GLsizei vertCnt = 0;
+		GLsizei indexCnt = 0;
 	};
 }

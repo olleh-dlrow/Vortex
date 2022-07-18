@@ -71,6 +71,5 @@ namespace Vortex
 		glm::vec4					m_ClearColor;
 		Ref<VertexArray>			m_ScreenVertexArray;
 		Ref<VertexBuffer>			m_ScreenVertexBuffer;
-		Ref<Shader>					m_ScreenShader;
 	};
 }

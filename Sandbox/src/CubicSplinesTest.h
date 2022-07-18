@@ -319,7 +319,7 @@ public:
         screenShader = Vortex::Shader::Create("assets/shaders/Screen.glsl");
     }
 
-    float offset = 1.0f / 300.0f;
+    float offset = 0;
 
     virtual void OnPostProcess(Vortex::Texture2D& renderTexture)
     {
@@ -327,50 +327,6 @@ public:
         screenShader->SetFloat("offset", offset);
         screenShader->SetInt("screenTexture", 0);
         renderTexture.Bind();
-    }
-
-    // https://blog.mapbox.com/drawing-antialiased-lines-with-opengl-8766f34192dc
-    void DrawLinesTest(const PosList& positions)
-    {
-        uint32_t len = positions.size();
-        uint32_t vbSize = len * 2 * sizeof(glm::vec3);
-        // calculate draw positions
-        PosList drawPositions(len * 2);
-        float width = lineWidth * 0.01f;
-        for (int i = 0; i < len; i++)
-        {
-            glm::vec2 lastNorm(0), nextNorm(0);
-            if(i != 0)
-            {
-                glm::vec2 dir = positions[i] - positions[i - 1];
-                lastNorm = glm::vec2(-dir.y, dir.x);
-                lastNorm = glm::normalize(lastNorm);
-            }
-            if (i != len - 1)
-            {
-                glm::vec2 dir = positions[i + 1] - positions[i];
-                nextNorm = glm::vec2(-dir.y, dir.x);
-                nextNorm = glm::normalize(nextNorm);
-            }
-            glm::vec2 avgNorm = glm::normalize(lastNorm + nextNorm) * width;
-            drawPositions[i * 2] = positions[i] + glm::vec3(avgNorm, 0);
-            drawPositions[i * 2 + 1] = positions[i] + glm::vec3(-avgNorm, 0);
-        }
-        Vortex::Ref<Vortex::VertexArray> VA = Vortex::VertexArray::Create();
-        Vortex::Ref<Vortex::VertexBuffer> VB = Vortex::VertexBuffer::Create((float*)&drawPositions[0], vbSize);
-        Vortex::BufferLayout layout = {
-            {Vortex::ShaderDataType::Float3, "a_Position"}
-        };
-        
-        VB->SetLayout(layout);
-        VA->Bind();
-        VA->AddVertexBuffer(VB);
-        Vortex::Ref<Vortex::Shader> shader = Vortex::Shader::Create("assets/shaders/Line.glsl");
-        shader->Bind();
-        shader->SetFloat4("u_Color", lineColor1);
-        shader->SetMat4("u_ViewProjection", GetCamera().GetViewProjMatrix());
-        // Vortex::DrawTriangleConfig attr(len * 2, GL_TRIANGLE_STRIP);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, len * 2);
     }
 
     inline void OnUpdate(Vortex::Timestep ts) override
@@ -745,9 +701,7 @@ public:
             if (i != curLineIndex || (i == curLineIndex && curveInitialized))
             {
                 CalculateSplinePointsWithTangent(ctlPointLists[i], linePoints);
-                //lr->DrawLines(linePoints);
-                //pr->DrawPoints(linePoints, lineWidth, lineColor1);
-                DrawLinesTest(linePoints);
+                lr->DrawLines(linePoints);
             }
         }
     }

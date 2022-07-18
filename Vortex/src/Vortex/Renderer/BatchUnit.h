@@ -31,6 +31,7 @@ namespace Vortex
 	{
 		friend class Batch<LinePoint2>;
 	public:
+		LinePoint2() {}
 		LinePoint2(const glm::vec3& p)
 		{
 			m_Vertices[0].position = p;

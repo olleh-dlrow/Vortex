@@ -89,6 +89,8 @@ namespace Vortex
 		int width = Application::Get().GetWindow().GetWidth();
 		int height = Application::Get().GetWindow().GetHeight();
 
+		// wait to implement:
+		// open or close postprocess
 		Texture2D* sampledTexture = nullptr;
 		if (m_MSAAOpened)
 		{
