@@ -153,21 +153,6 @@ namespace Vortex
 
 			// Because I use the texture from OpenGL, I need to invert the V from the UV.
 			ImGui::Image((ImTextureID)(uint64_t)m_FinalScreenFB->GetTextureID(), m_ContentSize, ImVec2(0, 1), ImVec2(1, 0));
-			
-			// TEST
-			//{
-			//	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-			//	ImVec2 vMax = ImGui::GetWindowContentRegionMax();
-
-			//	vMin.x += ImGui::GetWindowPos().x;
-			//	vMin.y += ImGui::GetWindowPos().y;
-			//	vMax.x += ImGui::GetWindowPos().x;
-			//	vMax.y += ImGui::GetWindowPos().y;
-
-			//	ImGui::GetForegroundDrawList()->AddRect(vMin, vMax, IM_COL32(255, 255, 0, 255));
-			//	//VT_CORE_INFO("({}, {})", vMin.x, vMin.y);
-			//	//VT_CORE_INFO("({}, {})", vMax.x, vMax.y);
-			//}
 		}
 		ImGui::End();
 	}

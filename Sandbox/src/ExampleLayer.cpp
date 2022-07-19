@@ -132,9 +132,6 @@ void ExampleLayer::OnUpdate(Vortex::Timestep ts)
     m_CameraController.OnUpdate(ts);
 
     // Render
-    Vortex::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-    Vortex::RenderCommand::Clear();
-
     Vortex::Renderer::BeginScene(m_CameraController.GetCamera());
 
     glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));

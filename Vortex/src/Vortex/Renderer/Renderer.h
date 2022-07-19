@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Vortex/Renderer/RenderCommand.h"
-
 #include "Vortex/Renderer/OrthographicCamera.h"
 #include "Vortex/Renderer/Camera.h"
 #include "Vortex/Renderer/Shader.h"
 #include "Vortex/Geo/DrawGeoConfig.h"
-
-#include "Vortex/Renderer/Batch.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/RendererAPI.h"
 
 namespace Vortex {
 

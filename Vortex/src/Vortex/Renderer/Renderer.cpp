@@ -2,20 +2,15 @@
 #include "Vortex/Renderer/Renderer.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"
-#include "Vortex/Renderer/Renderer2D.h"
 #include "Vortex/Renderer/GraphicsContext.h"
 
 namespace Vortex {
 
     Scope<Renderer::SceneData> Renderer::s_SceneData = CreateScope<Renderer::SceneData>();
     Scope<RendererAPI> Renderer::s_RendererAPI = RendererAPI::Create();
-
     void Renderer::Init()
     {
         s_RendererAPI->Init();
-        // OBSOLETE
-        //RenderCommand::Init();
-        //Renderer2D::Init();
     }
 
     void Renderer::Shutdown()

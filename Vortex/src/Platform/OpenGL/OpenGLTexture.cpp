@@ -79,10 +79,6 @@ namespace Vortex
             glBindTexture(GL_TEXTURE_2D, m_RendererID);
             glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, pixelType, NULL);
 
-            // if format has 16f, don't use this
-            //glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-            //glTextureStorage2D(m_RendererID, 1, m_InternalFormat, width, height);
-
             glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -134,26 +130,16 @@ namespace Vortex
 
         VT_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
 
-        //glGenTextures(1, &m_RendererID);
-        //glBindTexture(GL_TEXTURE_2D, m_RendererID);
-        //glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, pixelType, NULL);
-
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
         glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-
-        //glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-        //glTextureStorage2D(m_RendererID, 1, internalFormat, m_Width, m_Height);
 
         glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-        // tips: set texture data and its level in minmap(here is 0)
-        //glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 
         stbi_image_free(data);
     }

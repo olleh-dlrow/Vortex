@@ -4,6 +4,7 @@
 #include <Vortex/Scene/SceneImporter.h>
 #include <Vortex/Scene/MeshComponent.h>
 #include <Vortex/Scene/MeshRendererComponent.h>
+#include <Vortex/Renderer/Batch.h>
 #include <stb_image.h>
 
 using Vortex::Ref;
@@ -14,6 +15,7 @@ using Vortex::Renderer;
 using Vortex::Shader;
 using Vortex::VertexArray;
 using Vortex::VertexBuffer;
+using Vortex::Cube4;
 
 using Vortex::Texture;
 using Vortex::Texture2D;
@@ -23,7 +25,6 @@ using Vortex::MeshRendererComponent;
 using Vortex::Material;
 using Vortex::Scene;
 using Vortex::Entity;
-using Vortex::Cube4;
 
 std::vector<glm::vec3> lightPositions;
 std::vector<glm::vec3> lightColors;
