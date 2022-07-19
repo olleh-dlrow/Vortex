@@ -64,4 +64,59 @@ namespace Vortex
 
 		EVENT_CLASS_TYPE(MSAANSamplesChanged)
 	};
+
+	// HDROpened, HDRClosed, HDRExposureChanged
+	class HDROpenedEvent : public GraphicsEvent
+	{
+	public:
+		HDROpenedEvent()
+		{
+
+		}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "HDROpenedEvent";
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(HDROpened)
+	};
+
+	class HDRClosedEvent : public GraphicsEvent
+	{
+	public:
+		HDRClosedEvent()
+		{
+
+		}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "HDRClosedEvent";
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(HDRClosed)
+	};
+
+	class HDRExposureChangedEvent : public GraphicsEvent
+	{
+	public:
+		HDRExposureChangedEvent()
+		{
+
+		}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "HDRExposureChangedEvent";
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(HDRExposureChanged)
+	};
 }

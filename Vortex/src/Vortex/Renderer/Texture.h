@@ -31,8 +31,10 @@ namespace Vortex
     class Texture2D : public Texture
     {
     public:
-        static Ref<Texture2D> Create(uint32_t width, uint32_t height, bool MSAAOpened = false);
-        static Ref<Texture2D> Create(const std::string& path);
+        static Ref<Texture2D> Create(uint32_t width, uint32_t height, 
+                                    bool MSAAOpened = false,
+                                    const char* format = "RGBA8");
+        static Ref<Texture2D> Create(const std::string& path, bool gammaCorrection = false);
     };
 
     // store information about some texture

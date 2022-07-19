@@ -12,6 +12,8 @@ public:
 	virtual void PreUpdate(Vortex::Timestep ts) override;
 	virtual void OnUpdate(Vortex::Timestep ts) override;
 	virtual void PostUpdate(Vortex::Timestep ts) override;
+	void OnPostProcessBase(Vortex::Texture2D& renderTexture);
+
 	virtual void OnPostProcess(Vortex::Texture2D& renderTexture);
 
 	virtual void PreImGuiRender() override;
@@ -25,5 +27,5 @@ public:
 protected:
 	Vortex::Ref<Vortex::ViewportWindow> m_ViewportWindow;
 	Vortex::Ref<Vortex::Scene>			m_EditorScene;
-	Vortex::Ref<Vortex::Shader>			m_DefaultScreenShader;
+	Vortex::Ref<Vortex::Material>		m_PostProcessMaterial;
 };

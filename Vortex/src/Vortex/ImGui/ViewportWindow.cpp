@@ -4,7 +4,6 @@
 
 namespace Vortex
 {
-
 	// the whole off-screen render reference to:
 	// https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/5.1.framebuffers/framebuffers.cpp
 	Vortex::ViewportWindow::ViewportWindow(const std::string& winName,
@@ -13,11 +12,12 @@ namespace Vortex
 		:m_WindowName(winName), m_Camera(cam), m_IsFocused(false), m_ClearColor(clearColor)
 	{
 		m_MSAAOpened = Application::Get().GetWindow().GetGraphicsContext().GetMSAA();
+		m_HDROpened = Application::Get().GetWindow().GetGraphicsContext().GetHDR();
 
 		CreateFrameBuffers();
 
 		// create screen quad
-		float quadVertices[] = {   // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+		float quadVertices[] = {
 			// positions   // texCoords
 			-1.0f,  1.0f,  0.0f, 1.0f,
 			-1.0f, -1.0f,  0.0f, 0.0f,
@@ -44,7 +44,18 @@ namespace Vortex
 		int width = Application::Get().GetWindow().GetWidth();
 		int height = Application::Get().GetWindow().GetHeight();
 
-		m_FB = FrameBuffer::Create(width, height, m_MSAAOpened);
+		Ref<Texture2D> tex;
+		if (!m_HDROpened)
+		{
+			tex = Texture2D::Create(width, height, m_MSAAOpened, "RGBA8");
+			m_FB = FrameBuffer::Create(width, height, m_MSAAOpened, std::vector<Ref<Texture2D>>{tex});
+		}
+		else
+		{
+			tex = Texture2D::Create(width, height, m_MSAAOpened, "RGBA16F");
+			m_FB = FrameBuffer::Create(width, height, m_MSAAOpened, std::vector<Ref<Texture2D>>{tex});
+		}
+			
 		m_RB = RenderBuffer::Create(width, height, m_MSAAOpened);
 		m_FB->AttachRenderBuffer(m_RB);
 		if (!m_FB->CheckStatus())
@@ -56,7 +67,16 @@ namespace Vortex
 		if (m_MSAAOpened)
 		{
 			// TEST MSAA
-			m_DownsampleFB = FrameBuffer::Create(width, height);
+			if (!m_HDROpened)
+			{
+				tex = Texture2D::Create(width, height, false, "RGBA8");
+				m_DownsampleFB = FrameBuffer::Create(width, height, false, std::vector<Ref<Texture2D>>{tex});
+			}
+			else
+			{
+				tex = Texture2D::Create(width, height, false, "RGBA16F");
+				m_DownsampleFB = FrameBuffer::Create(width, height, false, std::vector<Ref<Texture2D>>{tex});
+			}
 			m_DownsampleFB->Bind();
 
 			if (!m_DownsampleFB->CheckStatus())
@@ -166,6 +186,20 @@ namespace Vortex
 		{
 			Application::Get().GetWindow().GetGraphicsContext().SetMSAANSamples(nSamples);
 		}
+		if (ImGui::Checkbox("HDR", &m_HDROpened))
+		{
+			Application::Get().GetWindow().GetGraphicsContext().SetHDR(m_HDROpened);
+		}
+		float exposure = Application::Get().GetWindow().GetGraphicsContext().GetHDRExposure();
+		if (ImGui::DragFloat("HDR Exposure", &exposure))
+		{
+			Application::Get().GetWindow().GetGraphicsContext().SetHDRExposure(exposure);
+		}
+		bool gamma = Application::Get().GetWindow().GetGraphicsContext().GetGammea();
+		if (ImGui::Checkbox("Gamma", &gamma))
+		{
+			Application::Get().GetWindow().GetGraphicsContext().SetGamma(gamma);
+		}
 	}
 
 	void Vortex::ViewportWindow::OnEvent(Event& e)
@@ -183,6 +217,12 @@ namespace Vortex
 			VT_BIND_EVENT_FN(ViewportWindow::OnMSAAChanged));
 		dispatcher.Dispatch<MSAANSamplesChangedEvent>(
 			VT_BIND_EVENT_FN(ViewportWindow::OnMSAAChanged));
+
+		// handle HDR event
+		dispatcher.Dispatch<HDROpenedEvent>(
+			VT_BIND_EVENT_FN(ViewportWindow::OnHDRChanged));
+		dispatcher.Dispatch<HDRClosedEvent>(
+			VT_BIND_EVENT_FN(ViewportWindow::OnHDRChanged));
 	}
 
 	void Vortex::ViewportWindow::OnUpdate(Timestep ts)
@@ -210,6 +250,12 @@ namespace Vortex
 	bool ViewportWindow::OnMSAAChanged(Event& e)
 	{
 		CreateFrameBuffers();
-		return true;
+		return false;
+	}
+
+	bool ViewportWindow::OnHDRChanged(Event& e)
+	{
+		CreateFrameBuffers();
+		return false;
 	}
 }

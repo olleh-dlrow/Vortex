@@ -36,7 +36,11 @@ namespace Vortex
                        "Vortex requires at least OpenGL version 4.5!");
 #endif
         // set MSAA state
-        SetMSAA(true);
+        SetMSAA(false);
+        // set HDR state
+        SetHDR(true);
+        // set gamma
+        SetGamma(true);
     }
 
     void OpenGLContext::SwapBuffers()

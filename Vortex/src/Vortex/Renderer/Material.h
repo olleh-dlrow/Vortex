@@ -13,6 +13,8 @@ namespace Vortex
 		Material();
 		Material(const std::string& name);
 
+		void ApplyProperties();
+
 		// add texture to map, not set shader
 		void AddTexture(const std::string& name, const Ref<Texture>& tex);
 		
@@ -43,7 +45,7 @@ namespace Vortex
 
 		Ref<Shader>									m_Shader;
 	private:
-		std::string									m_Name;
+		std::string									m_Name = "";
 		// key: name, value: TextureMeta, Texture ptr
 		std::unordered_map<std::string, TexPair>	m_Textures;
 

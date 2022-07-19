@@ -59,7 +59,7 @@ class CubicSplinesTest : public EditorLayer
     Vortex::PointRendererComponent* pr;
     Vortex::LineRendererComponent* lr;
 
-    Vortex::Ref<Vortex::Shader> screenShader;
+    // Vortex::Ref<Vortex::Shader> screenShader;
 
     const glm::vec3 INVALID_POINT = glm::vec3(std::numeric_limits<float>::max());
 
@@ -316,17 +316,14 @@ public:
         AddLine();
 
         // postprocess
-        screenShader = Vortex::Shader::Create("assets/shaders/Screen.glsl");
+        m_PostProcessMaterial->m_Shader = Vortex::Shader::Create("assets/shaders/Screen.glsl");
     }
 
     float offset = 0;
 
     virtual void OnPostProcess(Vortex::Texture2D& renderTexture)
     {
-        screenShader->Bind();
-        screenShader->SetFloat("offset", offset);
-        screenShader->SetInt("screenTexture", 0);
-        renderTexture.Bind();
+        m_PostProcessMaterial->SetFloat("offset", offset);
     }
 
     inline void OnUpdate(Vortex::Timestep ts) override

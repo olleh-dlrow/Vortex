@@ -15,6 +15,31 @@ namespace Vortex
 	{
 
 	}
+	void Material::ApplyProperties()
+	{
+		m_Shader->Bind();
+		for (auto& pf : m_FloatProps)
+		{
+			m_Shader->SetFloat(pf.first, pf.second);
+		}
+		for (auto& pf3 : m_Float3Props)
+		{
+			m_Shader->SetFloat3(pf3.first, pf3.second);
+		}
+		for (auto& pf4 : m_Float4Props)
+		{
+			m_Shader->SetFloat4(pf4.first, pf4.second);
+		}
+		for (auto& pi : m_IntProps)
+		{
+			m_Shader->SetInt(pi.first, pi.second);
+		}
+		for (auto& pm : m_Mat4Props)
+		{
+			m_Shader->SetMat4(pm.first, pm.second);
+		}
+		BindTextures();
+	}
 	void Material::AddTexture(const std::string& name, const Ref<Texture>& tex)
 	{
 		m_Textures[name] = TexPair{ TextureMeta{false}, tex };
@@ -42,7 +67,7 @@ namespace Vortex
 	void Material::SetFloat(const std::string& name, float val)
 	{
 		m_FloatProps[name] = val;
-		m_Shader->SetFloat(name, val);
+		
 	}
 	float Material::GetFloat(const std::string& name)
 	{
@@ -57,7 +82,6 @@ namespace Vortex
 	void Material::SetFloat3(const std::string& name, const glm::vec3& val)
 	{
 		m_Float3Props[name] = val;
-		m_Shader->SetFloat3(name, val);
 	}
 
 	glm::vec3 Material::GetFloat3(const std::string& name)
@@ -73,7 +97,6 @@ namespace Vortex
 	void Material::SetFloat4(const std::string& name, const glm::vec4& val)
 	{
 		m_Float4Props[name] = val;
-		m_Shader->SetFloat4(name, val);
 	}
 
 	glm::vec4 Material::GetFloat4(const std::string& name)
@@ -89,7 +112,6 @@ namespace Vortex
 	void Material::SetInt(const std::string& name, int val)
 	{
 		m_IntProps[name] = val;
-		m_Shader->SetInt(name, val);
 	}
 
 	int Material::GetInt(const std::string& name)
@@ -105,7 +127,6 @@ namespace Vortex
 	void Material::SetMat4(const std::string& name, const glm::mat4& val)
 	{
 		m_Mat4Props[name] = val;
-		m_Shader->SetMat4(name, val);
 	}
 
 	glm::mat4 Material::GetMat4(const std::string& name)

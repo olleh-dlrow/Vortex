@@ -13,13 +13,14 @@ namespace Vortex
 		using VertexType = V;
 		constexpr static int GetVertexCount() { return static_cast<int>(VCNT); }
 		constexpr static int GetIndexCount() { return static_cast<int>(ICNT); }
+		constexpr static uint32_t GetVerticesSize() { return GetVertexCount() * sizeof(VertexType); }
 	protected:
 		std::array<V, VCNT>			m_Vertices;
 	};
 
-
-
-
+	/////////////////////////////////////////////////////////////////////////////
+	// LinePoint //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////
 	template<typename V>
 	class LinePoint : public BatchUnit<V, 1, 0>
 	{
@@ -39,9 +40,9 @@ namespace Vortex
 	};
 
 
-
-
-
+	/////////////////////////////////////////////////////////////////////////////
+	// Triangle //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////
 	template<typename V>
 	class Triangle : public BatchUnit<V, 3, 0>
 	{
@@ -71,6 +72,10 @@ namespace Vortex
 		
 	};
 
+
+	/////////////////////////////////////////////////////////////////////////////
+	// Quad //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////
 	template<typename V>
 	class Quad : public BatchUnit<V, 4, 6>
 	{
@@ -113,6 +118,108 @@ namespace Vortex
 		constexpr static std::array<uint32_t, 6> GetIndices()
 		{
 			return Quad<Vertex1>::GetIndices();
+		}
+	};
+
+	/////////////////////////////////////////////////////////////////////////////
+	// Cube //////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////
+	template<typename V>
+	class Cube : public BatchUnit<V, 36, 0>
+	{
+	public:
+
+	};
+
+	//class Cube3 : public Cube<Vertex3>
+	//{
+	//	friend class Batch<Cube3>;
+	//public:
+	//	Cube3()
+	//	{
+
+	//	}
+	//	Cube3(const glm::vec3& position,
+	//		  const glm::vec3& normal,
+	//		  const glm::vec4& color,
+	//		  const glm::vec2& texCoord,
+	//		  const glm::vec3& tangent,
+	//		  const glm::vec3& biTangent
+	//		)
+	//	{
+
+	//	}
+	//};
+
+	class Cube4 : public Cube<Vertex4>
+	{
+		friend class Batch<Cube4>;
+	public:
+		Cube4()
+		{
+
+		}
+		Cube4(const glm::vec3& position)
+		{
+			for (int i = 0; i < GetVertexCount(); i++)
+			{
+				constexpr int floatCnt = 8;
+				float* vertices = GetVertices();
+				glm::vec3 pos{vertices[i * floatCnt + 0], vertices[i * floatCnt + 1], vertices[i * floatCnt + 2] };
+				glm::mat4 I = glm::identity<glm::mat4>();
+				m_Vertices[i].position = glm::translate(I, position) * glm::vec4(pos, 1);
+				m_Vertices[i].normal = glm::vec3{ vertices[i * floatCnt + 3], vertices[i * floatCnt + 4], vertices[i * floatCnt + 5] };
+				m_Vertices[i].texCoord = glm::vec2{ vertices[i * floatCnt + 6], vertices[i * floatCnt + 7] };
+			}
+		}
+
+		static float* GetVertices()
+		{
+			static float vertices[] = {
+				// Back face
+				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
+				0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f, // top-right
+				0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, // bottom-right         
+				0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,  // top-right
+				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,  // bottom-left
+				-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,// top-left
+				// Front face
+				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom-left
+				0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,  // bottom-right
+				0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,  // top-right
+				0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // top-right
+				-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,  // top-left
+				-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,  // bottom-left
+				// Left face
+				-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-right
+				-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top-left
+				-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,  // bottom-left
+				-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-left
+				-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,  // bottom-right
+				-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-right
+				// Right face
+				0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, // top-left
+				0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
+				0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top-right         
+				0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,  // bottom-right
+				0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,  // top-left
+				0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom-left     
+				// Bottom face
+				-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // top-right
+				0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f, // top-left
+				0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,// bottom-left
+				0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom-left
+				-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom-right
+				-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, // top-right
+				// Top face
+				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,// top-left
+				0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom-right
+				0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top-right     
+				0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom-right
+				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,// top-left
+				-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f // bottom-left        
+			};
+			return vertices;
 		}
 	};
 };

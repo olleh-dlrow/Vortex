@@ -18,7 +18,7 @@ namespace Vortex
 
 		ViewportWindow(const std::string& winName, 
 					   const Ref<Camera>& cam,
-					   const glm::vec4& clearColor=glm::vec4(0.1f, 0.1f, 0.1f, 1));
+					   const glm::vec4& clearColor=glm::vec4(0.0f, 0.0f, 0.0f, 1));
 		~ViewportWindow() {};
 		// create fb according to MSAAOpened
 		void CreateFrameBuffers();
@@ -36,13 +36,14 @@ namespace Vortex
 		ImVec2 ConvertToNormalizedPos(ImVec2 scrPos);
 
 		bool OnMSAAChanged(Event& e);
+		bool OnHDRChanged(Event& e);
 
 		inline Ref<Camera> GetCamera() const { return m_Camera; }
 		inline Camera* GetCamera() { return m_Camera.get(); }
 		inline ImVec2 GetContentSize() const { return m_ContentSize; }
 		inline ImVec2 GetTopLeftPosInScreen() const { return m_AbsContentPos; }
 		inline ImVec2 GetBottomRightPosInScreen() const { return ImVec2(m_AbsContentPos.x + m_ContentSize.x, m_AbsContentPos.y + m_ContentSize.y); }
-		inline glm::vec4& GetClearColor() { return m_ClearColor; }
+		inline glm::vec4 GetClearColor() { return m_ClearColor; }
 		inline bool IsInside(ImVec2 scrPos) const 
 		{
 			auto vMin = GetTopLeftPosInScreen();
@@ -66,6 +67,8 @@ namespace Vortex
 		
 		Ref<FrameBuffer>			m_FinalScreenFB;	// final screen framebuffer after postprocess
 		bool						m_MSAAOpened;
+
+		bool						m_HDROpened;
 
 		bool						m_IsFocused;
 		glm::vec4					m_ClearColor;

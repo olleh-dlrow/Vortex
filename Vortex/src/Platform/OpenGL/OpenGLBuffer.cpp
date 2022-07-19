@@ -129,22 +129,34 @@ namespace Vortex
     /////////////////////////////////////////////////////////////////////////////
     // FrameBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
-    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height, bool MSAAOpened)
+    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height, bool MSAAOpened,
+                                         const std::vector<Ref<Texture2D>>& textures)
         :m_Width(width), m_Height(height)
     {
         glGenFramebuffers(1, &m_RendererID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
         
-        m_Tex2d = OpenGLTexture2D::Create(width, height, MSAAOpened);
-        
-        if (MSAAOpened)
+        if (textures.empty())
         {
-            // TEST MSAA
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_Tex2d->GetID(), 0);
+            m_Textures.push_back(OpenGLTexture2D::Create(width, height, MSAAOpened));
         }
         else
         {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Tex2d->GetID(), 0);
+            m_Textures = textures;
+        }
+        
+        for (int i = 0; i < m_Textures.size(); i++)
+        {
+            auto& tex = m_Textures[i];
+            if (MSAAOpened)
+            {
+                // TEST MSAA
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, tex->GetID(), 0);
+            }
+            else
+            {
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tex->GetID(), 0);
+            }
         }
     }
     OpenGLFrameBuffer::~OpenGLFrameBuffer()

@@ -9,8 +9,10 @@ namespace Vortex
     class OpenGLTexture2D : public Texture2D
     {
     public:
-        OpenGLTexture2D(uint32_t width, uint32_t height, bool MSAAOpened = false);
-        OpenGLTexture2D(const std::string& path);
+        // https ://www.khronos.org/opengl/wiki/Image_Format
+        OpenGLTexture2D(uint32_t width, uint32_t height, bool MSAAOpened,
+                        const char* format);
+        OpenGLTexture2D(const std::string& path, bool gammaCorrection);
         virtual ~OpenGLTexture2D();
 
         inline virtual uint32_t GetWidth() const override { return m_Width; }

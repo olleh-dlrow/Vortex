@@ -30,6 +30,7 @@
 
 #include "Vortex/Renderer/OrthographicCamera.h"
 #include "Vortex/Renderer/Camera.h"
+#include "Vortex/Renderer/Material.h"
 // --------------------------------------
 
 #include "Vortex/Geo/DrawGeoConfig.h"

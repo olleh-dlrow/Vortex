@@ -15,9 +15,10 @@
 //#include "DrawLineTest.h"
 //#include "SceneTest.h"
 //#include "BezierTest.h"
-#include "CubicSplinesTest.h"
+//#include "CubicSplinesTest.h"
 //#include "ModelImportTest.h"
 //#include "BlingPhongTest.h"
+#include "HDRTest.h"
 
 /*
 tips:
@@ -29,7 +30,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new CubicSplinesTest());
+        PushLayer(new HDRTest());
     }
     ~Sandbox() {
     

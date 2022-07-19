@@ -13,9 +13,22 @@ namespace Vortex
         int  GetMSAANSamples() const { return m_nSamples; }
         void SetMSAANSamples(int nSamples);
 
+        void SetHDR(bool open);
+        bool GetHDR() const { return m_HDROpened; }
+        void SetHDRExposure(float exposure);
+        float GetHDRExposure() const { return m_Exposure; }
+
+        void SetGamma(bool open) { m_GammaOpened = open; }
+        bool GetGammea() const { return m_GammaOpened; }
+
         static Scope<GraphicsContext> Create(void* window);
     protected:
-        int         m_nSamples = 4;
         bool        m_MSAAOpened;       // may use event to broadcast the change of msaa
+        int         m_nSamples = 4;
+
+        bool        m_HDROpened;
+        float       m_Exposure = 1.0f;
+
+        bool        m_GammaOpened;
     };
 }

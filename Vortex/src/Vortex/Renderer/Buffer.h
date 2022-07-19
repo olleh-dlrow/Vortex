@@ -171,13 +171,14 @@ namespace Vortex
         virtual void Unbind() const = 0;
         virtual void AttachRenderBuffer(const Ref<RenderBuffer>& rb) const = 0;
         virtual bool CheckStatus() const = 0;
-        virtual uint32_t GetTextureID() const = 0;
+        virtual uint32_t GetTextureID(int index=0) const = 0;
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
         virtual uint32_t GetID() const = 0;
-        virtual Texture2D& GetInnerTexture() = 0;
+        virtual Texture2D& GetInnerTexture(int index=0) = 0;
 
-        static Ref<FrameBuffer> Create(uint32_t width, uint32_t height, bool MSAAOpened = false);
+        static Ref<FrameBuffer> Create(uint32_t width, uint32_t height, bool MSAAOpened = false,
+                    const std::vector<Ref<Texture2D>>& textures = std::vector<Ref<Texture2D>>());
         static void Blit(FrameBuffer& src, FrameBuffer& dst);
     };
 }

@@ -83,6 +83,24 @@ namespace Vortex
 		}
 	};
 
+	struct Vertex4
+	{
+		Vertex4() = default;
+
+		glm::f32vec3 position;
+		glm::f32vec3 normal;
+		glm::f32vec2 texCoord;
+
+		static BufferLayout GetLayout()
+		{
+			return BufferLayout({
+				{ShaderDataType::Float3, "a_Position"},
+				{ShaderDataType::Float3, "a_Normal"},
+				{ShaderDataType::Float2, "a_TexCoord"},
+				});
+		}
+	};
+
 	struct MeshVertex
 	{
 		MeshVertex() = default;

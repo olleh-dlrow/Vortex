@@ -27,6 +27,28 @@ namespace Vortex
         MSAANSamplesChangedEvent e;
         Application::Get().OnEvent(e);
     }
+    void GraphicsContext::SetHDR(bool open)
+    {
+        m_HDROpened = open;
+        if (m_HDROpened)
+        {
+            HDROpenedEvent e;
+            Application::Get().OnEvent(e);
+        }
+        else
+        {
+            HDRClosedEvent e;
+            Application::Get().OnEvent(e);
+        }
+    }
+
+    void GraphicsContext::SetHDRExposure(float exposure)
+    {
+        m_Exposure = exposure;
+        HDRExposureChangedEvent e;
+        Application::Get().OnEvent(e);
+    }
+
     Scope<GraphicsContext> GraphicsContext::Create(void* window)
     {
         switch (Renderer::GetAPI())

@@ -4,18 +4,20 @@ EditorLayer::EditorLayer()
 {
 	Vortex::Ref<Vortex::Camera> cam = Vortex::CreateRef<Vortex::Camera>(Vortex::OrthoParam(), glm::vec3(0, 0, 5.0f));
 	m_ViewportWindow = Vortex::CreateRef<Vortex::ViewportWindow>("Viewport", cam);
-    m_ViewportWindow->m_OnPostProcessCallback = VT_BIND_EVENT_FN(EditorLayer::OnPostProcess);
+    m_ViewportWindow->m_OnPostProcessCallback = VT_BIND_EVENT_FN(EditorLayer::OnPostProcessBase);
 
     m_EditorScene = Vortex::CreateRef<Vortex::Scene>(m_ViewportWindow.get());
     m_EditorScene->Init();
 
-    m_DefaultScreenShader = Vortex::Shader::Create("assets/shaders/DefaultScreen.glsl");
+    auto postProcessShader = Vortex::Shader::Create("assets/shaders/DefaultPostProcess.glsl");
+    m_PostProcessMaterial = Vortex::CreateRef<Vortex::Material>("PostProcessMat");
+    m_PostProcessMaterial->m_Shader = postProcessShader;
 }
 
 void EditorLayer::PreUpdate(Vortex::Timestep ts)
 {
     // background
-    Vortex::Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+    Vortex::Renderer::SetClearColor(m_ViewportWindow->GetClearColor());
     // clear glfw background and imgui 
     Vortex::Renderer::Clear();
     // start render in viewport window
@@ -36,11 +38,31 @@ void EditorLayer::PostUpdate(Vortex::Timestep ts)
     m_ViewportWindow->End();
 }
 
+void EditorLayer::OnPostProcessBase(Vortex::Texture2D& renderTexture)
+{
+    m_PostProcessMaterial->m_Shader->Bind();
+    m_PostProcessMaterial->SetInt("screenTexture", 0);
+    renderTexture.Bind();
+    if (Vortex::Application::Get().GetWindow().GetGraphicsContext().GetHDR())
+    {
+        m_PostProcessMaterial->SetInt("hdr", 1);
+        m_PostProcessMaterial->SetFloat("hdr_exposure", Vortex::Application::Get().GetWindow().GetGraphicsContext().GetHDRExposure());
+    }
+    else 
+    {
+        m_PostProcessMaterial->SetInt("hdr", 0);
+    }
+    bool gamma = Vortex::Application::Get().GetWindow().GetGraphicsContext().GetGammea();
+    m_PostProcessMaterial->SetInt("gamma_open", gamma ? 1 : 0);
+    
+    OnPostProcess(renderTexture);
+
+    m_PostProcessMaterial->ApplyProperties();
+}
+
 void EditorLayer::OnPostProcess(Vortex::Texture2D& renderTexture)
 {
-    m_DefaultScreenShader->Bind();
-    m_DefaultScreenShader->SetInt("screenTexture", 0);
-    renderTexture.Bind();
+
 }
 
 void EditorLayer::PreImGuiRender()

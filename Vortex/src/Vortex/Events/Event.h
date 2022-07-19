@@ -9,7 +9,8 @@ namespace Vortex {
 		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 
-		MSAAOpened, MSAAClosed, MSAANSamplesChanged
+		MSAAOpened, MSAAClosed, MSAANSamplesChanged,
+		HDROpened, HDRClosed, HDRExposureChanged
     };
 
 	/*

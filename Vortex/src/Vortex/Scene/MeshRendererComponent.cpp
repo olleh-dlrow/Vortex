@@ -30,7 +30,7 @@ namespace Vortex
 		
 		m_Material->m_Shader->Bind();
 		m_ConfigMatCallback(*m_Material.get());
-		m_Material->BindTextures();
+		m_Material->ApplyProperties();
 
 		Renderer::DrawIndexedTriangles(m_VertexArray, m_DrawCfg);
 	}
@@ -60,7 +60,6 @@ namespace Vortex
 		// set draw config
 		m_DrawCfg.vertCnt = comp->m_Mesh->m_Vertices.size();
 		m_DrawCfg.indexCnt = comp->m_Mesh->m_Indices.size();
-		m_DrawCfg.polygonMode = GL_FILL;
 	}
 }
 
