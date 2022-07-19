@@ -37,6 +37,12 @@ namespace Vortex
         static Ref<Texture2D> Create(const std::string& path, bool gammaCorrection = false);
     };
 
+    class Cubemap : public Texture
+    {
+    public:
+        static Ref<Cubemap> Create(const std::vector<std::string>& facesPath);
+    };
+
     // store information about some texture
     struct TextureMeta
     {

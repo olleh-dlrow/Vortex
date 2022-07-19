@@ -65,7 +65,6 @@ public:
         // init cube
         VA = VertexArray::Create();
         VA->Bind();
-        int v = Cube4::GetVerticesSize();
         VB = VertexBuffer::Create(Cube4::GetVertices(), Cube4::GetVerticesSize());
         VB->Bind();
         VB->SetLayout(Cube4::VertexType::GetLayout());

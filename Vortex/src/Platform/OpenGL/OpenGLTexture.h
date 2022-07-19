@@ -38,4 +38,29 @@ namespace Vortex
         GLenum              m_DataFormat;
     };
 
+    class OpenGLCubemap : public Cubemap
+    {
+    public:
+        OpenGLCubemap(const std::vector<std::string>& facesPath);
+        virtual ~OpenGLCubemap();
+
+        virtual void Bind(uint32_t slot = 0) const override;
+        virtual void Unbind(uint32_t slot = 0) const override;
+
+        inline virtual uint32_t GetWidth() const override { return m_Width; }
+        inline virtual uint32_t GetHeight() const override { return m_Height; }
+        inline virtual uint32_t GetID() const override { return m_RendererID; }
+
+        virtual void SetData(void* data, uint32_t size) override;
+
+        virtual bool operator==(const Texture& other) const override
+        {
+            return m_RendererID == ((OpenGLCubemap&)other).m_RendererID;
+        }
+
+    private:
+        uint32_t            m_RendererID;
+        uint32_t            m_Width;
+        uint32_t            m_Height;
+    };
 }

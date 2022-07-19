@@ -164,4 +164,51 @@ namespace Vortex
     {
         glBindTextureUnit(slot, 0);
     }
+
+    OpenGLCubemap::OpenGLCubemap(const std::vector<std::string>& facesPath)
+    {
+        glGenTextures(1, &m_RendererID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+        int width = 0, height = 0, nrComponents = 0;
+        for (unsigned int i = 0; i < facesPath.size(); i++)
+        {
+            unsigned char* data = stbi_load(facesPath[i].c_str(), &width, &height, &nrComponents, 0);
+            if (data)
+            {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                stbi_image_free(data);
+            }
+            else
+            {
+                std::cout << "Cubemap texture failed to load at path: " << facesPath[i] << std::endl;
+                stbi_image_free(data);
+            }
+        }
+
+        m_Width = width; m_Height = height;
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
+
+    OpenGLCubemap::~OpenGLCubemap()
+    {
+        glDeleteTextures(1, &m_RendererID);
+    }
+    void OpenGLCubemap::Bind(uint32_t slot) const
+    {
+        glBindTextureUnit(slot, m_RendererID);
+    }
+    void OpenGLCubemap::Unbind(uint32_t slot) const
+    {
+        glBindTextureUnit(slot, 0);
+    }
+    void OpenGLCubemap::SetData(void* data, uint32_t size)
+    {
+        VT_CORE_ASSERT(0, "Not implement!");
+    }
 }

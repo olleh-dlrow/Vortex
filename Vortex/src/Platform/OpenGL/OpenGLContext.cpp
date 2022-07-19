@@ -38,9 +38,9 @@ namespace Vortex
         // set MSAA state
         SetMSAA(false);
         // set HDR state
-        SetHDR(true);
+        SetHDR(false);
         // set gamma
-        SetGamma(true);
+        SetGamma(false);
     }
 
     void OpenGLContext::SwapBuffers()

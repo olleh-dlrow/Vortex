@@ -83,6 +83,7 @@ namespace Vortex
 		}
 	};
 
+	// position, normal texcoord
 	struct Vertex4
 	{
 		Vertex4() = default;

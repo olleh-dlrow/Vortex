@@ -54,4 +54,15 @@ namespace Vortex
         static TextureLibrary instance;
         return instance;
     }
+    Ref<Cubemap> Cubemap::Create(const std::vector<std::string>& facesPath)
+    {
+        switch (Renderer::GetAPI())
+        {
+        case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLCubemap>(facesPath);
+        }
+
+        VT_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
 }
