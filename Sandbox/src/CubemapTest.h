@@ -5,7 +5,7 @@
 #include <Vortex/Scene/MeshComponent.h>
 #include <Vortex/Scene/MeshRendererComponent.h>
 #include <Vortex/Renderer/Batch.h>
-#include <stb_image.h>
+#include <Vortex/Scene/SkyboxRendererComponent.h>
 
 using Vortex::Ref;
 using Vortex::CreateRef;
@@ -26,67 +26,23 @@ using Vortex::MeshRendererComponent;
 using Vortex::Material;
 using Vortex::Scene;
 using Vortex::Entity;
+using Vortex::SkyboxRendererComponent;
 
 Ref<Shader> shader;
-Ref<Shader> SkyboxShader;
 
 Ref<VertexArray> cubeVA;
 Ref<VertexBuffer> cubeVB;
 
-Ref<VertexArray> skyboxVA;
-Ref<VertexBuffer> skyboxVB;
-Ref<Cubemap>      cubemap;
-
-float skyboxVertices[] = {
-    // positions          
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
-};
-
+SkyboxRendererComponent* sbr;
 class CubemapTest : public EditorLayer
 {
 public:
     CubemapTest()
     {
+        auto scene = GetEditorScene();
+        auto skyEnt = scene->AddEntity("skybox");
+        sbr = skyEnt->AddComponent<SkyboxRendererComponent>();
+
         // set camera position and mode
         Camera& cam = GetCamera();
         cam.SetProjectionMode(false);
@@ -94,7 +50,6 @@ public:
         cam.m_MovementSpeed = 2.0f;
 
         shader = Shader::Create("assets/shaders/CubemapTest2.glsl");        // cubemap
-        SkyboxShader = Shader::Create("assets/shaders/CubemapTest1.glsl");   // skybox
 
         // init cube
         cubeVA = VertexArray::Create();
@@ -103,17 +58,6 @@ public:
         cubeVB->SetLayout(Cube4::VertexType::GetLayout());
         cubeVA->AddVertexBuffer(cubeVB);
 
-        // init skybox
-        skyboxVA = VertexArray::Create();
-        skyboxVA->Bind();
-        skyboxVB = VertexBuffer::Create(skyboxVertices, sizeof(skyboxVertices));
-        skyboxVB->SetLayout(Vortex::BufferLayout{
-            { Vortex::ShaderDataType::Float3, "aPos"}
-        });
-        skyboxVA->AddVertexBuffer(skyboxVB);
-
-        // load textures
-        // -------------
         std::vector<std::string> faces
         {
             "assets/textures/skybox1/right.jpg",
@@ -123,8 +67,9 @@ public:
             "assets/textures/skybox1/front.jpg",
             "assets/textures/skybox1/back.jpg",
         };
+        sbr->SetCubemapTextures(faces);
 
-        cubemap = Cubemap::Create(faces);
+        //cubemap = Cubemap::Create(faces);
     }
 
     virtual void OnUpdate(Vortex::Timestep ts) override
@@ -142,21 +87,8 @@ public:
         shader->SetMat4("projection", camera.GetProjMatrix());
         shader->SetInt("skybox", 0);
         cubeVA->Bind();
-        cubemap->Bind();
+        sbr->GetCubemap().Bind();
         Renderer::DrawTriangles(cubeVA, Vortex::DrawTriangleConfig(Cube4::GetVertexCount(), 0));
-
-        // skybox
-        glDepthFunc(GL_LEQUAL);
-        SkyboxShader->Bind();
-        auto view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-        SkyboxShader->SetMat4("view", view);
-        SkyboxShader->SetMat4("projection", camera.GetProjMatrix());
-        SkyboxShader->SetInt("skybox", 0);
-        skyboxVA->Bind();
-        // skybox cube
-        cubemap->Bind();
-        Renderer::DrawTriangles(skyboxVA, Vortex::DrawTriangleConfig(36, 0));
-        glDepthFunc(GL_LESS);
     }
 
     virtual void OnPostProcess(Vortex::Texture2D& renderTexture) override

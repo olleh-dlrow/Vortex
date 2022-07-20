@@ -1,6 +1,7 @@
 #include "vtpch.h"
 #include "Platform/OpenGL/OpenGLRendererAPI.h"
 
+#include "Vortex/Renderer/Renderer.h"
 #include <glad/glad.h>
 
 namespace Vortex
@@ -69,6 +70,42 @@ namespace Vortex
         if (enable)
             glEnable(GL_DEPTH_TEST);
         else glDisable(GL_DEPTH_TEST);
+    }
+
+    void OpenGLRendererAPI::SetDepthPassCond(DepthPassCond cond)
+    {
+        uint32_t glCond = 0;
+        switch (cond)
+        {
+        case Vortex::DepthPassCond::NEVER:
+            glCond = GL_NEVER;
+            break;
+        case Vortex::DepthPassCond::LESS:
+            glCond = GL_LESS;
+            break;
+        case Vortex::DepthPassCond::EQUAL:
+            glCond = GL_EQUAL;
+            break;
+        case Vortex::DepthPassCond::LEQUAL:
+            glCond = GL_LEQUAL;
+            break;
+        case Vortex::DepthPassCond::GREATER:
+            glCond = GL_GREATER;
+            break;
+        case Vortex::DepthPassCond::NOTEQUAL:
+            glCond = GL_NOTEQUAL;
+            break;
+        case Vortex::DepthPassCond::GEQUAL:
+            glCond = GL_GEQUAL;
+            break;
+        case Vortex::DepthPassCond::ALWAYS:
+            glCond = GL_ALWAYS;
+            break;
+        default:
+            VT_CORE_ASSERT(0, "Unkown depth pass condition");
+            break;
+        }
+        glDepthFunc(glCond);
     }
 
     void OpenGLRendererAPI::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)

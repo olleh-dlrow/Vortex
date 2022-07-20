@@ -19,7 +19,7 @@ namespace Vortex
         float GetHDRExposure() const { return m_Exposure; }
 
         void SetGamma(bool open) { m_GammaOpened = open; }
-        bool GetGammea() const { return m_GammaOpened; }
+        bool GetGamma() const { return m_GammaOpened; }
 
         static Scope<GraphicsContext> Create(void* window);
     protected:

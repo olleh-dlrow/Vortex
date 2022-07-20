@@ -16,9 +16,7 @@ namespace Vortex
             s_Batch = CreateScope< Batch<LinePoint2> >();
         }
 	}
-    void LineRendererComponent::Init()
-    {
-    }
+
     void LineRendererComponent::PostUpdate(Timestep ts)
     {
 

@@ -3,10 +3,6 @@
 
 namespace Vortex
 {
-	MeshRendererComponent::MeshRendererComponent(MeshComponent* comp)
-	{
-		ResetMesh(comp);
-	}
 	void MeshRendererComponent::SetMeshComponent(MeshComponent* comp)
 	{
 		ResetMesh(comp);

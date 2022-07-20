@@ -4,6 +4,8 @@
 
 namespace Vortex
 {
+    enum class DepthPassCond;
+
     class OpenGLRendererAPI: public RendererAPI
     {
     public:
@@ -12,6 +14,8 @@ namespace Vortex
         virtual void SetClearColor(const glm::vec4& color) override;
         virtual void Clear() override;
         virtual void SetDepthTest(bool enable) override;
+
+        virtual void SetDepthPassCond(DepthPassCond cond) override;
 
         virtual void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr) override;
         virtual void DrawTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr) override;

@@ -16,9 +16,7 @@ namespace Vortex
 			s_Batch = CreateScope<Batch<Quad1>>();
 		}
 	}
-	void PointRendererComponent::Init()
-	{
-	}
+
 	void PointRendererComponent::OnUpdate(Timestep ts)
 	{
 

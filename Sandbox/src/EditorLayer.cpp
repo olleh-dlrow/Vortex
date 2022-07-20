@@ -52,7 +52,7 @@ void EditorLayer::OnPostProcessBase(Vortex::Texture2D& renderTexture)
     {
         m_PostProcessMaterial->SetInt("hdr", 0);
     }
-    bool gamma = Vortex::Application::Get().GetWindow().GetGraphicsContext().GetGammea();
+    bool gamma = Vortex::Application::Get().GetWindow().GetGraphicsContext().GetGamma();
     m_PostProcessMaterial->SetInt("gamma_open", gamma ? 1 : 0);
     
     OnPostProcess(renderTexture);

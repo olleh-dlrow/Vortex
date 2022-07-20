@@ -12,6 +12,7 @@ namespace Vortex
 		Component() = default;
 		virtual ~Component() = default;
 
+		// temporarily don't use this, not sure where to put
 		virtual void Init() {};
 		virtual void OnUpdate(Timestep ts) {}
 		virtual void PostUpdate(Timestep ts) {}

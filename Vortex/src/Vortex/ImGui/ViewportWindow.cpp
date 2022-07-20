@@ -180,7 +180,7 @@ namespace Vortex
 		{
 			Application::Get().GetWindow().GetGraphicsContext().SetHDRExposure(exposure);
 		}
-		bool gamma = Application::Get().GetWindow().GetGraphicsContext().GetGammea();
+		bool gamma = Application::Get().GetWindow().GetGraphicsContext().GetGamma();
 		if (ImGui::Checkbox("Gamma", &gamma))
 		{
 			Application::Get().GetWindow().GetGraphicsContext().SetGamma(gamma);

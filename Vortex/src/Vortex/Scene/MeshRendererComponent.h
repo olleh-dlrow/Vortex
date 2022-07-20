@@ -15,7 +15,6 @@ namespace Vortex
 	{
 	public:
 		MeshRendererComponent() = default;
-		MeshRendererComponent(MeshComponent* comp);
 
 		void OnUpdate(Timestep ts) override;
 		void PostUpdate(Timestep ts) override;

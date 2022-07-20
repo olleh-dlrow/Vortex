@@ -7,6 +7,8 @@
 
 namespace Vortex 
 {
+    enum class DepthPassCond;
+
     // application interface gived by certain renderer,
     // This determines which type of instance you will get through Create function in renderer
     class RendererAPI
@@ -22,6 +24,7 @@ namespace Vortex
         virtual void SetClearColor(const glm::vec4& color) = 0;
         virtual void Clear() = 0;
         virtual void SetDepthTest(bool enable) = 0;
+        virtual void SetDepthPassCond(DepthPassCond cond) = 0;
 
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
         virtual void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr) = 0;

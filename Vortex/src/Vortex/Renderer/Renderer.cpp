@@ -15,13 +15,17 @@ namespace Vortex {
 
     void Renderer::Shutdown()
     {
-        // OBSOLETE
-        //Renderer2D::Shutdown();
+
     }
 
     void Renderer::SetDepthTest(bool enable)
     {
         s_RendererAPI->SetDepthTest(enable);
+    }
+
+    void Renderer::SetDepthPassCond(DepthPassCond cond)
+    {
+        s_RendererAPI->SetDepthPassCond(cond);
     }
 
     // OBSOLETE

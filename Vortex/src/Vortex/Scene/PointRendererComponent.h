@@ -10,8 +10,6 @@ namespace Vortex
 	public:
 		PointRendererComponent();
 
-		virtual void Init() override;
-
 		virtual void OnUpdate(Timestep ts) override;
 
 		virtual void PostUpdate(Timestep ts) override;

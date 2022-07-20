@@ -9,12 +9,26 @@
 
 namespace Vortex {
 
+    enum class DepthPassCond
+    {
+        NEVER,
+        LESS,
+        EQUAL,
+        LEQUAL,
+        GREATER,
+        NOTEQUAL,
+        GEQUAL,
+        ALWAYS
+    };
+
     class Renderer
     {
     public:
         static void Init();
         static void Shutdown();
         static void SetDepthTest(bool enable);
+
+        static void SetDepthPassCond(DepthPassCond cond);
 
         static void OnWindowResize(uint32_t width, uint32_t height);
 

@@ -14,8 +14,6 @@ namespace Vortex
 	public:
 		LineRendererComponent();
 
-		virtual void Init() override;
-
 		virtual void PostUpdate(Timestep ts) override;
 
 		void Flush();
