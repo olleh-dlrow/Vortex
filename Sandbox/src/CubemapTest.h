@@ -28,17 +28,24 @@ using Vortex::Scene;
 using Vortex::Entity;
 using Vortex::SkyboxRendererComponent;
 
-Ref<Shader> shader;
-
-Ref<VertexArray> cubeVA;
-Ref<VertexBuffer> cubeVB;
-
 SkyboxRendererComponent* sbr;
+std::vector<MeshRendererComponent*> comps;
+
 class CubemapTest : public EditorLayer
 {
 public:
     CubemapTest()
     {
+        std::string filename = "assets/models/utah-teapot-obj/utah-teapot.obj";
+
+        Vortex::SceneImporter sceneImporter(filename.c_str());
+        VT_INFO(sceneImporter.GetNodesInfo());
+        VT_INFO(sceneImporter.GetMeshesInfo());
+
+        std::vector<Ref<Mesh>> meshes;
+        std::vector <Ref<Material>> mats;
+        sceneImporter.ImportMeshAndMat(meshes, mats);
+
         auto scene = GetEditorScene();
         auto skyEnt = scene->AddEntity("skybox");
         sbr = skyEnt->AddComponent<SkyboxRendererComponent>();
@@ -46,49 +53,60 @@ public:
         // set camera position and mode
         Camera& cam = GetCamera();
         cam.SetProjectionMode(false);
-        cam.m_Position = glm::vec3(0, 0, 5);
+        cam.m_Position = glm::vec3(0, 0, 10);
         cam.m_MovementSpeed = 2.0f;
 
-        shader = Shader::Create("assets/shaders/CubemapTest2.glsl");        // cubemap
+        // create entity, init mesh component and mesh renderercomponent
+        for (int i = 0; i < meshes.size(); i++)
+        {
+            Mesh* mesh = meshes[i].get();
 
-        // init cube
-        cubeVA = VertexArray::Create();
-        cubeVA->Bind();
-        cubeVB = VertexBuffer::Create(Cube4::GetVertices(), Cube4::GetVerticesSize());
-        cubeVB->SetLayout(Cube4::VertexType::GetLayout());
-        cubeVA->AddVertexBuffer(cubeVB);
+            auto e = scene->AddEntity("Entity" + std::to_string(i));
+
+            auto mc = e->AddComponent<MeshComponent>();
+            mc->m_Mesh = meshes[i];
+
+            // init mesh renderer comp, set shader, mat, mesh
+            auto mr = e->AddComponent<MeshRendererComponent>();
+            mr->SetMeshComponent(mc);
+            mats[i]->m_Shader = Shader::Create("assets/shaders/CubemapTest.glsl");
+            // set all meshes' material the same in convenience to adjust parameters
+            mr->m_Material = mats[i];
+
+            // set config material callback
+            auto callback = [this](Material& mat)
+            {
+                mat.SetFloat3("cameraPos", GetCamera().m_Position);
+                glm::mat4 model = glm::mat4(1.0f);
+                model = glm::scale(model, glm::vec3(0.1f));
+                mat.SetMat4("model", model);
+                mat.SetMat4("view", GetCamera().GetViewMatrix());
+                mat.SetMat4("projection", GetCamera().GetProjMatrix());
+                mat.SetInt("skybox", 0);
+                sbr->GetCubemap().Bind();
+            };
+
+            mr->m_ConfigMatCallback = callback;
+            // add to comps list
+            comps.push_back(mr);
+        }
 
         std::vector<std::string> faces
         {
-            "assets/textures/skybox1/right.jpg",
-            "assets/textures/skybox1/left.jpg",
-            "assets/textures/skybox1/top.jpg",
-            "assets/textures/skybox1/bottom.jpg",
-            "assets/textures/skybox1/front.jpg",
-            "assets/textures/skybox1/back.jpg",
+            "assets/textures/skycube_1/skyrender0002.bmp",
+            "assets/textures/skycube_1/skyrender0005.bmp",
+            "assets/textures/skycube_1/skyrender0003.bmp",
+            "assets/textures/skycube_1/skyrender0006.bmp",
+            "assets/textures/skycube_1/skyrender0001.bmp",
+            "assets/textures/skycube_1/skyrender0004.bmp",
         };
-        sbr->SetCubemapTextures(faces);
 
-        //cubemap = Cubemap::Create(faces);
+        sbr->SetCubemapTextures(faces);
     }
 
     virtual void OnUpdate(Vortex::Timestep ts) override
     {
         EditorLayer::OnUpdate(ts);
-
-        Camera& camera = GetCamera();
-
-        // render cube
-        shader->Bind();
-        shader->SetFloat3("cameraPos", camera.m_Position);
-        glm::mat4 model = glm::mat4(1.0f);
-        shader->SetMat4("model", model);
-        shader->SetMat4("view", camera.GetViewMatrix());
-        shader->SetMat4("projection", camera.GetProjMatrix());
-        shader->SetInt("skybox", 0);
-        cubeVA->Bind();
-        sbr->GetCubemap().Bind();
-        Renderer::DrawTriangles(cubeVA, Vortex::DrawTriangleConfig(Cube4::GetVertexCount(), 0));
     }
 
     virtual void OnPostProcess(Vortex::Texture2D& renderTexture) override

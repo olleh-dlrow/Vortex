@@ -19,7 +19,8 @@
 //#include "ModelImportTest.h"
 //#include "BlingPhongTest.h"
 //#include "HDRTest.h"
-#include "CubemapTest.h"
+//#include "CubemapTest.h"
+#include "PBRLightTest.h"
 
 /*
 tips:
@@ -31,7 +32,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new CubemapTest());
+        PushLayer(new PBRLightTest());
     }
     ~Sandbox() {
     

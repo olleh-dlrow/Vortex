@@ -234,12 +234,20 @@ namespace Vortex
 	}
 	bool ViewportWindow::OnMSAAChanged(Event& e)
 	{
+		if (e.GetEventType() == EventType::MSAAOpened)
+			m_MSAAOpened = true;
+		if (e.GetEventType() == EventType::MSAAClosed)
+			m_MSAAOpened = false;
 		CreateFrameBuffers();
 		return false;
 	}
 
 	bool ViewportWindow::OnHDRChanged(Event& e)
 	{
+		if (e.GetEventType() == EventType::HDROpened)
+			m_HDROpened = true;
+		if (e.GetEventType() == EventType::HDRClosed)
+			m_HDROpened = false;
 		CreateFrameBuffers();
 		return false;
 	}
