@@ -9,6 +9,7 @@
 #include"Vortex/Core/Log.h"
 
 #include "Vortex/Core/Timestep.h"
+#include "Vortex/Core/Time.h"
 
 #include "Vortex/Core/Input.h"
 #include "Vortex/Core/KeyCodes.h"
