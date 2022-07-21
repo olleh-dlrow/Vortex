@@ -103,9 +103,9 @@ namespace Vortex
         VT_CORE_ASSERT(data, "Failed to load image!");
         m_Width = width;
         m_Height = height;
-
+        
         // set blend format
-        GLenum internalFormat, dataFormat, pixelType = 0;
+        GLenum internalFormat = 0, dataFormat = 0, pixelType = 0;
         if (channels == 4)
         {
             internalFormat = GL_RGBA8;

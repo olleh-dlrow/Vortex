@@ -5,6 +5,7 @@
 #include <Vortex/Scene/MeshComponent.h>
 #include <Vortex/Scene/MeshRendererComponent.h>
 #include <Vortex/Renderer/Batch.h>
+#include <Vortex/Scene/SkyboxRendererComponent.h>
 
 using Vortex::Ref;
 using Vortex::CreateRef;
@@ -46,6 +47,7 @@ class PBRLightTest : public EditorLayer
 {
 public:
     std::vector<MeshRendererComponent*> comps;
+    Vortex::SkyboxRendererComponent* sbr;
 
     void LoadMeshes(const std::string& filename)
     {
@@ -79,7 +81,7 @@ public:
 
             // init mat
             auto& mat = *mats[i];
-            mat.SetFloat3("albedo", { 0.5f, 0.0f, 0.0f });
+            mat.SetFloat3("albedo", { 0.4f, 1.0f, 0.9f });
             mat.SetFloat("ao", 1.0f);
             mat.SetFloat("roughness", 0.3f);
             mat.SetFloat("metallic", 0.0f);
@@ -122,6 +124,20 @@ public:
 
         std::string filename = "assets/models/utah-teapot-obj/utah-teapot.obj";
         LoadMeshes(filename);
+
+        auto scene = GetEditorScene();
+        auto skyEnt = scene->AddEntity("skybox");
+        sbr = skyEnt->AddComponent<Vortex::SkyboxRendererComponent>();
+        std::vector<std::string> faces
+        {
+            "assets/textures/skycube_1/skyrender0002.bmp",
+            "assets/textures/skycube_1/skyrender0005.bmp",
+            "assets/textures/skycube_1/skyrender0003.bmp",
+            "assets/textures/skycube_1/skyrender0006.bmp",
+            "assets/textures/skycube_1/skyrender0001.bmp",
+            "assets/textures/skycube_1/skyrender0004.bmp",
+        };
+        sbr->SetCubemapTextures(faces);
     }
 
     virtual void OnAttach() override
@@ -151,6 +167,12 @@ public:
                 {
                     c->SetEnableValue(v);
                 }
+            }
+
+            bool v = sbr->GetEnableValue();
+            if (ImGui::Checkbox("Skybox", &v))
+            {
+                sbr->SetEnableValue(v);
             }
 
             auto getIdx = [&]()->int {

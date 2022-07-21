@@ -320,7 +320,7 @@ namespace Vortex
 			{aiTextureType_NORMALS, "texture_normal"},
 			{aiTextureType_HEIGHT, "texture_height"}
 		};
-
+		
 		for (int i = 0; i < inMat->GetTextureCount(texType); i++)
 		{
 			// texture path relative to the path of model
