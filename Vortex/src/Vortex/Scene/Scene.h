@@ -5,11 +5,12 @@
 #include <map>
 #include "Entity.h"
 #include "Vortex/Core/Core.h"
-#include "Vortex/ImGui/ViewportWindow.h"
+#include "Vortex/Core/Timestep.h"
 
 namespace Vortex
 {
 	class ViewportWindow;
+	class Camera;
 
 	class Scene
 	{
@@ -27,7 +28,7 @@ namespace Vortex
 
 		Entity* FindFirstEntityByName(const std::string& name);
 
-		Camera* GetInnerCamera() { return m_ViewportWindow->GetCamera(); }
+		Camera* GetInnerCamera();
 	private:
 		// TODO: use multimap to implement the execution order
 		std::vector< Ref<Entity> >		m_Entities;

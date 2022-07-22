@@ -1,14 +1,20 @@
 #pragma once
 
+#include <vector>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
 #include "Vortex/Core/Core.h"
 #include "Component.h"
-#include "Vortex/Renderer/Shader.h"
-#include "Vortex/Renderer/VertexArray.h"
-#include "Vortex/Renderer/Buffer.h"
-#include "Vortex/Renderer/Batch.h"
+#include "Vortex/Core/Timestep.h"
+
 
 namespace Vortex
 {
+	template<typename BU> class Batch;
+	class LinePoint2;
+	class Shader;
+
 	class LineRendererComponent : public Component
 	{
 	public:

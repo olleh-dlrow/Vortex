@@ -2,9 +2,11 @@
 
 #include "Vortex/Core/Core.h"
 #include "Vortex/Core/Timestep.h"
-#include "Vortex/Events/Event.h"
+#include <string>
 
 namespace Vortex {
+
+	class Event;
 
 	class Layer
 	{

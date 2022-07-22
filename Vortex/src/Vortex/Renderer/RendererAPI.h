@@ -2,11 +2,11 @@
 
 #include <glm/glm.hpp>
 
-#include "Vortex/Renderer/VertexArray.h"
 #include "Vortex/Geo/DrawGeoConfig.h"
 
 namespace Vortex 
 {
+    class VertexArray;
     enum class DepthPassCond;
 
     // application interface gived by certain renderer,

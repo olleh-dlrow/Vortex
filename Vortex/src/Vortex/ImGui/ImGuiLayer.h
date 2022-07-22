@@ -2,11 +2,8 @@
 
 #include "Vortex/Core/Layer.h"
 
-#include "Vortex/Events/KeyEvent.h"
-#include "Vortex/Events/MouseEvent.h"
-#include "Vortex/Events/ApplicationEvent.h"
-
 namespace Vortex {
+    class Event;
     class ImGuiLayer: public Layer 
     {
     public:

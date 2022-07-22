@@ -1,7 +1,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "VertexArray.h"
+#include <glm/ext.hpp>
+#include "Buffer.h"
 
 namespace Vortex
 {

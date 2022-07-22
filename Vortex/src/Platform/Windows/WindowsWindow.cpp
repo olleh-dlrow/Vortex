@@ -7,8 +7,9 @@
 #include "Vortex/Events/KeyEvent.h"
 
 #include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Renderer/RendererAPI.h"
 
-#include "Platform/OpenGL/OpenGLContext.h"
+#include "Vortex/Renderer/GraphicsContext.h"
 
 namespace Vortex {
     static uint8_t s_GLFWWindowCount = 0;
@@ -41,7 +42,7 @@ namespace Vortex {
         }
 
 #if defined(VT_DEBUG)
-        if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
+        if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
             glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
         m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);

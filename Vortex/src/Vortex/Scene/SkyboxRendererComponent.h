@@ -1,13 +1,17 @@
 #pragma once
 
+#include <string>
+
 #include "Vortex/Core/Core.h"
 #include "Component.h"
-#include "Vortex/Renderer/Texture.h"
-#include "Vortex/Renderer/VertexArray.h"
-#include "Vortex/Renderer/Shader.h"
 
 namespace Vortex
 {
+	class VertexArray;
+	class VertexBuffer;
+	class Shader;
+	class Cubemap;
+
 	class SkyboxRendererComponent : public Component
 	{
 	public:

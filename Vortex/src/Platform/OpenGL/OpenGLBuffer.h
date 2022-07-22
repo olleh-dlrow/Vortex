@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Vortex/Renderer/Buffer.h"
-#include "Vortex/Renderer/Texture.h"
-
 
 namespace Vortex 
 {
+    class Texture2D;
+
     class OpenGLVertexBuffer : public VertexBuffer
     {
     public:
@@ -74,7 +74,7 @@ namespace Vortex
         virtual bool CheckStatus() const override;
         virtual uint32_t GetWidth() const override { return m_Width; } 
         virtual uint32_t GetHeight() const override { return m_Height; }
-        virtual uint32_t GetTextureID(int index) const override { return m_Textures[index]->GetID(); }
+        virtual uint32_t GetTextureID(int index) const override;
         virtual uint32_t GetID() const override { return m_RendererID; }
         virtual Texture2D& GetInnerTexture(int index) override { return *(m_Textures[index]); }
 

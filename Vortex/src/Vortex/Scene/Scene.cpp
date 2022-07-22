@@ -1,55 +1,66 @@
 #include "vtpch.h"
 #include "Scene.h"
+#include "Vortex/ImGui/ViewportWindow.h"
+#include "Vortex/Renderer/Camera.h"
 
-Vortex::Scene::Scene()
-	:m_ViewportWindow(nullptr)
+namespace Vortex
 {
-}
-
-Vortex::Scene::Scene(ViewportWindow* vWin)
-	:m_ViewportWindow(vWin)
-{
-}
-
-void Vortex::Scene::Init()
-{
-
-}
-
-void Vortex::Scene::OnUpdate(Timestep ts)
-{
-	for (auto& e : m_Entities)
+	Scene::Scene()
+		:m_ViewportWindow(nullptr)
 	{
-		e->OnUpdate(ts);
 	}
-}
 
-void Vortex::Scene::PostUpdate(Timestep ts)
-{
-	for (auto& e : m_Entities)
+	Scene::Scene(ViewportWindow* vWin)
+		:m_ViewportWindow(vWin)
 	{
-		e->PostUpdate(ts);
 	}
-}
 
-Vortex::Entity* Vortex::Scene::AddEntity(const std::string& name)
-{
-	Ref<Entity> e = CreateRef<Entity>(name);
-	e->SetScene(this);
-	e->Init();
-
-	m_Entities.emplace_back(e);
-	return e.get();
-}
-
-Vortex::Entity* Vortex::Scene::FindFirstEntityByName(const std::string& name)
-{
-	for (auto& e : m_Entities)
+	void Scene::Init()
 	{
-		if (e->GetName() == name)
+
+	}
+
+	void Scene::OnUpdate(Timestep ts)
+	{
+		for (auto& e : m_Entities)
 		{
-			return e.get();
+			e->OnUpdate(ts);
 		}
 	}
-	return nullptr;
+
+	void Scene::PostUpdate(Timestep ts)
+	{
+		for (auto& e : m_Entities)
+		{
+			e->PostUpdate(ts);
+		}
+	}
+
+	Entity* Scene::AddEntity(const std::string& name)
+	{
+		Ref<Entity> e = CreateRef<Entity>(name);
+		e->SetScene(this);
+		e->Init();
+
+		m_Entities.emplace_back(e);
+		return e.get();
+	}
+
+	Entity* Scene::FindFirstEntityByName(const std::string& name)
+	{
+		for (auto& e : m_Entities)
+		{
+			if (e->GetName() == name)
+			{
+				return e.get();
+			}
+		}
+		return nullptr;
+	}
+
+	Camera* Scene::GetInnerCamera()
+	{
+		return m_ViewportWindow->GetCamera();
+	}
 }
+

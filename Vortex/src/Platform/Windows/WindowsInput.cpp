@@ -2,6 +2,7 @@
 #include "Platform/Windows/WindowsInput.h"
 
 #include "Vortex/Core/Application.h"
+#include "Vortex/Core/Window.h"
 #include <GLFW/glfw3.h>
 
 namespace Vortex {

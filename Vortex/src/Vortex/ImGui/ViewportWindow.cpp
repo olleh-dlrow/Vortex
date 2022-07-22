@@ -1,6 +1,17 @@
 #include "vtpch.h"
 #include "ViewportWindow.h"
 #include "Vortex/Events/GraphicsEvent.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Geo/DrawGeoConfig.h"
+#include "Vortex/Core/Application.h"
+#include "Vortex/Core/Window.h"
+#include "Vortex/Renderer/GraphicsContext.h"
+
+#include "Vortex/Renderer/Buffer.h"
+#include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Renderer/Camera.h"
+#include "Vortex/Core/Application.h"
+#include "Vortex/Renderer/Material.h"
 
 namespace Vortex
 {

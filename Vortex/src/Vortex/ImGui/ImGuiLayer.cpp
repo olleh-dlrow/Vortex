@@ -6,6 +6,12 @@
 #include <backends/imgui_impl_opengl3.h>
 
 #include "Vortex/Core/Application.h"
+#include "Vortex/Core/Window.h"
+
+
+#include "Vortex/Events/KeyEvent.h"
+#include "Vortex/Events/MouseEvent.h"
+#include "Vortex/Events/ApplicationEvent.h"
 
 // not in this module
 #include <glad/glad.h>

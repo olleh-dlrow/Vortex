@@ -2,13 +2,14 @@
 #include "Vortex/Renderer/Shader.h"
 
 #include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Renderer/RendererAPI.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Vortex 
 {
     Ref<Shader> Shader::Create(const std::string& filepath)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
             case RendererAPI::API::None:  
                 VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
@@ -20,7 +21,7 @@ namespace Vortex
     }
     Ref<Shader> Shader::Create(const std::string& name, const std::string & vertexSrc, const std::string & fragmentSrc)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);

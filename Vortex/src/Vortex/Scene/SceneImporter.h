@@ -7,11 +7,12 @@
 #include <assimp/postprocess.h>     // Post processing flags
 
 #include "Vortex/Core/Core.h"
-#include "Vortex/Renderer/Material.h"
-#include "Vortex/Geo/Mesh.h"
 
 namespace Vortex
 {
+	class Mesh;
+	class Material;
+
 	class SceneImporter
 	{
 	public:

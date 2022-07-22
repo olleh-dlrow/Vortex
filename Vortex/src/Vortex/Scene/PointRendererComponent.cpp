@@ -2,6 +2,12 @@
 
 #include"PointRendererComponent.h"
 #include"Scene.h"
+#include "Vortex/Geo/DrawGeoConfig.h"
+#include "Vortex/Renderer/Shader.h"
+#include "Vortex/Renderer/Camera.h"
+#include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/Batch.h"
 
 namespace Vortex
 {

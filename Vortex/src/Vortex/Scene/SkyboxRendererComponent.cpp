@@ -1,6 +1,14 @@
 #include "vtpch.h"
 #include "SkyboxRendererComponent.h"
 #include "Scene.h"
+#include "Vortex/Geo/DrawGeoConfig.h"
+#include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Renderer/Camera.h"
+#include "Vortex/Renderer/Buffer.h"
+
+#include "Vortex/Renderer/Texture.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/Shader.h"
 
 namespace Vortex
 {

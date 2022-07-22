@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Vortex/Core/Core.h"
-#include "Vortex/Core/Layer.h"
 
 #include <vector>
 
 namespace Vortex {
+
+	class Layer;
 
 	/*
 		LayerStack has two parts: Overlay on the top and Layer underneath it,

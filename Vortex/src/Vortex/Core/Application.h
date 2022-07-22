@@ -1,16 +1,19 @@
 #pragma once
 
 #include "Vortex/Core/Core.h"
-#include "Vortex/Core/Window.h"
 #include "Vortex/Core/LayerStack.h"
-#include "Vortex/Events/Event.h"
-#include "Vortex/Events/ApplicationEvent.h"
-
-#include "Vortex/ImGui/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
 namespace Vortex {
+
+    class Window;
+    class Event;
+    class WindowCloseEvent;
+    class WindowResizeEvent;
+    class Layer;
+    class LayerStack;
+    class ImGuiLayer;
 
     class Application
     {
@@ -49,7 +52,7 @@ namespace Vortex {
         bool OnWindowClose(WindowCloseEvent& e);
         bool OnWindowResize(WindowResizeEvent& e);
     private:
-        std::unique_ptr<Window> m_Window;
+        Scope<Window> m_Window;
         ImGuiLayer* m_ImGuiLayer;
         LayerStack  m_LayerStack;
 

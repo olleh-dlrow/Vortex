@@ -1,8 +1,16 @@
 #include "vtpch.h"
 
 #include "Camera.h"
-#include "Vortex.h"
-#include "imgui.h"
+#include <imgui.h>
+
+#include "Vortex/Core/Core.h"
+#include "Vortex/Events/ApplicationEvent.h"
+#include "Vortex/Events/MouseEvent.h"
+#include "Vortex/Events/KeyEvent.h"
+#include "Vortex/Geo/Ray.h"
+#include "Vortex/Core/Input.h"
+#include "Vortex/Core/KeyCodes.h"
+#include "Vortex/Core/MouseButtonCodes.h"
 
 namespace Vortex
 {

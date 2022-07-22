@@ -1,5 +1,6 @@
 #include "vtpch.h"
 #include "MeshComponent.h"
+#include "Vortex/Geo/Mesh.h"
 
 namespace Vortex
 {

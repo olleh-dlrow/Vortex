@@ -1,12 +1,17 @@
 #pragma once
 
 #include<unordered_map>
-#include"Shader.h"
+#include<string>
+#include<glm/glm.hpp>
+#include<glm/ext.hpp>
+
 #include"Vortex/Core/Core.h"
 #include"Texture.h"
 
 namespace Vortex
 {
+	class Shader;
+
 	class Material
 	{
 	public:

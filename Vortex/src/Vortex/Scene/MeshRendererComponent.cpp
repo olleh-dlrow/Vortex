@@ -1,5 +1,12 @@
 #include "vtpch.h"
 #include "MeshRendererComponent.h"
+#include "Vortex/Renderer/Shader.h"
+#include "Vortex/Geo/Mesh.h"
+
+#include "MeshComponent.h"
+#include "Vortex/Renderer/Material.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/Renderer.h"
 
 namespace Vortex
 {

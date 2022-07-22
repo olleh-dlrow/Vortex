@@ -1,10 +1,8 @@
 #pragma once
 
 #include "EditorLayer.h"
-#include <Vortex/Scene/SceneImporter.h>
 #include <Vortex/Scene/MeshComponent.h>
 #include <Vortex/Scene/MeshRendererComponent.h>
-#include <Vortex/Renderer/Batch.h>
 #include <Vortex/Scene/SkyboxRendererComponent.h>
 
 using Vortex::Ref;

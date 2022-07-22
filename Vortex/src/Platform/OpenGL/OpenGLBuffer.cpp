@@ -2,6 +2,8 @@
 #include "Platform/OpenGL/OpenGLBuffer.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
 #include "Vortex/Core/Application.h"
+#include "Vortex/Core/Window.h"
+#include "Vortex/Renderer/GraphicsContext.h"
 #include <glad/glad.h>
 
 namespace Vortex 
@@ -192,6 +194,11 @@ namespace Vortex
     {
         return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
     }
+    uint32_t OpenGLFrameBuffer::GetTextureID(int index) const
+    {
+        return m_Textures[index]->GetID();
+    }
+
     void OpenGLFrameBuffer::BlitImpl(FrameBuffer& src, FrameBuffer& dst)
     {
         src.Bind(FrameBufferState::READ);

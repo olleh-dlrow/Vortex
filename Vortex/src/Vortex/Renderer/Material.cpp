@@ -4,6 +4,8 @@
 #include "imgui.h"
 #include "glm/gtc/type_ptr.hpp"
 
+#include"Shader.h"
+
 namespace Vortex
 {
 	Material::Material()

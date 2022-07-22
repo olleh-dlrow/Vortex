@@ -1,6 +1,6 @@
 #include "vtpch.h"
 #include "Vortex/Core/LayerStack.h"
-
+#include "Layer.h"
 namespace Vortex {
 
 	LayerStack::~LayerStack()

@@ -1,14 +1,18 @@
 #pragma once
 
+#include <functional>
 #include "Vortex/Core/Core.h"
 #include "Component.h"
-#include "MeshComponent.h"
-#include "Vortex/Renderer/Material.h"
-#include "Vortex/Renderer/VertexArray.h"
-#include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Geo/DrawGeoConfig.h"
 
 namespace Vortex
 {
+	class MeshComponent;
+	class Material;
+	class VertexArray;
+	class VertexBuffer;
+	class IndexBuffer;
+
 	using CfgMatFn = std::function<void(Material& mat)>;
 
 	class MeshRendererComponent : public Component

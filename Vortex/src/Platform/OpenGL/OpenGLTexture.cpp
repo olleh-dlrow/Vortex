@@ -1,6 +1,8 @@
 ﻿#include "vtpch.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
 #include "Vortex/Core/Application.h"
+#include "Vortex/Core/Window.h"
+#include "Vortex/Renderer/GraphicsContext.h"
 
 #include <stb_image.h>
 

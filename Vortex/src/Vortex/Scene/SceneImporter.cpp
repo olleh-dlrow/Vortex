@@ -1,5 +1,7 @@
 #include "vtpch.h"
 #include "SceneImporter.h"
+#include "Vortex/Renderer/Material.h"
+#include "Vortex/Geo/Mesh.h"
 
 namespace Vortex
 {
@@ -318,7 +320,12 @@ namespace Vortex
 			{aiTextureType_SPECULAR, "texture_specular"},
 			{aiTextureType_AMBIENT, "texture_ambient"},
 			{aiTextureType_NORMALS, "texture_normal"},
-			{aiTextureType_HEIGHT, "texture_height"}
+			{aiTextureType_HEIGHT, "texture_height"},
+			{aiTextureType_BASE_COLOR, "albedoMap"},
+			{aiTextureType_NORMAL_CAMERA, "normalMap"},
+			{aiTextureType_METALNESS, "metallicMap"},
+			{aiTextureType_DIFFUSE_ROUGHNESS, "roughnessMap"},
+			{aiTextureType_AMBIENT_OCCLUSION, "aoMap"}
 		};
 		
 		for (int i = 0; i < inMat->GetTextureCount(texType); i++)

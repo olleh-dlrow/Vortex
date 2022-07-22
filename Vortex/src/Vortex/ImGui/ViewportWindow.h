@@ -1,16 +1,24 @@
 #pragma once
 
-#include "Vortex/Renderer/Buffer.h"
-#include "Vortex/Renderer/Renderer.h"
-#include "Vortex/Renderer/Camera.h"
-#include "Vortex/Core/Application.h"
-#include "Vortex/Renderer/Material.h"
+#include <string>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+#include "Vortex/Core/Core.h"
+#include "Vortex/Core/Timestep.h"
 
-#include "imgui_internal.h"
-#include "imgui.h"
+#include <imgui_internal.h>
+#include <imgui.h>
 
 namespace Vortex
 {
+	class Event;
+	class FrameBuffer;
+	class RenderBuffer;
+	class Camera;
+	class VertexArray;
+	class VertexBuffer;
+	class Texture2D;
+
 	class ViewportWindow
 	{
 	public:

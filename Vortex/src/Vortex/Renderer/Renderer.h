@@ -1,13 +1,18 @@
 #pragma once
 
-#include "Vortex/Renderer/OrthographicCamera.h"
-#include "Vortex/Renderer/Camera.h"
-#include "Vortex/Renderer/Shader.h"
-#include "Vortex/Geo/DrawGeoConfig.h"
-#include "Vortex/Renderer/VertexArray.h"
-#include "Vortex/Renderer/RendererAPI.h"
+#include<glm/glm.hpp>
 
 namespace Vortex {
+
+    class Camera;
+    class VertexArray;
+    class Shader;
+    // https://stackoverflow.com/questions/1021793/how-do-i-forward-declare-an-inner-class
+    class RendererAPI;
+
+    struct DrawTriangleConfig;
+    struct DrawPointConfig;
+    struct DrawLineConfig;
 
     enum class DepthPassCond
     {
@@ -33,7 +38,6 @@ namespace Vortex {
         static void OnWindowResize(uint32_t width, uint32_t height);
 
         // camera: the main camera that defines view and projection matrix
-        static void BeginScene(OrthographicCamera& camera);
         static void BeginScene(Camera& camera);
         static void EndScene();
 
@@ -77,17 +81,17 @@ namespace Vortex {
         // OBSOLETE
         inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count = 0)
         {
-            s_RendererAPI->DrawIndexed(vertexArray, count);
+            VT_CORE_ASSERT(0, "OBSOLETE");
+            // s_RendererAPI->DrawIndexed(vertexArray, count);
         }
         // OBSOLETE
         inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader)
         {
-            vertexArray->Bind();
-            shader->Bind();
-            s_RendererAPI->DrawIndexed(vertexArray, 0);
+            VT_CORE_ASSERT(0, "OBSOLETE");
+            //vertexArray->Bind();
+            //shader->Bind();
+            //s_RendererAPI->DrawIndexed(vertexArray, 0);
         }
-
-        inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
     private:
         // Stored ViewProjectionMatrix
         struct SceneData

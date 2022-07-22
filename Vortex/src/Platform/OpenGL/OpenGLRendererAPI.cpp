@@ -1,8 +1,11 @@
 #include "vtpch.h"
 #include "Platform/OpenGL/OpenGLRendererAPI.h"
 
-#include "Vortex/Renderer/Renderer.h"
 #include <glad/glad.h>
+
+#include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/Buffer.h"
 
 namespace Vortex
 {

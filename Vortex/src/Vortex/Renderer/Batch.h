@@ -1,13 +1,18 @@
 #pragma once
 
 #include"Vortex/Core/Core.h"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
-#include"Vertex.h"
-#include"Renderer.h"
 #include"BatchUnit.h"
 
 namespace Vortex
 {
+	class VertexBuffer;
+	class VertexArray;
+	class IndexBuffer;
+	class Shader;
+
 	template<typename BU>
 	class Batch
 	{

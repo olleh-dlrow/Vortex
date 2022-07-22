@@ -2,7 +2,7 @@
 #include "Vortex/Renderer/Buffer.h"
 
 #include "Vortex/Renderer/Renderer.h"
-
+#include "Vortex/Renderer/RendererAPI.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 
 namespace Vortex 
@@ -10,7 +10,7 @@ namespace Vortex
     // only give a memory of size but not transport actual data
     Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(size);
@@ -22,7 +22,7 @@ namespace Vortex
 
     Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLVertexBuffer>(vertices, size);
@@ -34,7 +34,7 @@ namespace Vortex
 
     Ref<IndexBuffer> IndexBuffer::Create(uint32_t count)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLIndexBuffer>(count);
@@ -48,7 +48,7 @@ namespace Vortex
     // count: the count of indices (not size!)
     Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLIndexBuffer>(indices, count);
@@ -60,7 +60,7 @@ namespace Vortex
 
     Ref<RenderBuffer> RenderBuffer::Create(uint32_t width, uint32_t height, bool MSAAOpened)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLRenderBuffer>(width, height, MSAAOpened);
@@ -73,7 +73,7 @@ namespace Vortex
     Ref<FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height, bool MSAAOpened, 
                                 const std::vector<Ref<Texture2D>>& textures)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLFrameBuffer>(width, height, MSAAOpened, textures);
@@ -85,7 +85,7 @@ namespace Vortex
 
     void FrameBuffer::Blit(FrameBuffer& src, FrameBuffer& dst)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    
             VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");

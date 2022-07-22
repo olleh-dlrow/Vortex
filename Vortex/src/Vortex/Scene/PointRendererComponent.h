@@ -1,10 +1,17 @@
 #pragma once
 
+#include <vector>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+#include "Vortex/Core/Core.h"
 #include "Component.h"
-#include "Vortex/Renderer/Batch.h"
 
 namespace Vortex 
 {
+	template<typename BU> class Batch;
+	class Quad1;
+	class Shader;
+
 	class PointRendererComponent : public Component
 	{
 	public:

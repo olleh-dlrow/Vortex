@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Vortex/Core/Window.h"
-#include "Vortex/Renderer/GraphicsContext.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 namespace Vortex {
+    class GraphicsContext;
+
     class WindowsWindow: public Window {
     public:
         WindowsWindow(const WindowProps& props);

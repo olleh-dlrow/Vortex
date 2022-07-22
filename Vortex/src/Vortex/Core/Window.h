@@ -3,11 +3,11 @@
 #include "vtpch.h"
 
 #include "Vortex/Core/Core.h"
-#include "Vortex/Events/Event.h"
-#include "Vortex/Renderer/GraphicsContext.h"
 
 namespace Vortex {
-    
+    class Event;
+    class GraphicsContext;
+
     struct WindowProps {
         std::string Title;
         unsigned int Width;

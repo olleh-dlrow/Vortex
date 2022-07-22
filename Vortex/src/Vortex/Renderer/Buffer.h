@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
-#include "Vortex/Renderer/Texture.h"
 
 namespace Vortex 
 {
+    class Texture2D;
+
     enum class ShaderDataType
     {
         None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool

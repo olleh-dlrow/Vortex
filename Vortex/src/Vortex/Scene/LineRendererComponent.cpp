@@ -3,6 +3,13 @@
 #include "Vortex/Geo/DrawGeoConfig.h"
 #include "Scene.h"
 #include "Vortex/Renderer/BatchUnit.h"
+#include "Vortex/Renderer/Camera.h"
+#include "Vortex/Renderer/Renderer.h"
+
+#include "Vortex/Renderer/Shader.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/Buffer.h"
+#include "Vortex/Renderer/Batch.h"
 
 namespace Vortex
 {

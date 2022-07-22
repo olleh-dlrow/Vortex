@@ -1,5 +1,6 @@
 #include "vtpch.h"
 #include "Platform/OpenGL/OpenGLVertexArray.h"
+#include "Vortex/Renderer/Buffer.h"
 
 #include <glad/glad.h>
 

@@ -2,8 +2,10 @@
 #include "Vortex/Core/Application.h"
 
 #include "Vortex/Renderer/Renderer.h"
-
 #include "Vortex/Core/Input.h"
+#include "Vortex/Core/Window.h"
+#include "Vortex/Events/ApplicationEvent.h"
+#include "Vortex/ImGui/ImGuiLayer.h"
 
 #include <GLFW/glfw3.h>
 
@@ -51,7 +53,7 @@ namespace Vortex {
         dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnWindowClose));
         // Will window be resized?
         dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(Application::OnWindowResize));
-
+        
         for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
             if ( e.Handled )break;
             it--;

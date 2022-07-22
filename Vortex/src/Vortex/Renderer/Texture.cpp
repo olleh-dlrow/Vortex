@@ -2,6 +2,7 @@
 #include "Vortex/Renderer/Texture.h"
 
 #include "Vortex/Renderer/Renderer.h"
+#include "Vortex/Renderer/RendererAPI.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
 
 namespace Vortex
@@ -9,7 +10,7 @@ namespace Vortex
     Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, bool MSAAOpened,
                                     const char* format)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  
@@ -22,7 +23,7 @@ namespace Vortex
 
     Ref<Texture2D> Texture2D::Create(const std::string& path, bool gammaCorrection)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLTexture2D>(path, gammaCorrection);
@@ -56,7 +57,7 @@ namespace Vortex
     }
     Ref<Cubemap> Cubemap::Create(const std::vector<std::string>& facesPath)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLCubemap>(facesPath);

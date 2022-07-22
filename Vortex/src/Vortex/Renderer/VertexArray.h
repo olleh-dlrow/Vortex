@@ -2,10 +2,12 @@
 
 #include <memory>
 #include <vector>
-#include "Buffer.h"
 
 namespace Vortex
 {
+    class VertexBuffer;
+    class IndexBuffer;
+
     class VertexArray
     {
     public:

@@ -3,6 +3,11 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include "Vortex/Renderer/GraphicsContext.h"
+#include "Vortex/Renderer/RendererAPI.h"
+#include "Vortex/Renderer/Camera.h"
+#include "Vortex/Geo/DrawGeoConfig.h"
+#include "Vortex/Renderer/VertexArray.h"
+#include "Vortex/Renderer/Buffer.h"
 
 namespace Vortex {
 
@@ -32,11 +37,6 @@ namespace Vortex {
     void Renderer::OnWindowResize(uint32_t width, uint32_t height)
     {
         SetViewport(0, 0, width, height);
-    }
-
-    void Renderer::BeginScene(OrthographicCamera& camera)
-    {
-        s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
     }
 
     void Renderer::BeginScene(Camera& camera)

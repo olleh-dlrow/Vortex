@@ -5,13 +5,16 @@
 
 #include "Vortex/Core/Timestep.h"
 
-#include "Vortex/Events/ApplicationEvent.h"
-#include "Vortex/Events/MouseEvent.h"
-#include "Vortex/Events/KeyEvent.h"
-#include "Vortex/Geo/Ray.h"
-
 namespace Vortex
 {
+	struct Ray;
+	class Event;
+	class MouseScrolledEvent;
+	class WindowResizeEvent;
+	class MouseButtonPressedEvent;
+	class MouseButtonReleasedEvent;
+	class KeyPressedEvent;
+
 	enum class CameraProjMode 
 	{
 		Perspective, Orthographic

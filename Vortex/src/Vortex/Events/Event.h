@@ -1,5 +1,6 @@
 #pragma once
 #include"Vortex/Core/Core.h"
+#include<string>
 
 namespace Vortex {
     enum class EventType {
