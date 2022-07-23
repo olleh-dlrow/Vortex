@@ -6,6 +6,7 @@
 #include "Vortex/Core/Application.h"
 #include "Vortex/Core/Window.h"
 #include "Vortex/Renderer/GraphicsContext.h"
+#include "Vortex/Geo/Rect.h"
 
 #include "Vortex/Renderer/Buffer.h"
 #include "Vortex/Renderer/Renderer.h"
@@ -59,11 +60,11 @@ namespace Vortex
 	{
 		int width = Application::Get().GetWindow().GetWidth();
 		int height = Application::Get().GetWindow().GetHeight();
-		m_TargetFB = FrameBuffer::Create(width, height);
-		m_DownsampleFB = FrameBuffer::Create(width, height);
+		m_TargetFB = FrameBuffer::Create();
+		m_DownsampleFB = FrameBuffer::Create();
 
 		// init final screen frame buffer
-		m_FinalScreenFB = FrameBuffer::Create(width, height);
+		m_FinalScreenFB = FrameBuffer::Create();
 		m_FinalTex2D = Texture2D::Create(width, height, "RGBA8");
 		m_FinalScreenFB->AttachTexture2D(*m_FinalTex2D, 0);
 
@@ -140,7 +141,10 @@ namespace Vortex
 	
 	void Vortex::ViewportWindow::Begin()
 	{
+		int width = Application::Get().GetWindow().GetWidth();
+		int height = Application::Get().GetWindow().GetHeight();
 		m_TargetFB->Bind();
+		Renderer::SetViewport(0, 0, width, height);
 		Renderer::SetDepthTest(true);
 		Renderer::SetClearColor(m_ClearColor);
 		Renderer::Clear();
@@ -150,7 +154,11 @@ namespace Vortex
 	{
 		if (m_MSAAOpened)
 		{
-			FrameBuffer::Blit(*m_TargetFB, *m_DownsampleFB);
+			FrameBuffer::Blit(*m_TargetFB, 
+				RectInt(0, 0, m_TargetTex2D->GetWidth(), m_TargetTex2D->GetHeight()),
+				*m_DownsampleFB,
+				RectInt(0, 0, m_DownsampleTex2D->GetWidth(), m_DownsampleTex2D->GetHeight()));
+
 			return *m_DownsampleTex2D;
 		}
 		else

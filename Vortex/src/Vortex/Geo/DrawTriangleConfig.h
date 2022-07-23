@@ -5,17 +5,36 @@
 
 namespace Vortex
 {
+	enum class PolygonMode
+	{
+		POINT,
+		LINE,
+		FILL
+	};
+
+	enum class PrimitiveType
+	{
+		POINTS,
+		LINE_STRIP,
+		LINE_LOOP,
+		LINES,
+		TRIANGLES,
+		TRIANGLE_STRIP,
+		TRIANLGE_FAN
+	};
+
 	struct DrawTriangleConfig
 	{
 		DrawTriangleConfig() {}
-		DrawTriangleConfig(int verticesCount, int indicesCount, uint32_t _polygonMode = GL_FILL, GLenum triMode = GL_TRIANGLES)
+		DrawTriangleConfig(int verticesCount, int indicesCount, 
+			PolygonMode _polygonMode = PolygonMode::FILL, PrimitiveType triMode = PrimitiveType::TRIANGLES)
 			:triangleMode(triMode), polygonMode(_polygonMode), vertCnt(verticesCount), indexCnt(indicesCount)
 		{
 
 		}
-		GLenum  triangleMode = GL_TRIANGLES;
-		GLenum	polygonMode  = GL_FILL;
-		GLsizei vertCnt = 0;
-		GLsizei indexCnt = 0;
+		PrimitiveType	triangleMode = PrimitiveType::TRIANGLES;
+		PolygonMode		polygonMode  = PolygonMode::FILL;
+		int				vertCnt		 = 0;
+		int				indexCnt	 = 0;
 	};
 }

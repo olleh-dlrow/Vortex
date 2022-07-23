@@ -52,6 +52,7 @@ namespace Vortex
         OpenGLRenderBuffer(uint32_t width, uint32_t height, int nSamples);
         virtual ~OpenGLRenderBuffer();
 
+        virtual void SetStorage(uint32_t width, uint32_t height) override;
         virtual void Bind() const;
         virtual void Unbind() const;
         virtual uint32_t GetID() const override { return m_RendererID; }
@@ -63,7 +64,7 @@ namespace Vortex
     class OpenGLFrameBuffer : public FrameBuffer
     {
     public:
-        OpenGLFrameBuffer(uint32_t width, uint32_t height);
+        OpenGLFrameBuffer();
         virtual ~OpenGLFrameBuffer();
 
         virtual void Bind(FrameBufferState state) const override;
@@ -72,14 +73,10 @@ namespace Vortex
         virtual void AttachTexture2D(Texture2D& tex2D, int attachIndex) override;
         virtual void AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex) override;
         virtual bool CheckStatus() const override;
-        virtual uint32_t GetWidth() const override { return m_Width; } 
-        virtual uint32_t GetHeight() const override { return m_Height; }
         virtual uint32_t GetID() const override { return m_RendererID; }
 
-        static void BlitImpl(FrameBuffer& src, FrameBuffer& dst);
+        static void BlitImpl(FrameBuffer& src, RectInt srcRect, FrameBuffer& dst, RectInt dstRect);
     private:
         uint32_t                            m_RendererID;
-        uint32_t                            m_Width;
-        uint32_t                            m_Height;
     };
 }

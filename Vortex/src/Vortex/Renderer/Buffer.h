@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Vortex/Geo/Rect.h"
 
 namespace Vortex 
 {
@@ -150,6 +151,8 @@ namespace Vortex
     public:
         virtual ~RenderBuffer() {};
 
+        // temporarily don't use this, other API may not have
+        virtual void SetStorage(uint32_t width, uint32_t height) = 0;
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
         virtual uint32_t GetID() const = 0;
@@ -179,12 +182,10 @@ namespace Vortex
         virtual void AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex) = 0;
         virtual bool CheckStatus() const = 0;
         
-        virtual uint32_t GetWidth() const = 0;
-        virtual uint32_t GetHeight() const = 0;
         virtual uint32_t GetID() const = 0;
 
-        static Ref<FrameBuffer> Create(uint32_t width, uint32_t height);
+        static Ref<FrameBuffer> Create();
         
-        static void Blit(FrameBuffer& src, FrameBuffer& dst);
+        static void Blit(FrameBuffer& src, RectInt srcRect, FrameBuffer& dst, RectInt dstRect);
     };
 }

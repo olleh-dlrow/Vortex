@@ -89,7 +89,7 @@ public:
 
 		for (auto& c : comps)
 		{
-			c->m_DrawCfg.polygonMode = drawLine ? GL_LINE : GL_FILL;
+			c->m_DrawCfg.polygonMode = drawLine ? Vortex::PolygonMode::LINE : Vortex::PolygonMode::FILL;
 		}
 	}
 

@@ -20,6 +20,7 @@
 #include "Vortex/Geo/Ray.h"
 #include "Vortex/Geo/DrawGeoConfig.h"
 #include "Vortex/Geo/Mesh.h"
+#include "Vortex/Geo/Rect.h"
 
 // --- Renderer -------------------------
 #include "Vortex/Renderer/Renderer.h"

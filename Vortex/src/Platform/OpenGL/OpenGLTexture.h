@@ -72,8 +72,10 @@ namespace Vortex
     {
     public:
         OpenGLCubemap(const std::vector<std::string>& facesPath);
+        OpenGLCubemap(uint32_t width, uint32_t height, const char* format);
         virtual ~OpenGLCubemap();
 
+        virtual void GenerateMipmaps() const override;
         virtual void Bind(uint32_t slot = 0) const override;
         virtual void Unbind(uint32_t slot = 0) const override;
 

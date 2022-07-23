@@ -10,7 +10,7 @@ namespace Vortex
 {
 	template<typename BU> class Batch;
 	class Quad1;
-	class Shader;
+	class Material;
 
 	class PointRendererComponent : public Component
 	{
@@ -32,7 +32,7 @@ namespace Vortex
 		constexpr static float			UNIT_POINT_SIZE = 0.1f;
 	private:
 
-		Ref<Shader>						m_Shader;
+		Ref<Material>					m_Material;
 
 		static Scope< Batch<Quad1> >	s_Batch;
 	};

@@ -1,5 +1,6 @@
 #include "CameraTest.h"
 
+#include <Vortex.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -124,7 +125,7 @@ void CameraTest::OnUpdate(Vortex::Timestep ts)
         float angle = 20.0f * i;
         modelMat = glm::rotate(modelMat, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
         shader->SetMat4("u_Transform", modelMat);
-        Vortex::DrawTriangleConfig attr(36, GL_LINE);
+        Vortex::DrawTriangleConfig attr(36, 0, Vortex::PolygonMode::LINE);
         Vortex::Renderer::DrawTriangles(VA, shader, attr);
     }
 

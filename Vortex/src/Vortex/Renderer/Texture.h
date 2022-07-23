@@ -36,7 +36,7 @@ namespace Vortex
         virtual bool operator==(const Texture& other) const = 0;
 
         virtual TextureType GetType() const = 0;
-
+        virtual void GenerateMipmaps() const { VT_CORE_ASSERT(0, "Not implement!"); }
         virtual std::string GetTextureFormat() const { return m_TextureFormat; }
     protected:
         std::string m_TextureFormat;
@@ -68,9 +68,10 @@ namespace Vortex
     class Cubemap : public Texture
     {
     public:
-        static Ref<Cubemap> Create(const std::vector<std::string>& facesPath);
-
         virtual TextureType GetType() const override { return TextureType::CUBEMAP; }
+
+        static Ref<Cubemap> Create(const std::vector<std::string>& facesPath);
+        static Ref<Cubemap> Create(uint32_t width, uint32_t height, const char* format = "RGBA8");
     };
 
     // store information about some texture
@@ -83,7 +84,8 @@ namespace Vortex
         bool isCopyed;
     };
 
-
+    // TODO:
+    // not consider load of SRGB texture and cubemap
     class TextureLibrary
     {
     public:

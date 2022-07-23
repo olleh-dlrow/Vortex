@@ -88,7 +88,7 @@ public:
 			};
 
 			mr->m_ConfigMatCallback = callback;
-			mr->m_DrawCfg.polygonMode = GL_LINE;
+			mr->m_DrawCfg.polygonMode = Vortex::PolygonMode::LINE;
 			// add to comps list
 			comps.push_back(mr);
 		}
@@ -100,7 +100,8 @@ public:
 
 		for (auto& c : comps)
 		{
-			c->m_DrawCfg.polygonMode = drawLine ? GL_LINE : GL_FILL;
+			c->m_DrawCfg.polygonMode = drawLine ? Vortex::PolygonMode::LINE : Vortex::PolygonMode::FILL;
+
 		}
 	}
 

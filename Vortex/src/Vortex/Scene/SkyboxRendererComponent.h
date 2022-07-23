@@ -9,7 +9,7 @@ namespace Vortex
 {
 	class VertexArray;
 	class VertexBuffer;
-	class Shader;
+	class Material;
 	class Cubemap;
 
 	class SkyboxRendererComponent : public Component
@@ -27,6 +27,6 @@ namespace Vortex
 		Ref<Cubemap>		m_Cubemap;
 		Ref<VertexArray>	m_VertexArray;
 		Ref<VertexBuffer>	m_VertexBuffer;
-		Ref<Shader>			m_Shader;
+		Ref<Material>		m_Material;
 	};
 }

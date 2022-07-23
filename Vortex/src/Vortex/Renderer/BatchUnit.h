@@ -3,6 +3,7 @@
 #include"Vertex.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <array>
 
 namespace Vortex
 {
@@ -123,6 +124,33 @@ namespace Vortex
 		}
 	};
 
+	class Quad5 : public Quad<Vertex5>
+	{
+		friend class Batch<Quad5>;
+	public:
+		Quad5()
+		{
+
+		}
+		
+		static float* GetVertices()
+		{
+			static float quadVertices[] = {
+				// positions        // texture Coords
+				-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+				-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+				 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+				 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+			};
+			return quadVertices;
+		}
+
+		constexpr static std::array<uint32_t, 6> GetIndices()
+		{
+			return Quad<Vertex1>::GetIndices();
+		}
+	};
+
 	/////////////////////////////////////////////////////////////////////////////
 	// Cube //////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////
@@ -132,26 +160,6 @@ namespace Vortex
 	public:
 
 	};
-
-	//class Cube3 : public Cube<Vertex3>
-	//{
-	//	friend class Batch<Cube3>;
-	//public:
-	//	Cube3()
-	//	{
-
-	//	}
-	//	Cube3(const glm::vec3& position,
-	//		  const glm::vec3& normal,
-	//		  const glm::vec4& color,
-	//		  const glm::vec2& texCoord,
-	//		  const glm::vec3& tangent,
-	//		  const glm::vec3& biTangent
-	//		)
-	//	{
-
-	//	}
-	//};
 
 	class Cube4 : public Cube<Vertex4>
 	{

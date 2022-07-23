@@ -13,7 +13,7 @@ namespace Vortex
 {
 	template<typename BU> class Batch;
 	class LinePoint2;
-	class Shader;
+	class Material;
 
 	class LineRendererComponent : public Component
 	{
@@ -32,7 +32,7 @@ namespace Vortex
 		glm::vec4							m_Color = glm::vec4(1.0f, 0.5f, 0.2f, 1.0f);
 	
 	protected:
-		Ref<Shader>							m_Shader;
+		Ref<Material>						m_Material;
 		static Scope < Batch<LinePoint2> >	s_Batch;
 	};
 }

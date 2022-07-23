@@ -8,14 +8,16 @@
 #include "Vortex/Renderer/Renderer.h"
 #include "Vortex/Renderer/VertexArray.h"
 #include "Vortex/Renderer/Batch.h"
+#include "Vortex/Renderer/Material.h"
 
 namespace Vortex
 {
 	Scope<Batch<Quad1>> PointRendererComponent::s_Batch = nullptr;
 
 	PointRendererComponent::PointRendererComponent()
-		:m_Shader(Shader::Create("assets/shaders/Vertex1.glsl"))
+		:m_Material(CreateRef<Material>("PointRendererMat"))
 	{
+		m_Material->m_Shader = Shader::Create("assets/shaders/Vertex1.glsl");
 		if (s_Batch == nullptr)
 		{
 			// maybe move to the initial process in Scene
@@ -41,9 +43,9 @@ namespace Vortex
 		Camera* cam = GetEntity()->GetScene()->GetInnerCamera();
 
 		s_Batch->m_VertexArray->Bind();
-		m_Shader->Bind();
-		m_Shader->SetMat4("u_ViewProjection", cam->GetViewProjMatrix());
+		m_Material->SetMat4("u_ViewProjection", cam->GetViewProjMatrix());
 
+		m_Material->ApplyProperties();
 		Renderer::DrawIndexedTriangles(s_Batch->m_VertexArray, DrawTriangleConfig(s_Batch->m_FreeVertexBufferBaseIndex, s_Batch->GetTempBufferIndexCount()));
 
 		s_Batch->m_FreeVertexBufferBaseIndex = 0;

@@ -60,6 +60,12 @@ namespace Vortex
             internalFormat = GL_RGBA16F;
             pixelType = GL_FLOAT;
         }
+        else if (strcmp(format, "RG16F") == 0)
+        {
+            dataFormat = GL_RG;
+            internalFormat = GL_RG16F;
+            pixelType = GL_FLOAT;
+        }
         else
         {
             VT_CORE_ASSERT(0, "Unkown texture format");
@@ -117,7 +123,14 @@ namespace Vortex
 
         // set blend format
         GLenum internalFormat = 0, dataFormat = 0;
-        if (channels == 4)
+        // https://stackoverflow.com/questions/41396731/in-opengl-whats-the-difference-between-the-gl-red-and-gl-r-color-formats
+        if (channels == 1)
+        {
+            internalFormat = GL_RED;
+            m_TextureFormat = "RED";
+            dataFormat = GL_RED;
+        }
+        else if (channels == 4)
         {
             internalFormat = GL_RGBA8;
             m_TextureFormat = "RGBA8";
@@ -148,13 +161,21 @@ namespace Vortex
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
         glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
+        //glGenerateMipmap(GL_TEXTURE_2D);
+
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        // IBL TEST
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
     }
@@ -227,6 +248,8 @@ namespace Vortex
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
 
         int width = 0, height = 0, channels = 0;
+        m_InternalFormat = 0;
+        m_DataFormat = 0;
         for (unsigned int i = 0; i < facesPath.size(); i++)
         {
             unsigned char* data = stbi_load(facesPath[i].c_str(), &width, &height, &channels, 0);
@@ -245,6 +268,7 @@ namespace Vortex
                     m_TextureFormat = "RGB8";
                     m_DataFormat = GL_RGB;
                 }
+                VT_CORE_ASSERT(m_InternalFormat & m_DataFormat, "Unknown format");
             }
 
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_InternalFormat, width, height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
@@ -260,9 +284,34 @@ namespace Vortex
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
 
+    OpenGLCubemap::OpenGLCubemap(uint32_t width, uint32_t height, const char* format)
+        :m_Width(width), m_Height(height)
+    {
+        m_TextureFormat = format;
+        glGenTextures(1, &m_RendererID);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+
+        uint32_t pixelType = 0;
+        ParseFormat(format, m_DataFormat, m_InternalFormat, pixelType);
+
+        for (unsigned int i = 0; i < 6; ++i)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_InternalFormat, width, height, 0, m_DataFormat, pixelType, nullptr);
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // enable pre-filter mipmap sampling (combatting visible dots artifact)
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
+
     OpenGLCubemap::~OpenGLCubemap()
     {
         glDeleteTextures(1, &m_RendererID);
+    }
+    void OpenGLCubemap::GenerateMipmaps() const
+    {
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     }
     void OpenGLCubemap::Bind(uint32_t slot) const
     {

@@ -1,12 +1,6 @@
 #include <Vortex.h>
 #include <Vortex/Core/EntryPoint.h>
 
-
-#include <imgui.h>
-
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 //#include "TemplateLayer.h"
 //#include "RayCastTest.h"
 //#include "BatchRenderingTest.h"
@@ -19,8 +13,8 @@
 //#include "BlingPhongTest.h"
 //#include "HDRTest.h"
 //#include "CubemapTest.h"
-#include "PBRLightTest.h"
-//#include "IBLTest.h"
+//#include "PBRLightTest.h"
+#include "IBLTest.h"
 
 /*
 tips:
@@ -32,7 +26,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new PBRLightTest());
+        PushLayer(new IBLTest());
     }
     ~Sandbox() {
     

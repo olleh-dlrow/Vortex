@@ -117,6 +117,11 @@ namespace Vortex
         glDeleteRenderbuffers(1, &m_RendererID);
     }
 
+    void OpenGLRenderBuffer::SetStorage(uint32_t width, uint32_t height)
+    {
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    }
+
     void OpenGLRenderBuffer::Bind() const
     {
         glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
@@ -130,8 +135,7 @@ namespace Vortex
     /////////////////////////////////////////////////////////////////////////////
     // FrameBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
-    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height)
-        :m_Width(width), m_Height(height)
+    OpenGLFrameBuffer::OpenGLFrameBuffer()
     {
         glGenFramebuffers(1, &m_RendererID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
@@ -191,11 +195,11 @@ namespace Vortex
         return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
     }
 
-    void OpenGLFrameBuffer::BlitImpl(FrameBuffer& src, FrameBuffer& dst)
+    void OpenGLFrameBuffer::BlitImpl(FrameBuffer& src, RectInt srcRect, FrameBuffer& dst, RectInt dstRect)
     {
         src.Bind(FrameBufferState::READ);
         dst.Bind(FrameBufferState::DRAW);
-        glBlitFramebuffer(0, 0, src.GetWidth(), src.GetHeight(), 0, 0, dst.GetWidth(), dst.GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebuffer(srcRect.x, srcRect.y, srcRect.width, srcRect.height, dstRect.x, dstRect.y, dstRect.width, dstRect.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
         src.Unbind();
         dst.Unbind();
     }

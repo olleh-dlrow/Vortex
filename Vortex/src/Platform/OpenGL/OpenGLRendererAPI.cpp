@@ -111,16 +111,54 @@ namespace Vortex
         glDepthFunc(glCond);
     }
 
+    GLenum ParsePolygonMode(PolygonMode m)
+    {
+        switch (m)
+        {
+        case Vortex::PolygonMode::POINT:
+            return GL_POINT;
+        case Vortex::PolygonMode::LINE:
+            return GL_LINE;
+        case Vortex::PolygonMode::FILL:
+            return GL_FILL;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    GLenum ParsePrimitiveType(PrimitiveType type)
+    {
+        switch (type)
+        {
+        case Vortex::PrimitiveType::POINTS:
+            return GL_POINTS;
+        case Vortex::PrimitiveType::LINE_STRIP:
+            return GL_LINE_STRIP;
+        case Vortex::PrimitiveType::LINE_LOOP:
+            return GL_LINE_LOOP;
+        case Vortex::PrimitiveType::LINES:
+            return GL_LINES;
+        case Vortex::PrimitiveType::TRIANGLES:
+            return GL_TRIANGLES;
+        case Vortex::PrimitiveType::TRIANGLE_STRIP:
+            return GL_TRIANGLE_STRIP;
+        case Vortex::PrimitiveType::TRIANLGE_FAN:
+            return GL_TRIANGLE_FAN;
+        default:
+            return GL_NONE;
+        }
+    }
+
     void OpenGLRendererAPI::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
-        glDrawElements(attr.triangleMode, attr.indexCnt, GL_UNSIGNED_INT, nullptr);
+        glPolygonMode(GL_FRONT_AND_BACK, ParsePolygonMode(attr.polygonMode));
+        glDrawElements(ParsePrimitiveType(attr.triangleMode), attr.indexCnt, GL_UNSIGNED_INT, nullptr);
     }
 
     void OpenGLRendererAPI::DrawTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, attr.polygonMode);
-        glDrawArrays(attr.triangleMode, 0, attr.vertCnt);
+        glPolygonMode(GL_FRONT_AND_BACK, ParsePolygonMode(attr.polygonMode));
+        glDrawArrays(ParsePrimitiveType(attr.triangleMode), 0, attr.vertCnt);
     }
 
     void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)

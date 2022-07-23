@@ -82,19 +82,19 @@ namespace Vortex
         return nullptr;
     }
 
-    Ref<FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height)
+    Ref<FrameBuffer> FrameBuffer::Create()
     {
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLFrameBuffer>(width, height);
+        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLFrameBuffer>();
         }
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
-    void FrameBuffer::Blit(FrameBuffer& src, FrameBuffer& dst)
+    void FrameBuffer::Blit(FrameBuffer& src, RectInt srcRect, FrameBuffer& dst, RectInt dstRect)
     {
         switch (RendererAPI::GetAPI())
         {
@@ -102,7 +102,7 @@ namespace Vortex
             VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return;
         case RendererAPI::API::OpenGL:
-            OpenGLFrameBuffer::BlitImpl(src, dst);
+            OpenGLFrameBuffer::BlitImpl(src, srcRect, dst, dstRect);
             return;
         }
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");

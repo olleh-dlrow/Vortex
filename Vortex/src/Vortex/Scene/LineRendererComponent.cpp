@@ -10,14 +10,16 @@
 #include "Vortex/Renderer/VertexArray.h"
 #include "Vortex/Renderer/Buffer.h"
 #include "Vortex/Renderer/Batch.h"
+#include "Vortex/Renderer/Material.h"
 
 namespace Vortex
 {
     Scope < Batch<LinePoint2> >  LineRendererComponent::s_Batch = nullptr;
 
 	LineRendererComponent::LineRendererComponent()
-		:m_Shader(Shader::Create("assets/shaders/Line.glsl"))
+		:m_Material(CreateRef<Material>("LineRendererMat"))
 	{
+        m_Material->m_Shader = Shader::Create("assets/shaders/Line.glsl");
         if (s_Batch == nullptr)
         {
             s_Batch = CreateScope< Batch<LinePoint2> >();
@@ -37,11 +39,11 @@ namespace Vortex
         Camera* cam = GetEntity()->GetScene()->GetInnerCamera();
 
         s_Batch->m_VertexArray->Bind();
-        m_Shader->Bind();
-        m_Shader->SetMat4("u_ViewProjection", cam->GetViewProjMatrix());
-        m_Shader->SetFloat4("u_Color", m_Color);
+        m_Material->SetMat4("u_ViewProjection", cam->GetViewProjMatrix());
+        m_Material->SetFloat4("u_Color", m_Color);
+        m_Material->ApplyProperties();
 
-        DrawTriangleConfig attr(s_Batch->GetTempBufferVertexCount(), 0, GL_FILL, GL_TRIANGLE_STRIP);
+        DrawTriangleConfig attr(s_Batch->GetTempBufferVertexCount(), 0, PolygonMode::FILL, PrimitiveType::TRIANGLE_STRIP);
         Renderer::DrawTriangles(s_Batch->m_VertexArray, attr);
         s_Batch->m_FreeVertexBufferBaseIndex = 0;
     }
