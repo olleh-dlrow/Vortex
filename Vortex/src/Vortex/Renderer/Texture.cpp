@@ -7,14 +7,14 @@
 
 namespace Vortex
 {
-    Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, bool MSAAOpened,
+    Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height,
                                     const char* format)
     {
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  
-            return CreateRef<OpenGLTexture2D>(width, height, MSAAOpened, format);
+            return CreateRef<OpenGLTexture2D>(width, height, format);
         }
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -61,6 +61,17 @@ namespace Vortex
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
         case RendererAPI::API::OpenGL:  return CreateRef<OpenGLCubemap>(facesPath);
+        }
+
+        VT_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
+    Ref<MultisampleTexture2D> MultisampleTexture2D::Create(uint32_t width, uint32_t height, int nSamples, const char* format)
+    {
+        switch (RendererAPI::GetAPI())
+        {
+        case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLMultisampleTexture2D>(width, height, nSamples, format);
         }
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");

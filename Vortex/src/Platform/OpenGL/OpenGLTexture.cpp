@@ -68,36 +68,45 @@ namespace Vortex
 
     // difference of glTextureStorage* and glTexImage*
     // https://community.khronos.org/t/framebuffer-texture-glteximage2d-vs-gltexstorage2d/74839/2
-    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, bool MSAAOpened,
+    OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, 
                                      const char* format)
         : m_Width(width), m_Height(height)
     {
+        m_TextureFormat = format;
         uint32_t pixelType;
         ParseFormat(format, m_DataFormat, m_InternalFormat, pixelType);
         
-        if (!MSAAOpened)
-        {
-            glGenTextures(1, &m_RendererID);
-            glBindTexture(GL_TEXTURE_2D, m_RendererID);
-            glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, pixelType, NULL);
+       glGenTextures(1, &m_RendererID);
+       glBindTexture(GL_TEXTURE_2D, m_RendererID);
+       glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, pixelType, NULL);
 
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+       glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+       glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        }
-        else
-        {
-            // TEST MSAA
-            glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_RendererID);
-            int nSamples = Application::Get().GetWindow().GetGraphicsContext().GetMSAANSamples();
-            glTextureStorage2DMultisample(m_RendererID, nSamples, m_InternalFormat, width, height, GL_TRUE);
-        }
+       glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+       glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT); 
     }
 
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool gammaCorrection)
         : m_Path(path)
+    {
+        bool hdr = stbi_is_hdr(path.c_str());
+        if (!hdr)
+        {
+            CreateGeneral(path, gammaCorrection);
+        }
+        else
+        {
+            CreateHDR(path);
+        }
+    }
+
+    OpenGLTexture2D::~OpenGLTexture2D()
+    {
+        glDeleteTextures(1, &m_RendererID);
+    }
+
+    void OpenGLTexture2D::CreateGeneral(const std::string& path, bool gammaCorrection)
     {
         int width, height, channels;
         stbi_set_flip_vertically_on_load(1);
@@ -105,24 +114,28 @@ namespace Vortex
         VT_CORE_ASSERT(data, "Failed to load image!");
         m_Width = width;
         m_Height = height;
-        
+
         // set blend format
-        GLenum internalFormat = 0, dataFormat = 0, pixelType = 0;
+        GLenum internalFormat = 0, dataFormat = 0;
         if (channels == 4)
         {
             internalFormat = GL_RGBA8;
+            m_TextureFormat = "RGBA8";
             if (gammaCorrection)
             {
                 internalFormat = GL_SRGB8_ALPHA8;
+                m_TextureFormat = "SRGBA8";
             }
             dataFormat = GL_RGBA;
         }
         else if (channels == 3)
         {
             internalFormat = GL_RGB8;
+            m_TextureFormat = "RGB8";
             if (gammaCorrection)
             {
                 internalFormat = GL_SRGB8;
+                m_TextureFormat = "SRGB8";
             }
             dataFormat = GL_RGB;
         }
@@ -146,9 +159,48 @@ namespace Vortex
         stbi_image_free(data);
     }
 
-    OpenGLTexture2D::~OpenGLTexture2D()
+    void Vortex::OpenGLTexture2D::CreateHDR(const std::string& path)
     {
-        glDeleteTextures(1, &m_RendererID);
+        int width, height, channels;
+        stbi_set_flip_vertically_on_load(1);
+        float* data = stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+        VT_CORE_ASSERT(data, "Failed to load image!");
+        m_Width = width;
+        m_Height = height;
+        stbi_is_hdr(path.c_str());
+       
+        // set blend format
+        GLenum internalFormat = 0, dataFormat = 0;
+        if (channels == 4)
+        {
+            internalFormat = GL_RGBA16F;
+            m_TextureFormat = "RGBA16F";
+            dataFormat = GL_RGBA;
+        }
+        else if (channels == 3)
+        {
+            internalFormat = GL_RGB16F;
+            m_TextureFormat = "RGB16F";
+            dataFormat = GL_RGB;
+        }
+
+        m_InternalFormat = internalFormat;
+        m_DataFormat = dataFormat;
+
+        VT_CORE_ASSERT(internalFormat & dataFormat, "Format not supported!");
+
+        glGenTextures(1, &m_RendererID);
+        glBindTexture(GL_TEXTURE_2D, m_RendererID);
+        glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, GL_FLOAT, data);
+        // not generate mipmap
+
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+        stbi_image_free(data);
     }
 
     void OpenGLTexture2D::SetData(void* data, uint32_t size)
@@ -160,11 +212,13 @@ namespace Vortex
 
     void OpenGLTexture2D::Bind(uint32_t slot) const
     {
-        glBindTextureUnit(slot, m_RendererID);
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, m_RendererID);
     }
     void OpenGLTexture2D::Unbind(uint32_t slot) const
     {
-        glBindTextureUnit(slot, 0);
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     OpenGLCubemap::OpenGLCubemap(const std::vector<std::string>& facesPath)
@@ -172,20 +226,29 @@ namespace Vortex
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
 
-        int width = 0, height = 0, nrComponents = 0;
+        int width = 0, height = 0, channels = 0;
         for (unsigned int i = 0; i < facesPath.size(); i++)
         {
-            unsigned char* data = stbi_load(facesPath[i].c_str(), &width, &height, &nrComponents, 0);
-            if (data)
+            unsigned char* data = stbi_load(facesPath[i].c_str(), &width, &height, &channels, 0);
+            VT_CORE_ASSERT(data, "Cubemap texture failed to load at path: {}", facesPath[i].c_str());
+            if (i == 0)
             {
-                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-                stbi_image_free(data);
+                if (channels == 4)
+                {
+                    m_InternalFormat = GL_RGBA8;
+                    m_TextureFormat = "RGBA8";
+                    m_DataFormat = GL_RGBA;
+                }
+                else if (channels == 3)
+                {
+                    m_InternalFormat = GL_RGB8;
+                    m_TextureFormat = "RGB8";
+                    m_DataFormat = GL_RGB;
+                }
             }
-            else
-            {
-                std::cout << "Cubemap texture failed to load at path: " << facesPath[i] << std::endl;
-                stbi_image_free(data);
-            }
+
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_InternalFormat, width, height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
+            stbi_image_free(data);
         }
 
         m_Width = width; m_Height = height;
@@ -203,14 +266,53 @@ namespace Vortex
     }
     void OpenGLCubemap::Bind(uint32_t slot) const
     {
-        glBindTextureUnit(slot, m_RendererID);
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
     }
     void OpenGLCubemap::Unbind(uint32_t slot) const
     {
-        glBindTextureUnit(slot, 0);
+        // glBindTextureUnit(slot, 0);
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     }
     void OpenGLCubemap::SetData(void* data, uint32_t size)
     {
         VT_CORE_ASSERT(0, "Not implement!");
+    }
+
+
+    OpenGLMultisampleTexture2D::OpenGLMultisampleTexture2D(uint32_t width, uint32_t height,
+                                                  int nSamples , const char* format)
+        :m_Width(width), m_Height(height)
+    {
+        m_TextureFormat = format;
+        uint32_t pixelType;
+        ParseFormat(format, m_DataFormat, m_InternalFormat, pixelType);
+
+        // TEST MSAA
+        //glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &m_RendererID);
+        //glTextureStorage2DMultisample(m_RendererID, nSamples, m_InternalFormat, width, height, GL_TRUE);
+        glGenTextures(1, &m_RendererID);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_RendererID);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, nSamples, m_InternalFormat, m_Width, m_Height, GL_TRUE);
+
+    }
+    OpenGLMultisampleTexture2D::~OpenGLMultisampleTexture2D()
+    {
+        glDeleteTextures(1, &m_RendererID);
+    }
+    void OpenGLMultisampleTexture2D::SetData(void* data, uint32_t size)
+    {
+        VT_CORE_ASSERT(0, "Not implement!");
+    }
+    void OpenGLMultisampleTexture2D::Bind(uint32_t slot) const
+    {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_RendererID);
+    }
+    void OpenGLMultisampleTexture2D::Unbind(uint32_t slot) const
+    {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
     }
 }

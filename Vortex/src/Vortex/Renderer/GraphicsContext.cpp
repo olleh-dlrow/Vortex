@@ -13,7 +13,7 @@ namespace Vortex
     {
         m_MSAAOpened = open;
         if (m_MSAAOpened) {
-            MSAAOpenedEvent e;
+            MSAAOpenedEvent e(m_nSamples);
             Application::Get().OnEvent(e);
         }
         else
@@ -25,7 +25,7 @@ namespace Vortex
     void GraphicsContext::SetMSAANSamples(int nSamples)
     {
         m_nSamples = nSamples;
-        MSAANSamplesChangedEvent e;
+        MSAANSamplesChangedEvent e(nSamples);
         Application::Get().OnEvent(e);
     }
     void GraphicsContext::SetHDR(bool open)
@@ -46,7 +46,7 @@ namespace Vortex
     void GraphicsContext::SetHDRExposure(float exposure)
     {
         m_Exposure = exposure;
-        HDRExposureChangedEvent e;
+        HDRExposureChangedEvent e(exposure);
         Application::Get().OnEvent(e);
     }
 

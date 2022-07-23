@@ -95,23 +95,22 @@ namespace Vortex
     /////////////////////////////////////////////////////////////////////////////
     // RenderBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
-    OpenGLRenderBuffer::OpenGLRenderBuffer(uint32_t width, uint32_t height, bool MSAAOpened)
+    OpenGLRenderBuffer::OpenGLRenderBuffer(uint32_t width, uint32_t height)
     {
         glGenRenderbuffers(1, &m_RendererID);
         glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
-        if (!MSAAOpened)
-        {
-            //use a single renderbuffer object for both a depth AND stencil buffer.
-            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); 
-        }
-        else
-        {
-            // TEST MSAA
-            int nSamples = Application::Get().GetWindow().GetGraphicsContext().GetMSAANSamples();
-            glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, width, height);
-        }
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height); 
+        //glBindRenderbuffer(GL_RENDERBUFFER, 0);
     }   
+
+    OpenGLRenderBuffer::OpenGLRenderBuffer(uint32_t width, uint32_t height, int nSamples)
+    {
+        glGenRenderbuffers(1, &m_RendererID);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_RendererID);
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, nSamples, GL_DEPTH24_STENCIL8, width, height);
+        //glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    }
+
 
     OpenGLRenderBuffer::~OpenGLRenderBuffer()
     {
@@ -131,35 +130,11 @@ namespace Vortex
     /////////////////////////////////////////////////////////////////////////////
     // FrameBuffer //////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
-    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height, bool MSAAOpened,
-                                         const std::vector<Ref<Texture2D>>& textures)
+    OpenGLFrameBuffer::OpenGLFrameBuffer(uint32_t width, uint32_t height)
         :m_Width(width), m_Height(height)
     {
         glGenFramebuffers(1, &m_RendererID);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-        
-        if (textures.empty())
-        {
-            m_Textures.push_back(OpenGLTexture2D::Create(width, height, MSAAOpened));
-        }
-        else
-        {
-            m_Textures = textures;
-        }
-        
-        for (int i = 0; i < m_Textures.size(); i++)
-        {
-            auto& tex = m_Textures[i];
-            if (MSAAOpened)
-            {
-                // TEST MSAA
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, tex->GetID(), 0);
-            }
-            else
-            {
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tex->GetID(), 0);
-            }
-        }
     }
     OpenGLFrameBuffer::~OpenGLFrameBuffer()
     {
@@ -190,13 +165,30 @@ namespace Vortex
     {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb->GetID());
     }
+    void OpenGLFrameBuffer::AttachTexture2D(Texture2D& tex2D, int attachIndex)
+    {
+        uint32_t texType = 0;
+        switch (tex2D.GetType())
+        {
+        case TextureType::TEX2D:
+            texType = GL_TEXTURE_2D;
+            break;
+        case TextureType::TEX2D_MULTISAMPLE:
+            texType = GL_TEXTURE_2D_MULTISAMPLE;
+            break;
+        default:
+            VT_CORE_ASSERT(0, "Unknown TextureType");
+            break;
+        }
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachIndex, texType, tex2D.GetID(), 0);
+    }
+    void OpenGLFrameBuffer::AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex)
+    {
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachIndex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, cubemap.GetID(), 0);
+    }
     bool OpenGLFrameBuffer::CheckStatus() const
     {
         return glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-    }
-    uint32_t OpenGLFrameBuffer::GetTextureID(int index) const
-    {
-        return m_Textures[index]->GetID();
     }
 
     void OpenGLFrameBuffer::BlitImpl(FrameBuffer& src, FrameBuffer& dst)
@@ -204,5 +196,7 @@ namespace Vortex
         src.Bind(FrameBufferState::READ);
         dst.Bind(FrameBufferState::DRAW);
         glBlitFramebuffer(0, 0, src.GetWidth(), src.GetHeight(), 0, 0, dst.GetWidth(), dst.GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        src.Unbind();
+        dst.Unbind();
     }
 }

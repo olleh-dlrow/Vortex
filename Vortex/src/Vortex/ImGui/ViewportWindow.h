@@ -28,8 +28,7 @@ namespace Vortex
 					   const Ref<Camera>& cam,
 					   const glm::vec4& clearColor=glm::vec4(0.0f, 0.0f, 0.0f, 1));
 		~ViewportWindow() {};
-		// create fb according to MSAAOpened
-		void CreateFrameBuffers();
+
 		void Begin();
 		void End();
 		void OnImGuiRender();
@@ -42,9 +41,6 @@ namespace Vortex
 		ImVec2 ConvertToWinPos(ImVec2 scrPos);
 		// X+: right, Y+: down
 		ImVec2 ConvertToNormalizedPos(ImVec2 scrPos);
-
-		bool OnMSAAChanged(Event& e);
-		bool OnHDRChanged(Event& e);
 
 		inline Ref<Camera> GetCamera() const { return m_Camera; }
 		inline Camera* GetCamera() { return m_Camera.get(); }
@@ -61,6 +57,14 @@ namespace Vortex
 		}
 		inline bool IsFocused() const { return m_IsFocused; }
 
+	private:
+		Texture2D& GetRenderTexture();
+		void InitFrameBuffers();
+		void AttachTextures(int nSamples, bool hdr);
+		void AttachRenderBuffers(int nSamples);
+		void CheckFrameBuffers();
+		bool OnMSAAChanged(Event& e);
+		bool OnHDRChanged(Event& e);
 	public:
 		OnPostProcessCallbackFn		m_OnPostProcessCallback;
 	private:
@@ -69,11 +73,16 @@ namespace Vortex
 		ImVec2						m_AbsContentPos;	// screen pos of top-left content
 		Ref<Camera>					m_Camera;
 		
-		Ref<FrameBuffer>			m_FB;				// rendered first to this frame buffer
-		Ref<RenderBuffer>			m_RB;
+		Ref<FrameBuffer>			m_TargetFB;				// rendered first to this frame buffer
+		Ref<RenderBuffer>			m_TargetRB;
+		Ref<Texture2D>				m_TargetTex2D;
+
 		Ref<FrameBuffer>			m_DownsampleFB;		// used for msaa to downsample
-		
+		Ref<Texture2D>				m_DownsampleTex2D;
+
 		Ref<FrameBuffer>			m_FinalScreenFB;	// final screen framebuffer after postprocess
+		Ref<Texture2D>				m_FinalTex2D;
+
 		bool						m_MSAAOpened;
 
 		bool						m_HDROpened;

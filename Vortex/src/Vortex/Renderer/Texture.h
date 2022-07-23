@@ -11,6 +11,14 @@ namespace Vortex
 
     using TexPair = Pair<TextureMeta, Ref<Texture> >;
 
+    enum class TextureType
+    {
+        TEX2D,
+        TEX2D_MULTISAMPLE,
+        CUBEMAP,
+        TEX3D
+    };
+
     class Texture
     {
     public:
@@ -26,21 +34,43 @@ namespace Vortex
         virtual void Unbind(uint32_t slot = 0) const = 0;
 
         virtual bool operator==(const Texture& other) const = 0;
+
+        virtual TextureType GetType() const = 0;
+
+        virtual std::string GetTextureFormat() const { return m_TextureFormat; }
+    protected:
+        std::string m_TextureFormat;
     };
 
     class Texture2D : public Texture
     {
     public:
         static Ref<Texture2D> Create(uint32_t width, uint32_t height, 
-                                    bool MSAAOpened = false,
                                     const char* format = "RGBA8");
-        static Ref<Texture2D> Create(const std::string& path, bool gammaCorrection = false);
+        // https://learnopengl-cn.github.io/05%20Advanced%20Lighting/02%20Gamma%20Correction/
+        // when gammaCorrection setted, the color space will automatically changed from
+        // gamma space to linear space
+        static Ref<Texture2D> Create(const std::string& path, 
+                                     bool gammaCorrection = false);
+
+        virtual TextureType GetType() const override { return TextureType::TEX2D; }
+    };
+
+    class MultisampleTexture2D : public Texture2D
+    {
+    public:
+        static Ref<MultisampleTexture2D> Create(uint32_t width, uint32_t height, int nSamples, 
+                                                const char* format="RGBA8");
+
+        virtual TextureType GetType() const override { return TextureType::TEX2D_MULTISAMPLE; }
     };
 
     class Cubemap : public Texture
     {
     public:
         static Ref<Cubemap> Create(const std::vector<std::string>& facesPath);
+
+        virtual TextureType GetType() const override { return TextureType::CUBEMAP; }
     };
 
     // store information about some texture

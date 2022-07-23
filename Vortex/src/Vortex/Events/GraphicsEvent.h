@@ -14,7 +14,8 @@ namespace Vortex
 	class MSAAOpenedEvent : public GraphicsEvent
 	{
 	public:
-		MSAAOpenedEvent()
+		MSAAOpenedEvent(int nSamples)
+			:m_NSamples(nSamples)
 		{
 
 		}
@@ -27,6 +28,8 @@ namespace Vortex
 		}
 
 		EVENT_CLASS_TYPE(MSAAOpened)
+
+		int m_NSamples;
 	};
 	
 	class MSAAClosedEvent : public GraphicsEvent
@@ -50,7 +53,8 @@ namespace Vortex
 	class MSAANSamplesChangedEvent : public GraphicsEvent
 	{
 	public:
-		MSAANSamplesChangedEvent()
+		MSAANSamplesChangedEvent(int nSamples)
+			:m_NSamples(nSamples)
 		{
 
 		}
@@ -63,6 +67,8 @@ namespace Vortex
 		}
 
 		EVENT_CLASS_TYPE(MSAANSamplesChanged)
+
+		int m_NSamples;
 	};
 
 	// HDROpened, HDRClosed, HDRExposureChanged
@@ -105,7 +111,8 @@ namespace Vortex
 	class HDRExposureChangedEvent : public GraphicsEvent
 	{
 	public:
-		HDRExposureChangedEvent()
+		HDRExposureChangedEvent(float exposure)
+			:m_Exposure(exposure)
 		{
 
 		}
@@ -118,5 +125,7 @@ namespace Vortex
 		}
 
 		EVENT_CLASS_TYPE(HDRExposureChanged)
+
+		float m_Exposure;
 	};
 }

@@ -17,6 +17,8 @@ namespace Vortex
 	{
 
 	}
+
+	// optimize: use dirty flag to determine whether or not we should set value with shader
 	void Material::ApplyProperties()
 	{
 		m_Shader->Bind();

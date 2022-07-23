@@ -60,5 +60,8 @@ namespace Vortex
 		std::unordered_map<std::string, glm::vec3>	m_Float3Props;
 		std::unordered_map<std::string, glm::vec4>	m_Float4Props;
 		std::unordered_map<std::string, glm::mat4>	m_Mat4Props;
+		
+		// extention
+		//std::unordered_map<std::string, bool>		m_DirtyFlags;
 	};
 }

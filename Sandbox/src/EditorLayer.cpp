@@ -62,7 +62,7 @@ void EditorLayer::OnPostProcessBase(Vortex::Texture2D& renderTexture)
 
 void EditorLayer::OnPostProcess(Vortex::Texture2D& renderTexture)
 {
-
+    
 }
 
 void EditorLayer::PreImGuiRender()

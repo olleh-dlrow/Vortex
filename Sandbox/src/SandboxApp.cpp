@@ -20,6 +20,7 @@
 //#include "HDRTest.h"
 //#include "CubemapTest.h"
 #include "PBRLightTest.h"
+//#include "IBLTest.h"
 
 /*
 tips:

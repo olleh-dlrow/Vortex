@@ -58,25 +58,36 @@ namespace Vortex
         return nullptr;
     }
 
-    Ref<RenderBuffer> RenderBuffer::Create(uint32_t width, uint32_t height, bool MSAAOpened)
+    Ref<RenderBuffer> RenderBuffer::Create(uint32_t width, uint32_t height)
     {
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLRenderBuffer>(width, height, MSAAOpened);
+        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLRenderBuffer>(width, height);
         }
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
-    Ref<FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height, bool MSAAOpened, 
-                                const std::vector<Ref<Texture2D>>& textures)
+    Ref<RenderBuffer> RenderBuffer::Create(uint32_t width, uint32_t height, int nSamples)
     {
         switch (RendererAPI::GetAPI())
         {
         case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLFrameBuffer>(width, height, MSAAOpened, textures);
+        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLRenderBuffer>(width, height, nSamples);
+        }
+
+        VT_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
+
+    Ref<FrameBuffer> FrameBuffer::Create(uint32_t width, uint32_t height)
+    {
+        switch (RendererAPI::GetAPI())
+        {
+        case RendererAPI::API::None:    VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+        case RendererAPI::API::OpenGL:  return CreateRef<OpenGLFrameBuffer>(width, height);
         }
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");

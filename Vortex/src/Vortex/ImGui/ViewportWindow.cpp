@@ -12,6 +12,7 @@
 #include "Vortex/Renderer/Camera.h"
 #include "Vortex/Core/Application.h"
 #include "Vortex/Renderer/Material.h"
+#include "Vortex/Renderer/Texture.h"
 
 namespace Vortex
 {
@@ -24,8 +25,13 @@ namespace Vortex
 	{
 		m_MSAAOpened = Application::Get().GetWindow().GetGraphicsContext().GetMSAA();
 		m_HDROpened = Application::Get().GetWindow().GetGraphicsContext().GetHDR();
+		int nSamples = m_MSAAOpened ? 
+			Application::Get().GetWindow().GetGraphicsContext().GetMSAANSamples() : 0;
 
-		CreateFrameBuffers();
+		InitFrameBuffers();
+		AttachTextures(nSamples, m_HDROpened);
+		AttachRenderBuffers(nSamples);
+		CheckFrameBuffers();
 
 		// create screen quad
 		float quadVertices[] = {
@@ -49,94 +55,121 @@ namespace Vortex
 		m_ScreenVertexArray->Unbind();
 	}
 
-	
-	void ViewportWindow::CreateFrameBuffers()
+	void ViewportWindow::InitFrameBuffers()
 	{
 		int width = Application::Get().GetWindow().GetWidth();
 		int height = Application::Get().GetWindow().GetHeight();
+		m_TargetFB = FrameBuffer::Create(width, height);
+		m_DownsampleFB = FrameBuffer::Create(width, height);
 
-		Ref<Texture2D> tex;
-		if (!m_HDROpened)
-		{
-			tex = Texture2D::Create(width, height, m_MSAAOpened, "RGBA8");
-			m_FB = FrameBuffer::Create(width, height, m_MSAAOpened, std::vector<Ref<Texture2D>>{tex});
+		// init final screen frame buffer
+		m_FinalScreenFB = FrameBuffer::Create(width, height);
+		m_FinalTex2D = Texture2D::Create(width, height, "RGBA8");
+		m_FinalScreenFB->AttachTexture2D(*m_FinalTex2D, 0);
+
+		// unbind
+		m_TargetFB->Unbind();
+		m_DownsampleFB->Unbind();
+		m_FinalScreenFB->Unbind();
+		m_FinalScreenFB->Unbind();
+	}
+
+	void ViewportWindow::AttachTextures(int nSamples, bool hdr)
+	{
+		int width = Application::Get().GetWindow().GetWidth();
+		int height = Application::Get().GetWindow().GetHeight();
+		const char* format = hdr ? "RGBA16F" : "RGBA8";
+		if (m_MSAAOpened) {
+			m_TargetTex2D = MultisampleTexture2D::Create(width, height, nSamples, format);
+
+			m_DownsampleTex2D = Texture2D::Create(width, height, format);
+			m_DownsampleFB->Bind();
+			m_DownsampleFB->AttachTexture2D(*m_DownsampleTex2D, 0);
+			m_DownsampleFB->Unbind();
 		}
 		else
 		{
-			tex = Texture2D::Create(width, height, m_MSAAOpened, "RGBA16F");
-			m_FB = FrameBuffer::Create(width, height, m_MSAAOpened, std::vector<Ref<Texture2D>>{tex});
+			m_TargetTex2D = Texture2D::Create(width, height, format);
 		}
-			
-		m_RB = RenderBuffer::Create(width, height, m_MSAAOpened);
-		m_FB->AttachRenderBuffer(m_RB);
-		if (!m_FB->CheckStatus())
+		m_TargetFB->Bind();
+		m_TargetFB->AttachTexture2D(*m_TargetTex2D, 0);
+		m_TargetFB->Unbind();
+	}
+
+	void ViewportWindow::AttachRenderBuffers(int nSamples)
+	{
+		int width = Application::Get().GetWindow().GetWidth();
+		int height = Application::Get().GetWindow().GetHeight();
+		if (m_MSAAOpened)
 		{
+			m_TargetRB = RenderBuffer::Create(width, height, nSamples);
+		} 
+		else
+		{
+			m_TargetRB = RenderBuffer::Create(width, height);
+		}
+		m_TargetFB->Bind();
+		m_TargetFB->AttachRenderBuffer(m_TargetRB);
+		m_TargetFB->Unbind();
+		m_TargetRB->Unbind();
+	}
+
+	void ViewportWindow::CheckFrameBuffers()
+	{
+		m_TargetFB->Bind();
+		if (!m_TargetFB->CheckStatus()) {
 			VT_CORE_ASSERT(0, "FrameBuffer is not complete");
 		}
-		m_FB->Unbind();
+		m_TargetFB->Unbind();
 
 		if (m_MSAAOpened)
 		{
-			// TEST MSAA
-			if (!m_HDROpened)
-			{
-				tex = Texture2D::Create(width, height, false, "RGBA8");
-				m_DownsampleFB = FrameBuffer::Create(width, height, false, std::vector<Ref<Texture2D>>{tex});
-			}
-			else
-			{
-				tex = Texture2D::Create(width, height, false, "RGBA16F");
-				m_DownsampleFB = FrameBuffer::Create(width, height, false, std::vector<Ref<Texture2D>>{tex});
-			}
 			m_DownsampleFB->Bind();
-
-			if (!m_DownsampleFB->CheckStatus())
-			{
-				VT_CORE_ASSERT(0, "Downsample FrameBuffer is not complete");
+			if (!m_DownsampleFB->CheckStatus()) {
+				VT_CORE_ASSERT(0, "FrameBuffer is not complete");
 			}
 			m_DownsampleFB->Unbind();
 		}
 
-		// create final screen frame buffer
-		m_FinalScreenFB = FrameBuffer::Create(width, height);
-		if (!m_FinalScreenFB->CheckStatus())
-		{
-			VT_CORE_ASSERT(0, "FinalScreen FrameBuffer is not complete");
+		m_FinalScreenFB->Bind();
+		if (!m_FinalScreenFB->CheckStatus()) {
+			VT_CORE_ASSERT(0, "FrameBuffer is not complete");
 		}
+		m_FinalScreenFB->Unbind();
 	}
-
+	
 	void Vortex::ViewportWindow::Begin()
 	{
-		m_FB->Bind();
+		m_TargetFB->Bind();
 		Renderer::SetDepthTest(true);
 		Renderer::SetClearColor(m_ClearColor);
 		Renderer::Clear();
 	}
 
-	void Vortex::ViewportWindow::End()
+	Texture2D& ViewportWindow::GetRenderTexture()
 	{
-		m_FB->Unbind();
-		Renderer::SetDepthTest(false);
-		int width = Application::Get().GetWindow().GetWidth();
-		int height = Application::Get().GetWindow().GetHeight();
-
-		// wait to implement:
-		// open or close postprocess
-		Texture2D* sampledTexture = nullptr;
 		if (m_MSAAOpened)
 		{
-			FrameBuffer::Blit(*m_FB, *m_DownsampleFB);
-			m_FB->Unbind();
-
-			sampledTexture = &m_DownsampleFB->GetInnerTexture();
+			FrameBuffer::Blit(*m_TargetFB, *m_DownsampleFB);
+			return *m_DownsampleTex2D;
 		}
 		else
 		{
-			sampledTexture = &m_FB->GetInnerTexture();
+			return *m_TargetTex2D;
 		}
+	}
+
+	void Vortex::ViewportWindow::End()
+	{
+		m_TargetFB->Unbind();
+		Renderer::SetDepthTest(false);
+
+		// wait to implement:
+		// open or close postprocess
+		Texture2D& renderTexture = GetRenderTexture();
 		m_FinalScreenFB->Bind();
 		m_ScreenVertexArray->Bind();
-		m_OnPostProcessCallback(*sampledTexture);
+		m_OnPostProcessCallback(renderTexture);
 		Renderer::DrawTriangles(m_ScreenVertexArray, DrawTriangleConfig(6, 0));
 		m_FinalScreenFB->Unbind();
 	}
@@ -163,7 +196,7 @@ namespace Vortex
 			m_Camera->m_Aspect = (float)m_ContentSize.x / m_ContentSize.y;
 
 			// Because I use the texture from OpenGL, I need to invert the V from the UV.
-			ImGui::Image((ImTextureID)(uint64_t)m_FinalScreenFB->GetTextureID(), m_ContentSize, ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((ImTextureID)(uint64_t)m_FinalTex2D->GetID(), m_ContentSize, ImVec2(0, 1), ImVec2(1, 0));
 		}
 		ImGui::End();
 	}
@@ -245,21 +278,48 @@ namespace Vortex
 	}
 	bool ViewportWindow::OnMSAAChanged(Event& e)
 	{
-		if (e.GetEventType() == EventType::MSAAOpened)
+		int nSamples = 0;
+		switch (e.GetEventType())
+		{
+		case EventType::MSAAOpened:
 			m_MSAAOpened = true;
-		if (e.GetEventType() == EventType::MSAAClosed)
+			nSamples = ((MSAAOpenedEvent&)e).m_NSamples;
+			break;
+		case EventType::MSAAClosed:
 			m_MSAAOpened = false;
-		CreateFrameBuffers();
+			break;
+		case EventType::MSAANSamplesChanged:
+			nSamples = ((MSAANSamplesChangedEvent&)e).m_NSamples;
+			break;
+		default:
+			break;
+		}
+		AttachTextures(nSamples, m_HDROpened);
+		AttachRenderBuffers(nSamples);
+		CheckFrameBuffers();
+		
 		return false;
 	}
 
 	bool ViewportWindow::OnHDRChanged(Event& e)
 	{
-		if (e.GetEventType() == EventType::HDROpened)
+		int exposure = 0;
+		switch (e.GetEventType())
+		{
+		case EventType::HDROpened:
 			m_HDROpened = true;
-		if (e.GetEventType() == EventType::HDRClosed)
+			break;
+		case EventType::HDRClosed:
 			m_HDROpened = false;
-		CreateFrameBuffers();
+			break;
+		default:
+			break;
+		}
+		int nSamples = m_MSAAOpened ?
+			Application::Get().GetWindow().GetGraphicsContext().GetMSAANSamples() : 0;
+		AttachTextures(nSamples, m_HDROpened);
+		CheckFrameBuffers();
+
 		return false;
 	}
 }

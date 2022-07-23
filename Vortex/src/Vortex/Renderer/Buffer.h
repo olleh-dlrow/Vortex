@@ -5,6 +5,8 @@
 namespace Vortex 
 {
     class Texture2D;
+    class Texture;
+    class Cubemap;
 
     enum class ShaderDataType
     {
@@ -152,7 +154,8 @@ namespace Vortex
         virtual void Unbind() const = 0;
         virtual uint32_t GetID() const = 0;
 
-        static Ref<RenderBuffer> Create(uint32_t width, uint32_t height, bool MSAAOpened = false);
+        static Ref<RenderBuffer> Create(uint32_t width, uint32_t height);
+        static Ref<RenderBuffer> Create(uint32_t width, uint32_t height, int nSamples);
     };
 
     enum class FrameBufferState
@@ -163,23 +166,25 @@ namespace Vortex
         BOTH
     };
 
-    class FrameBuffer 
+    class FrameBuffer
     {
     public:
         virtual ~FrameBuffer() {}
 
         virtual void Bind(FrameBufferState state = FrameBufferState::BOTH) const = 0;
         virtual void Unbind() const = 0;
+        
         virtual void AttachRenderBuffer(const Ref<RenderBuffer>& rb) const = 0;
+        virtual void AttachTexture2D(Texture2D& tex2D, int attachIndex) = 0;
+        virtual void AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex) = 0;
         virtual bool CheckStatus() const = 0;
-        virtual uint32_t GetTextureID(int index=0) const = 0;
+        
         virtual uint32_t GetWidth() const = 0;
         virtual uint32_t GetHeight() const = 0;
         virtual uint32_t GetID() const = 0;
-        virtual Texture2D& GetInnerTexture(int index=0) = 0;
 
-        static Ref<FrameBuffer> Create(uint32_t width, uint32_t height, bool MSAAOpened = false,
-                    const std::vector<Ref<Texture2D>>& textures = std::vector<Ref<Texture2D>>());
+        static Ref<FrameBuffer> Create(uint32_t width, uint32_t height);
+        
         static void Blit(FrameBuffer& src, FrameBuffer& dst);
     };
 }
