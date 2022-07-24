@@ -108,7 +108,6 @@ public:
         }
         cubeVA->Bind();
         Renderer::DrawTriangles(cubeVA, Vortex::DrawTriangleConfig(36, 0));
-        cubeVA->Unbind();
     }
 
     void RenderQuad()
@@ -125,7 +124,6 @@ public:
         }
         quadVA->Bind();
         Renderer::DrawTriangles(quadVA, Vortex::DrawTriangleConfig(4, 0, Vortex::PolygonMode::FILL, Vortex::PrimitiveType::TRIANGLE_STRIP));
-        quadVA->Unbind();
     }
 
     void LoadMeshes(const std::string& filename)
