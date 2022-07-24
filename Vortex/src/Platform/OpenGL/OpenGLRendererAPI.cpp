@@ -45,6 +45,7 @@ namespace Vortex
             m_supportLineWidth = false;
         }
 
+        // WARNING: default close it, otherwise some output less than 4D(eg. vec2 FragColor) will be overlapped!
         // open blend effect
         SetBlend(false);
         //SetBlendFunc(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);

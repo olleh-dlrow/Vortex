@@ -226,12 +226,6 @@ public:
         hdrTexture->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
         hdrTexture->ApplySettings();
 
-        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
         // pbr: setup cubemap to render to and attach to framebuffer
         envCubemap = Cubemap::Create(512, 512, "RGB16F");
         envCubemap->SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR_MIPMAP_LINEAR);
@@ -239,12 +233,6 @@ public:
         envCubemap->SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
         envCubemap->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
         envCubemap->SetTextureWrapMode(TextureWrapAxis::R, TextureWrapMode::CLAMP_TO_EDGE);
-
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // enable pre-filter mipmap sampling (combatting visible dots artifact)
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // pbr: convert HDR equirectangular environment map to cubemap equivalent
         equirectangularToCubemapMat->SetMat4("projection", captureProjection);
@@ -275,12 +263,6 @@ public:
         irradianceMap->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
         irradianceMap->SetTextureWrapMode(TextureWrapAxis::R, TextureWrapMode::CLAMP_TO_EDGE);
         irradianceMap->ApplySettings();
-        // temporarily use the raw API
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         captureRB = RenderBuffer::Create(32, 32);
         captureFB->Bind();
@@ -313,13 +295,6 @@ public:
         prefilterMap->SetTextureWrapMode(TextureWrapAxis::R, TextureWrapMode::CLAMP_TO_EDGE);
         prefilterMap->SetMipmap(true);
         prefilterMap->ApplySettings();
-        // generate mipmaps for the cubemap so OpenGL automatically allocates the required memory.
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // be sure to set minification filter to mip_linear 
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
         // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
         prefilterMat->SetMat4("projection", captureProjection);
@@ -355,14 +330,10 @@ public:
         brdfLUTTexture = Texture2D::Create(512, 512, "RG16F");
         brdfLUTTexture->SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
         brdfLUTTexture->SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+        // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
         brdfLUTTexture->SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
         brdfLUTTexture->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
         brdfLUTTexture->ApplySettings();
-        // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
         captureRB = RenderBuffer::Create(512, 512);
