@@ -108,7 +108,7 @@ namespace Vortex
             
             if (ImGui::BeginCombo(label.data(),preVal.data()))
             {
-                for (int i = (int)TextureWrapMode::NONE; i < (int)TextureWrapMode::ENUM_MAX; i++)
+                for (int i = (int)TextureWrapMode::NONE + 1; i < (int)TextureWrapMode::ENUM_MAX; i++)
                 {
                     bool isSelected = (currentIdx == i);
                     auto val = magic_enum::enum_name(TextureWrapMode(i));
@@ -130,7 +130,7 @@ namespace Vortex
             int currentIdx = (int)filter.second;
             if (ImGui::BeginCombo(label.data(), preVal.data()))
             {
-                for (int i = (int)TextureFilterMode::NONE; i < (int)TextureFilterMode::ENUM_MAX; i++)
+                for (int i = (int)TextureFilterMode::NONE + 1; i < (int)TextureFilterMode::ENUM_MAX; i++)
                 {
                     bool isSelected = (currentIdx == i);
                     auto val = magic_enum::enum_name(TextureFilterMode(i));
