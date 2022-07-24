@@ -315,7 +315,7 @@ namespace Vortex
 	}
 	bool SceneImporter::ParseAssimpTextures(const aiMaterial* inMat, aiTextureType texType, Ref<Material>& mat)
 	{
-		std::unordered_map<aiTextureType, std::string> slotNames = {
+		HashMap<aiTextureType, std::string> slotNames = {
 			{aiTextureType_DIFFUSE, "texture_diffuse"},
 			{aiTextureType_SPECULAR, "texture_specular"},
 			{aiTextureType_AMBIENT, "texture_ambient"},

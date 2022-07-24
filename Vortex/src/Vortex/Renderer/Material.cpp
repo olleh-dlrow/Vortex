@@ -145,6 +145,7 @@ namespace Vortex
 
 	void Material::RenderConfigGUI()
 	{
+		ImGui::PushID(m_Name.c_str());
 		ImGui::Text("Material Name: %s", m_Name.c_str());
 		// display properties
 		// float, float3, float4, int, texture
@@ -177,7 +178,9 @@ namespace Vortex
 		for (auto& tex : m_Textures)
 		{
 			ImGui::Text("Texture: %s", tex.first.c_str());
+			tex.second.second->RenderConfigGUI();
 		}
 		m_Shader->Unbind();
+		ImGui::PopID();
 	}
 }

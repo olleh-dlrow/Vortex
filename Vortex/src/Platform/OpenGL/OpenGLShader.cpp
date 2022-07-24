@@ -1,10 +1,11 @@
 #include "vtpch.h"
 #include "Platform/OpenGL/OpenGLShader.h"
 
+#include "Vortex/Core/Core.h"
 #include <fstream>
 #include <glad/glad.h>
 
-#include "glm/gtc/type_ptr.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Vortex
 {
@@ -39,7 +40,7 @@ namespace Vortex
     OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
         : m_Name(name)
     {
-        std::unordered_map<GLenum, std::string> sources;
+        HashMap<GLenum, std::string> sources;
         sources[GL_VERTEX_SHADER] = vertexSrc;
         sources[GL_FRAGMENT_SHADER] = fragmentSrc;
         Compile(sources);
@@ -79,9 +80,9 @@ namespace Vortex
 
     // pre process the source code of openGL shader
     // source can include multiple shader types with flag "#type xxx" in start
-    std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
+    HashMap<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source)
     {
-        std::unordered_map<GLenum, std::string> shaderSources;
+        HashMap<GLenum, std::string> shaderSources;
 
         const char* typeToken = "#type";
         size_t typeTokenLength = strlen(typeToken);
@@ -109,7 +110,7 @@ namespace Vortex
         return shaderSources;
     }
 
-    void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources)
+    void OpenGLShader::Compile(const HashMap<GLenum, std::string>& shaderSources)
     {
         GLuint program = glCreateProgram();
         

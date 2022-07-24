@@ -5,6 +5,7 @@
 namespace Vortex
 {
     enum class DepthPassCond;
+    enum class BlendFactor;
 
     class OpenGLRendererAPI: public RendererAPI
     {
@@ -14,6 +15,8 @@ namespace Vortex
         virtual void SetClearColor(const glm::vec4& color) override;
         virtual void Clear() override;
         virtual void SetDepthTest(bool enable) override;
+        virtual void SetBlend(bool enable) override;
+        virtual void SetBlendFunc(BlendFactor src, BlendFactor dst) override;
 
         virtual void SetDepthPassCond(DepthPassCond cond) override;
 

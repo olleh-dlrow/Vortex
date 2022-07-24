@@ -28,6 +28,10 @@ using Vortex::Entity;
 using Vortex::Cubemap;
 using Vortex::FrameBuffer;
 using Vortex::RenderBuffer;
+using Vortex::TextureFilterOperation;
+using Vortex::TextureFilterMode;
+using Vortex::TextureWrapAxis;
+using Vortex::TextureWrapMode;
 
 glm::vec3 lightPositions[] = {
     glm::vec3(-10.0f,  10.0f, 10.0f),
@@ -215,20 +219,32 @@ public:
   
         // pbr: load the HDR environment map
         hdrTexture = Texture2D::Create("assets/textures/hdr/newport_loft.hdr");
-        glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        hdrTexture->SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
         // WARNING: this place should be GL_LINEAR, not GL_NEAREST!!!
-        glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        hdrTexture->SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+        hdrTexture->SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        hdrTexture->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        hdrTexture->ApplySettings();
 
-        glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTextureParameteri(hdrTexture->GetID(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         // pbr: setup cubemap to render to and attach to framebuffer
         envCubemap = Cubemap::Create(512, 512, "RGB16F");
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // enable pre-filter mipmap sampling (combatting visible dots artifact)
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        envCubemap->SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR_MIPMAP_LINEAR);
+        envCubemap->SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+        envCubemap->SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        envCubemap->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        envCubemap->SetTextureWrapMode(TextureWrapAxis::R, TextureWrapMode::CLAMP_TO_EDGE);
+
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // enable pre-filter mipmap sampling (combatting visible dots artifact)
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // pbr: convert HDR equirectangular environment map to cubemap equivalent
         equirectangularToCubemapMat->SetMat4("projection", captureProjection);
@@ -245,22 +261,26 @@ public:
             RenderCube();
         }
         captureFB->Unbind();
-        envCubemap->Bind();
-        envCubemap->GenerateMipmaps();
+        envCubemap->SetMipmap(true);
+        envCubemap->ApplySettings();
     }
 
     void CreateIrradianceMap()
     {
         // pbr: create an irradiance cubemap, and re-scale capture FBO to irradiance scale.
         irradianceMap = Cubemap::Create(32, 32, "RGB16F");
-        irradianceMap->Bind();
+        irradianceMap->SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
+        irradianceMap->SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+        irradianceMap->SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        irradianceMap->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        irradianceMap->SetTextureWrapMode(TextureWrapAxis::R, TextureWrapMode::CLAMP_TO_EDGE);
+        irradianceMap->ApplySettings();
         // temporarily use the raw API
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        irradianceMap->Unbind();
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         captureRB = RenderBuffer::Create(32, 32);
         captureFB->Bind();
@@ -286,13 +306,20 @@ public:
     {
         // pbr: create a pre-filter cubemap, and re-scale capture FBO to pre-filter scale.
         prefilterMap = Cubemap::Create(128, 128, "RGB16F");
+        prefilterMap->SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR_MIPMAP_LINEAR);
+        prefilterMap->SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+        prefilterMap->SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        prefilterMap->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        prefilterMap->SetTextureWrapMode(TextureWrapAxis::R, TextureWrapMode::CLAMP_TO_EDGE);
+        prefilterMap->SetMipmap(true);
+        prefilterMap->ApplySettings();
         // generate mipmaps for the cubemap so OpenGL automatically allocates the required memory.
-        prefilterMap->GenerateMipmaps();
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // be sure to set minification filter to mip_linear 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // be sure to set minification filter to mip_linear 
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
         // pbr: run a quasi monte-carlo simulation on the environment lighting to create a prefilter (cube)map.
         prefilterMat->SetMat4("projection", captureProjection);
@@ -313,7 +340,7 @@ public:
             for (int i = 0; i < 6; i++)
             {
                 prefilterMat->SetMat4("view", captureViews[i]);
-                captureFB->AttachCubemap(*prefilterMap, 0, i);
+                captureFB->AttachCubemap(*prefilterMap, 0, i, mip);
                 Renderer::Clear();
                 prefilterMat->ApplyProperties();
                 RenderCube();
@@ -326,11 +353,16 @@ public:
     {
         // pbr: generate a 2D LUT from the BRDF equations used.
         brdfLUTTexture = Texture2D::Create(512, 512, "RG16F");
+        brdfLUTTexture->SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
+        brdfLUTTexture->SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+        brdfLUTTexture->SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        brdfLUTTexture->SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        brdfLUTTexture->ApplySettings();
         // be sure to set wrapping mode to GL_CLAMP_TO_EDGE
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         // then re-configure capture framebuffer object and render screen-space quad with BRDF shader.
         captureRB = RenderBuffer::Create(512, 512);
@@ -360,6 +392,9 @@ public:
         CreateIrradianceMap();
         CreatePrefilterMap();
         Create2DLUT();
+        pbrMat->SetTexture("irradianceMap", irradianceMap);
+        pbrMat->SetTexture("prefilterMap", prefilterMap);
+        pbrMat->SetTexture("brdfLUT", brdfLUTTexture);
 
         std::string filename = "assets/models/utah-teapot-obj/utah-teapot.obj";
         LoadMeshes(filename);
@@ -373,6 +408,9 @@ public:
     virtual void OnUpdate(Vortex::Timestep ts) override
     {
         EditorLayer::OnUpdate(ts);
+
+        //brdfMat->ApplyProperties();
+        //RenderQuad();
 
         Renderer::SetDepthPassCond(Vortex::DepthPassCond::LEQUAL);
         backgroundMat->SetMat4("projection", GetCamera().GetProjMatrix());

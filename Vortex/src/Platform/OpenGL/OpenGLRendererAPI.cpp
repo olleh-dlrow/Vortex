@@ -46,11 +46,11 @@ namespace Vortex
         }
 
         // open blend effect
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
+        SetBlend(false);
+        //SetBlendFunc(BlendFactor::SRC_ALPHA, BlendFactor::ONE_MINUS_SRC_ALPHA);
+
         // This affected the mix of texture
-        glEnable(GL_DEPTH_TEST);
+        SetDepthTest(true);
     }
 
     void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -73,6 +73,18 @@ namespace Vortex
         if (enable)
             glEnable(GL_DEPTH_TEST);
         else glDisable(GL_DEPTH_TEST);
+    }
+
+    void OpenGLRendererAPI::SetBlend(bool enable)
+    {
+        if (enable)
+        {
+            glEnable(GL_BLEND);
+        }
+        else
+        {
+            glDisable(GL_BLEND);
+        }
     }
 
     void OpenGLRendererAPI::SetDepthPassCond(DepthPassCond cond)
@@ -194,6 +206,24 @@ namespace Vortex
             glDisable(GL_PROGRAM_POINT_SIZE);
         }
         glDrawArrays(attr.mode, 0, attr.count);
+    }
+
+    GLenum ParseBlendFactor(BlendFactor factor)
+    {
+        switch (factor)
+        {
+        case Vortex::BlendFactor::SRC_ALPHA:
+            return GL_SRC_ALPHA;
+        case Vortex::BlendFactor::ONE_MINUS_SRC_ALPHA:
+            return GL_ONE_MINUS_SRC_ALPHA;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    void OpenGLRendererAPI::SetBlendFunc(BlendFactor src, BlendFactor dst)
+    {
+        glBlendFunc(ParseBlendFactor(src), ParseBlendFactor(dst));
     }
 
 }

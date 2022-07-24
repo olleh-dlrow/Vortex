@@ -72,6 +72,106 @@ namespace Vortex
         }
     }
 
+
+    GLint ParseTextureWrapMode(TextureWrapMode mode)
+    {
+        switch (mode)
+        {
+        case Vortex::TextureWrapMode::NONE:
+            return GL_NONE;
+        case Vortex::TextureWrapMode::CLAMP_TO_EDGE:
+            return GL_CLAMP_TO_EDGE;
+        case Vortex::TextureWrapMode::CLAMP_TO_BORDER:
+            return GL_CLAMP_TO_BORDER;
+        case Vortex::TextureWrapMode::REPEAT:
+            return GL_REPEAT;
+        case Vortex::TextureWrapMode::MIRRORED_REPEAT:
+            return GL_MIRRORED_REPEAT;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    GLenum ParseTextureWrapAxis(TextureWrapAxis axis)
+    {
+        switch (axis)
+        {
+        case Vortex::TextureWrapAxis::S:
+            return GL_TEXTURE_WRAP_S;
+        case Vortex::TextureWrapAxis::T:
+            return GL_TEXTURE_WRAP_T;
+        case Vortex::TextureWrapAxis::R:
+            return GL_TEXTURE_WRAP_R;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    GLint ParseTextureFilterMode(TextureFilterMode mode)
+    {
+        switch (mode)
+        {
+        case Vortex::TextureFilterMode::NONE:
+            return GL_NONE;
+        case Vortex::TextureFilterMode::NEAREST:
+            return GL_NEAREST;
+        case Vortex::TextureFilterMode::LINEAR:
+            return GL_LINEAR;
+        case Vortex::TextureFilterMode::LINEAR_MIPMAP_LINEAR:
+            return GL_LINEAR_MIPMAP_LINEAR;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    GLenum ParseTextureFilterOperation(TextureFilterOperation op)
+    {
+        switch (op)
+        {
+        case Vortex::TextureFilterOperation::MINIFY:
+            return GL_TEXTURE_MIN_FILTER;
+        case Vortex::TextureFilterOperation::MAGNIFY:
+            return GL_TEXTURE_MAG_FILTER;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    GLenum ParseTextureType(TextureType type)
+    {
+        switch (type)
+        {
+        case TextureType::TEX2D:
+            return GL_TEXTURE_2D;
+        case TextureType::TEX2D_MULTISAMPLE:
+            return GL_TEXTURE_2D_MULTISAMPLE;
+        case TextureType::CUBEMAP:
+            return GL_TEXTURE_CUBE_MAP;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    void OpenGLApplySettings(const Texture& tex, 
+        const HashMap<TextureWrapAxis, TextureWrapMode>& wrapModes,
+        const HashMap<TextureFilterOperation, TextureFilterMode>& filters,
+        bool mipmapEnabled)
+    {
+        tex.Bind();
+        for (auto& wrap : wrapModes)
+        {
+            glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureWrapAxis(wrap.first), ParseTextureWrapMode(wrap.second));
+        }
+        for (auto& filter : filters)
+        {
+            glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureFilterOperation(filter.first), ParseTextureFilterMode(filter.second));
+        }
+        if (mipmapEnabled)
+        {
+            glGenerateMipmap(ParseTextureType(tex.GetType()));
+        }
+    }
+
     // difference of glTextureStorage* and glTexImage*
     // https://community.khronos.org/t/framebuffer-texture-glteximage2d-vs-gltexstorage2d/74839/2
     OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height, 
@@ -86,11 +186,17 @@ namespace Vortex
        glBindTexture(GL_TEXTURE_2D, m_RendererID);
        glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, pixelType, NULL);
 
-       glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+       SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
+       SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::NEAREST);
+
+       SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::REPEAT);
+       SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::REPEAT);
+       ApplySettings();
+       /*glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-       glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+       glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT); */
     }
 
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool gammaCorrection)
@@ -161,6 +267,13 @@ namespace Vortex
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
         glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
+        
+        SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
+        SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::NEAREST);
+
+        SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::REPEAT);
+        SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::REPEAT);
+        ApplySettings();
         //glGenerateMipmap(GL_TEXTURE_2D);
 
         //glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -170,12 +283,12 @@ namespace Vortex
         //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
         // IBL TEST
-        glGenerateMipmap(GL_TEXTURE_2D);
+        //glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
     }
@@ -213,13 +326,18 @@ namespace Vortex
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_2D, m_RendererID);
         glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, width, height, 0, m_DataFormat, GL_FLOAT, data);
-        // not generate mipmap
+        SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
+        SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::NEAREST);
 
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        ApplySettings();
 
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
         stbi_image_free(data);
     }
@@ -240,6 +358,11 @@ namespace Vortex
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void OpenGLTexture2D::ApplySettings() const
+    {
+        OpenGLApplySettings(*this, m_WrapModes, m_Filters, m_MipmapEnabled);
     }
 
     OpenGLCubemap::OpenGLCubemap(const std::vector<std::string>& facesPath)
@@ -277,11 +400,19 @@ namespace Vortex
 
         m_Width = width; m_Height = height;
 
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
+        SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+
+        SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        ApplySettings();
+
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
 
     OpenGLCubemap::OpenGLCubemap(uint32_t width, uint32_t height, const char* format)
@@ -298,21 +429,27 @@ namespace Vortex
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, m_InternalFormat, width, height, 0, m_DataFormat, pixelType, nullptr);
         }
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // enable pre-filter mipmap sampling (combatting visible dots artifact)
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        SetTextureFilterMode(TextureFilterOperation::MINIFY, TextureFilterMode::LINEAR);
+        SetTextureFilterMode(TextureFilterOperation::MAGNIFY, TextureFilterMode::LINEAR);
+
+        SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
+        SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        ApplySettings();
+
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // enable pre-filter mipmap sampling (combatting visible dots artifact)
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
     OpenGLCubemap::~OpenGLCubemap()
     {
         glDeleteTextures(1, &m_RendererID);
     }
-    void OpenGLCubemap::GenerateMipmaps() const
-    {
-        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-    }
+
     void OpenGLCubemap::Bind(uint32_t slot) const
     {
         glActiveTexture(GL_TEXTURE0 + slot);
@@ -327,6 +464,11 @@ namespace Vortex
     void OpenGLCubemap::SetData(void* data, uint32_t size)
     {
         VT_CORE_ASSERT(0, "Not implement!");
+    }
+
+    void OpenGLCubemap::ApplySettings() const
+    {
+        OpenGLApplySettings(*this, m_WrapModes, m_Filters, m_MipmapEnabled);
     }
 
 
@@ -344,7 +486,8 @@ namespace Vortex
         glGenTextures(1, &m_RendererID);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_RendererID);
         glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, nSamples, m_InternalFormat, m_Width, m_Height, GL_TRUE);
-
+        
+        ApplySettings();
     }
     OpenGLMultisampleTexture2D::~OpenGLMultisampleTexture2D()
     {
@@ -363,5 +506,9 @@ namespace Vortex
     {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    }
+    void OpenGLMultisampleTexture2D::ApplySettings() const
+    {
+        OpenGLApplySettings(*this, m_WrapModes, m_Filters, m_MipmapEnabled);
     }
 }

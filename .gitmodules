@@ -19,3 +19,6 @@
 [submodule "Vortex/vendor/assimp"]
 	path = Vortex/vendor/assimp
 	url = https://github.com/olleh-dlrow/assimp.git
+[submodule "Vortex/vendor/magic_enum"]
+	path = Vortex/vendor/magic_enum
+	url = https://github.com/olleh-dlrow/magic_enum.git

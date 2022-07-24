@@ -8,6 +8,7 @@ namespace Vortex
 {
     class VertexArray;
     enum class DepthPassCond;
+    enum class BlendFactor;
 
     // application interface gived by certain renderer,
     // This determines which type of instance you will get through Create function in renderer
@@ -25,6 +26,8 @@ namespace Vortex
         virtual void Clear() = 0;
         virtual void SetDepthTest(bool enable) = 0;
         virtual void SetDepthPassCond(DepthPassCond cond) = 0;
+        virtual void SetBlend(bool enable) = 0;
+        virtual void SetBlendFunc(BlendFactor src, BlendFactor dst) = 0;
 
         virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
         virtual void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr) = 0;

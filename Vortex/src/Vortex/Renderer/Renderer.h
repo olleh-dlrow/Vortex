@@ -26,6 +26,12 @@ namespace Vortex {
         ALWAYS
     };
 
+    enum class BlendFactor
+    {
+        SRC_ALPHA,
+        ONE_MINUS_SRC_ALPHA
+    };
+
     class Renderer
     {
     public:
@@ -34,6 +40,9 @@ namespace Vortex {
         static void SetDepthTest(bool enable);
 
         static void SetDepthPassCond(DepthPassCond cond);
+
+        static void SetBlend(bool enable);
+        static void SetBlendFunc(BlendFactor src, BlendFactor dst);
 
         static void OnWindowResize(uint32_t width, uint32_t height);
 

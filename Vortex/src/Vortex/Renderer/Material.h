@@ -52,16 +52,16 @@ namespace Vortex
 	private:
 		std::string									m_Name = "";
 		// key: name, value: TextureMeta, Texture ptr
-		std::unordered_map<std::string, TexPair>	m_Textures;
+		HashMap<std::string, TexPair>				m_Textures;
 
 		// properties
-		std::unordered_map<std::string, float>		m_FloatProps;
-		std::unordered_map<std::string, int>		m_IntProps;
-		std::unordered_map<std::string, glm::vec3>	m_Float3Props;
-		std::unordered_map<std::string, glm::vec4>	m_Float4Props;
-		std::unordered_map<std::string, glm::mat4>	m_Mat4Props;
+		HashMap<std::string, float>					m_FloatProps;
+		HashMap<std::string, int>					m_IntProps;
+		HashMap<std::string, glm::vec3>				m_Float3Props;
+		HashMap<std::string, glm::vec4>				m_Float4Props;
+		HashMap<std::string, glm::mat4>				m_Mat4Props;
 		
 		// extention
-		//std::unordered_map<std::string, bool>		m_DirtyFlags;
+		//HashMap<std::string, bool>		m_DirtyFlags;
 	};
 }

@@ -70,8 +70,8 @@ namespace Vortex
         virtual void Bind(FrameBufferState state) const override;
         virtual void Unbind() const override;
         virtual void AttachRenderBuffer(const Ref<RenderBuffer>& rb) const override;
-        virtual void AttachTexture2D(Texture2D& tex2D, int attachIndex) override;
-        virtual void AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex) override;
+        virtual void AttachTexture2D(Texture2D& tex2D, int attachIndex, int mipLevel) override;
+        virtual void AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex, int mipLevel) override;
         virtual bool CheckStatus() const override;
         virtual uint32_t GetID() const override { return m_RendererID; }
 

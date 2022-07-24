@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 
 namespace Vortex
-{
+{    
     class OpenGLTexture2D : public Texture2D
     {
     public:
@@ -32,6 +32,7 @@ namespace Vortex
         {
             return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
         }
+        virtual void ApplySettings() const override;
 
     private:
         std::string         m_Path;
@@ -61,6 +62,9 @@ namespace Vortex
         {
             return m_RendererID == ((OpenGLMultisampleTexture2D&)other).m_RendererID;
         }
+
+        virtual void ApplySettings() const override;
+
     private:
         uint32_t            m_Width, m_Height;
         uint32_t            m_RendererID;
@@ -75,7 +79,6 @@ namespace Vortex
         OpenGLCubemap(uint32_t width, uint32_t height, const char* format);
         virtual ~OpenGLCubemap();
 
-        virtual void GenerateMipmaps() const override;
         virtual void Bind(uint32_t slot = 0) const override;
         virtual void Unbind(uint32_t slot = 0) const override;
 
@@ -90,6 +93,7 @@ namespace Vortex
             return m_RendererID == ((OpenGLCubemap&)other).m_RendererID;
         }
 
+        virtual void ApplySettings() const override;
     private:
         uint32_t            m_RendererID;
         uint32_t            m_Width;

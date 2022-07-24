@@ -4,6 +4,8 @@
 #include "Vortex/Renderer/Renderer.h"
 #include "Vortex/Renderer/RendererAPI.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
+#include <magic_enum.hpp>
+#include <imgui.h>
 
 namespace Vortex
 {
@@ -90,5 +92,69 @@ namespace Vortex
 
         VT_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
+    }
+
+    void Texture::RenderConfigGUI()
+    {
+        ImGui::PushID(GetID());
+        ImGui::Text("Texture Settings:");
+        for (auto& wrap : m_WrapModes)
+        {
+            auto label = magic_enum::enum_name(wrap.first);
+            auto preVal = magic_enum::enum_name(wrap.second);
+            int currentIdx = (int)wrap.second;
+            
+            if (ImGui::BeginCombo(label.data(),preVal.data()))
+            {
+                for (int i = (int)TextureWrapMode::NONE; i < (int)TextureWrapMode::ENUM_MAX; i++)
+                {
+                    bool isSelected = (currentIdx == i);
+                    auto val = magic_enum::enum_name(TextureWrapMode(i));
+                    
+                    if (ImGui::Selectable(val.data(), isSelected))
+                    {
+                        currentIdx = i;
+                        SetTextureWrapMode(wrap.first, TextureWrapMode(i));
+                        m_IsDirty = true;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        }
+        for (auto& filter : m_Filters)
+        {
+            auto label = magic_enum::enum_name(filter.first);
+            auto preVal = magic_enum::enum_name(filter.second);
+            int currentIdx = (int)filter.second;
+            if (ImGui::BeginCombo(label.data(), preVal.data()))
+            {
+                for (int i = (int)TextureFilterMode::NONE; i < (int)TextureFilterMode::ENUM_MAX; i++)
+                {
+                    bool isSelected = (currentIdx == i);
+                    auto val = magic_enum::enum_name(TextureFilterMode(i));
+
+                    if (ImGui::Selectable(val.data(), isSelected))
+                    {
+                        currentIdx = i;
+                        SetTextureFilterMode(filter.first, TextureFilterMode(i));
+                        m_IsDirty = true;
+                    }
+                }
+                ImGui::EndCombo();
+            }
+        }
+
+        if (ImGui::Checkbox("Mipmap", &m_MipmapEnabled))
+        {
+            SetMipmap(m_MipmapEnabled);
+            m_IsDirty = true;
+        }
+
+        if (m_IsDirty && ImGui::Button("Apply"))
+        {
+            ApplySettings();
+            m_IsDirty = false;
+        }
+        ImGui::PopID();
     }
 }

@@ -27,6 +27,7 @@ IncludeDir["stb_image"] = "Vortex/vendor/stb_image"
 IncludeDir["eigen"] = "Vortex/vendor/eigen"
 IncludeDir["libigl"] = "Vortex/vendor/libigl/include"
 IncludeDir['assimp'] = "Vortex/vendor/assimp/include"
+IncludeDir['magic_enum'] = "Vortex/vendor/magic_enum/include"
 
 include "Vortex/vendor/GLFW"
 include "Vortex/vendor/Glad"
@@ -70,7 +71,8 @@ project "Vortex"
         "%{prj.name}/vendor/glm/glm/**.inl",
         "%{prj.name}/vendor/eigen/Eigen/**",
         "%{prj.name}/vendor/libigl/include/**.h",
-        "%{prj.name}/vendor/assimp/include/**.h"
+        "%{prj.name}/vendor/assimp/include/**.h",
+        "%{prj.name}/vendor/magic_enum/include/**.h"
     }
     
     defines
@@ -89,7 +91,8 @@ project "Vortex"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.eigen}",
         "%{IncludeDir.libigl}",
-        "%{IncludeDir.assimp}"
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.magic_enum}"
     }
     
     links
@@ -164,7 +167,8 @@ project "Sandbox"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.eigen}",
         "%{IncludeDir.libigl}",
-        "%{IncludeDir.assimp}"
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.magic_enum}"
     }
     
     links

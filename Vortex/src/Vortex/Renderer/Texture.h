@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 #include "Vortex/Core/Core.h"
 
@@ -13,10 +14,48 @@ namespace Vortex
 
     enum class TextureType
     {
+        NONE,
         TEX2D,
         TEX2D_MULTISAMPLE,
         CUBEMAP,
-        TEX3D
+        TEX3D,
+        ENUM_MAX
+    };
+
+    enum class TextureWrapMode
+    {
+        NONE,
+        CLAMP_TO_EDGE,
+        CLAMP_TO_BORDER,
+        REPEAT,
+        MIRRORED_REPEAT,
+        ENUM_MAX
+    };
+
+    enum class TextureWrapAxis
+    {
+        NONE,
+        S,
+        T,
+        R,
+        ENUM_MAX
+    };
+
+    enum class TextureFilterMode
+    {
+        NONE,
+        NEAREST,
+        LINEAR,
+        LINEAR_MIPMAP_LINEAR,
+        ENUM_MAX
+    };
+
+    enum class TextureFilterOperation
+    {
+        NONE,
+        MINIFY,
+        MAGNIFY,
+        ENUM_MAX
     };
 
     class Texture
@@ -36,10 +75,33 @@ namespace Vortex
         virtual bool operator==(const Texture& other) const = 0;
 
         virtual TextureType GetType() const = 0;
-        virtual void GenerateMipmaps() const { VT_CORE_ASSERT(0, "Not implement!"); }
         virtual std::string GetTextureFormat() const { return m_TextureFormat; }
+        
+        void SetMipmap(bool enable) { m_MipmapEnabled = enable; }
+        bool GetMipmap() const { return m_MipmapEnabled; }
+
+        TextureWrapMode GetWrapMode(TextureWrapAxis axis) const 
+        { 
+            return m_WrapModes.count(axis) > 0 ? m_WrapModes.at(axis) : TextureWrapMode::NONE;
+        }
+        void SetTextureWrapMode(TextureWrapAxis axis, TextureWrapMode mode) { m_WrapModes[axis] = mode; }
+
+        TextureFilterMode GetFilterMode(TextureFilterOperation op) const 
+        {
+            return m_Filters.count(op) > 0 ? m_Filters.at(op) : TextureFilterMode::NONE;
+        }
+        void SetTextureFilterMode(TextureFilterOperation op, TextureFilterMode mode) { m_Filters[op] = mode; }
+
+        virtual void ApplySettings() const = 0;
+
+        void RenderConfigGUI();
+
     protected:
-        std::string m_TextureFormat;
+        std::string                                                         m_TextureFormat;
+        bool                                                                m_MipmapEnabled = false;
+        HashMap<TextureWrapAxis, TextureWrapMode>                           m_WrapModes;
+        HashMap<TextureFilterOperation, TextureFilterMode>                  m_Filters;
+        bool                                                                m_IsDirty = false;
     };
 
     class Texture2D : public Texture
@@ -98,6 +160,6 @@ namespace Vortex
 
     private:
         // key: path, value: pair of texture meta and texture ptr
-        std::unordered_map<std::string, TexPair > m_Textures;
+        HashMap<std::string, TexPair > m_Textures;
     };
 }

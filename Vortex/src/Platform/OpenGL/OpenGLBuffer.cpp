@@ -8,6 +8,8 @@
 
 namespace Vortex 
 {
+    extern GLenum ParseTextureType(TextureType type);
+
     /////////////////////////////////////////////////////////////////////////////
     // VertexBuffer /////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
@@ -169,26 +171,14 @@ namespace Vortex
     {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rb->GetID());
     }
-    void OpenGLFrameBuffer::AttachTexture2D(Texture2D& tex2D, int attachIndex)
+    void OpenGLFrameBuffer::AttachTexture2D(Texture2D& tex2D, int attachIndex, int mipLevel)
     {
-        uint32_t texType = 0;
-        switch (tex2D.GetType())
-        {
-        case TextureType::TEX2D:
-            texType = GL_TEXTURE_2D;
-            break;
-        case TextureType::TEX2D_MULTISAMPLE:
-            texType = GL_TEXTURE_2D_MULTISAMPLE;
-            break;
-        default:
-            VT_CORE_ASSERT(0, "Unknown TextureType");
-            break;
-        }
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachIndex, texType, tex2D.GetID(), 0);
+        uint32_t texType = ParseTextureType(tex2D.GetType());
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachIndex, texType, tex2D.GetID(), mipLevel);
     }
-    void OpenGLFrameBuffer::AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex)
+    void OpenGLFrameBuffer::AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex, int mipLevel)
     {
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachIndex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, cubemap.GetID(), 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachIndex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, cubemap.GetID(), mipLevel);
     }
     bool OpenGLFrameBuffer::CheckStatus() const
     {

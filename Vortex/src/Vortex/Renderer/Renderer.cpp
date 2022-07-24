@@ -33,6 +33,16 @@ namespace Vortex {
         s_RendererAPI->SetDepthPassCond(cond);
     }
 
+    void Renderer::SetBlend(bool enable)
+    {
+        s_RendererAPI->SetBlend(enable);
+    }
+
+    void Renderer::SetBlendFunc(BlendFactor src, BlendFactor dst)
+    {
+        s_RendererAPI->SetBlendFunc(src, dst);
+    }
+
     // OBSOLETE
     void Renderer::OnWindowResize(uint32_t width, uint32_t height)
     {
