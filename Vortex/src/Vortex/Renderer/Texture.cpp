@@ -94,6 +94,8 @@ namespace Vortex
         return nullptr;
     }
 
+    // The reason of PushID:
+    // https://blog.csdn.net/weixin_40787463/article/details/106928337
     void Texture::RenderConfigGUI()
     {
         ImGui::PushID(GetID());
