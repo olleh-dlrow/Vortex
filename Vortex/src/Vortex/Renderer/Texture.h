@@ -4,6 +4,8 @@
 #include <unordered_map>
 
 #include "Vortex/Core/Core.h"
+#include <glm/glm.hpp>
+#include <optional>
 
 namespace Vortex
 {
@@ -92,6 +94,8 @@ namespace Vortex
         }
         void SetTextureFilterMode(TextureFilterOperation op, TextureFilterMode mode) { m_Filters[op] = mode; }
 
+        void SetBorderColor(const glm::vec4& col) { m_BorderColor = col; }
+
         virtual void ApplySettings() const = 0;
 
         void RenderConfigGUI();
@@ -101,6 +105,7 @@ namespace Vortex
         bool                                                                m_MipmapEnabled = false;
         HashMap<TextureWrapAxis, TextureWrapMode>                           m_WrapModes;
         HashMap<TextureFilterOperation, TextureFilterMode>                  m_Filters;
+        std::optional<glm::vec4>                                            m_BorderColor;
         bool                                                                m_IsDirty = false;
     };
 

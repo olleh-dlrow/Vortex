@@ -9,6 +9,8 @@ namespace Vortex
     class VertexArray;
     enum class DepthPassCond;
     enum class BlendFactor;
+    enum class RDBufferMode;
+    enum class BitField;
 
     // application interface gived by certain renderer,
     // This determines which type of instance you will get through Create function in renderer
@@ -23,9 +25,11 @@ namespace Vortex
         virtual void Init() = 0;
         virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
         virtual void SetClearColor(const glm::vec4& color) = 0;
-        virtual void Clear() = 0;
+        virtual void Clear(BitField mask) = 0;
         virtual void SetDepthTest(bool enable) = 0;
         virtual void SetDepthPassCond(DepthPassCond cond) = 0;
+        virtual void SetDrawBufferMode(RDBufferMode mode) = 0;
+        virtual void SetReadBufferMode(RDBufferMode mode) = 0;
         virtual void SetBlend(bool enable) = 0;
         virtual void SetBlendFunc(BlendFactor src, BlendFactor dst) = 0;
 

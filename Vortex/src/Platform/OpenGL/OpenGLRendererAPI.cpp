@@ -9,6 +9,38 @@
 
 namespace Vortex
 {
+    GLenum ParseReadDrawBufferMode(RDBufferMode mode) 
+    {
+        switch (mode)
+        {
+        case Vortex::RDBufferMode::NONE:
+            return GL_NONE;
+        case Vortex::RDBufferMode::FRONT:
+            return GL_FRONT;
+        case Vortex::RDBufferMode::BACK:
+            return GL_BACK;
+        default:
+            return GL_NONE;
+        }
+    }
+
+    GLbitfield ParseBitField(BitField mask)
+    {
+        switch (mask)
+        {
+        case Vortex::BitField::NONE:
+            return GL_NONE;
+        case Vortex::BitField::DEPTH_BUFFER_BIT:
+            return GL_DEPTH_BUFFER_BIT;
+        case Vortex::BitField::COLOR_BUFFER_BIT:
+            return GL_COLOR_BUFFER_BIT;
+        case Vortex::BitField::DEPTH_COLOR_BUFFER_BIT:
+            return GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT;
+        default:
+            return GL_NONE;
+        }
+    }
+
     void OpenGLMessageCallback(
         unsigned source,
         unsigned type,
@@ -64,9 +96,10 @@ namespace Vortex
         glClearColor(color.r, color.g, color.b, color.a);
     }
 
-    void OpenGLRendererAPI::Clear()
+    void OpenGLRendererAPI::Clear(BitField mask)
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        GLbitfield m = ParseBitField(mask);
+        glClear(m);
     }
 
     void OpenGLRendererAPI::SetDepthTest(bool enable)
@@ -74,6 +107,18 @@ namespace Vortex
         if (enable)
             glEnable(GL_DEPTH_TEST);
         else glDisable(GL_DEPTH_TEST);
+    }
+
+    void OpenGLRendererAPI::SetDrawBufferMode(RDBufferMode mode)
+    {
+        GLenum m = ParseReadDrawBufferMode(mode);
+        glDrawBuffer(m);
+    }
+
+    void OpenGLRendererAPI::SetReadBufferMode(RDBufferMode mode)
+    {
+        GLenum m = ParseReadDrawBufferMode(mode);
+        glReadBuffer(m);
     }
 
     void OpenGLRendererAPI::SetBlend(bool enable)

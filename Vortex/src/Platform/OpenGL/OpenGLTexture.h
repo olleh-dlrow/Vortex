@@ -3,11 +3,34 @@
 #include "Vortex/Renderer/Texture.h"
 
 #include <glad/glad.h>
+#include <glm/ext.hpp>
 
 namespace Vortex
 {    
+    template<typename T>
+    void OpenGLApplySettings(const T& tex)
+    {
+        for (auto& wrap : tex.m_WrapModes)
+        {
+            glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureWrapAxis(wrap.first), ParseTextureWrapMode(wrap.second));
+        }
+        for (auto& filter : tex.m_Filters)
+        {
+            glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureFilterOperation(filter.first), ParseTextureFilterMode(filter.second));
+        }
+        if (tex.m_MipmapEnabled)
+        {
+            glGenerateMipmap(ParseTextureType(tex.GetType()));
+        }
+        if (tex.m_BorderColor.has_value()) 
+        {
+            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(tex.m_BorderColor.value()));
+        }
+    }
+
     class OpenGLTexture2D : public Texture2D
     {
+        template<typename T> friend void OpenGLApplySettings(const T& tex);
     public:
         // https ://www.khronos.org/opengl/wiki/Image_Format
         OpenGLTexture2D(uint32_t width, uint32_t height, 
@@ -44,6 +67,7 @@ namespace Vortex
 
     class OpenGLMultisampleTexture2D : public MultisampleTexture2D
     {
+        template<typename T> friend void OpenGLApplySettings(const T& tex);
     public:
         OpenGLMultisampleTexture2D(uint32_t width, uint32_t height, int nSamples, const char* format);
         virtual ~OpenGLMultisampleTexture2D();
@@ -74,6 +98,7 @@ namespace Vortex
 
     class OpenGLCubemap : public Cubemap
     {
+        template<typename T> friend void OpenGLApplySettings(const T& tex);
     public:
         OpenGLCubemap(const std::vector<std::string>& facesPath);
         OpenGLCubemap(uint32_t width, uint32_t height, const char* format);

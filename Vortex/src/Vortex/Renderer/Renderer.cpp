@@ -28,6 +28,18 @@ namespace Vortex {
         s_RendererAPI->SetDepthTest(enable);
     }
 
+    void Renderer::SetDrawBufferMode(RDBufferMode mode)
+    {
+        s_RendererAPI->SetDrawBufferMode(mode);
+    }
+
+    void Renderer::SetReadBufferMode(RDBufferMode mode)
+    {
+        s_RendererAPI->SetReadBufferMode(mode);
+    }
+
+
+
     void Renderer::SetDepthPassCond(DepthPassCond cond)
     {
         s_RendererAPI->SetDepthPassCond(cond);
@@ -88,9 +100,9 @@ namespace Vortex {
         s_RendererAPI->SetClearColor(color);
     }
 
-    void Renderer::Clear()
+    void Renderer::Clear(BitField mask)
     {
-        s_RendererAPI->Clear();
+        s_RendererAPI->Clear(mask);
     }
 
     void Renderer::DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr)

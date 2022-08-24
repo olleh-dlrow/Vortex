@@ -26,9 +26,9 @@ namespace Vortex
 
 		// set mesh, and update the size of buffer
 		void SetMeshComponent(MeshComponent* comp);
+		void DrawMesh();
 
 	protected:
-		void DrawMesh();
 		void ResetMesh(MeshComponent* comp);
 
 	public:

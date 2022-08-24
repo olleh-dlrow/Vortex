@@ -5,33 +5,7 @@
 #include <Vortex/Scene/MeshRendererComponent.h>
 #include <Vortex/Scene/SkyboxRendererComponent.h>
 #include <Vortex/Renderer/Texture.h>
-
-using Vortex::Ref;
-using Vortex::CreateRef;
-using Vortex::ViewportWindow;
-using Vortex::Camera;
-using Vortex::Renderer;
-using Vortex::Shader;
-using Vortex::VertexArray;
-using Vortex::VertexBuffer;
-using Vortex::Cube4;
-using Vortex::Quad5;
-
-using Vortex::Texture;
-using Vortex::Texture2D;
-using Vortex::Mesh;
-using Vortex::MeshComponent;
-using Vortex::MeshRendererComponent;
-using Vortex::Material;
-using Vortex::Scene;
-using Vortex::Entity;
-using Vortex::Cubemap;
-using Vortex::FrameBuffer;
-using Vortex::RenderBuffer;
-using Vortex::TextureFilterOperation;
-using Vortex::TextureFilterMode;
-using Vortex::TextureWrapAxis;
-using Vortex::TextureWrapMode;
+using namespace Vortex;
 
 glm::vec3 lightPositions[] = {
     glm::vec3(-10.0f,  10.0f, 10.0f),

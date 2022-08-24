@@ -32,12 +32,29 @@ namespace Vortex {
         ONE_MINUS_SRC_ALPHA
     };
 
+    enum class RDBufferMode
+    {
+        NONE,
+        FRONT,
+        BACK
+    };
+
+    enum class BitField
+    {
+        NONE,
+        DEPTH_BUFFER_BIT,
+        COLOR_BUFFER_BIT,
+        DEPTH_COLOR_BUFFER_BIT
+    };
+
     class Renderer
     {
     public:
         static void Init();
         static void Shutdown();
         static void SetDepthTest(bool enable);
+        static void SetDrawBufferMode(RDBufferMode mode);
+        static void SetReadBufferMode(RDBufferMode mode);
 
         static void SetDepthPassCond(DepthPassCond cond);
 
@@ -63,7 +80,7 @@ namespace Vortex {
 
         static void SetClearColor(const glm::vec4& color);
         
-        static void Clear();
+        static void Clear(BitField mask = BitField::DEPTH_COLOR_BUFFER_BIT);
                
         static void DrawIndexedTriangles(const Ref<VertexArray>& vertexArray, DrawTriangleConfig attr);
      

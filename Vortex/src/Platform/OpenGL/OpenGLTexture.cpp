@@ -9,7 +9,7 @@
 namespace Vortex
 {
     void ParseFormat(const char* format, uint32_t& dataFormat, uint32_t& internalFormat,
-                    uint32_t& pixelType)
+        uint32_t& pixelType)
     {
         // GL_[components​][size​][type​]
         if (strcmp(format, "RGB8") == 0)
@@ -64,6 +64,12 @@ namespace Vortex
         {
             dataFormat = GL_RG;
             internalFormat = GL_RG16F;
+            pixelType = GL_FLOAT;
+        }
+        else if (strcmp(format, "DEPTH") == 0)
+        {
+            dataFormat = GL_DEPTH_COMPONENT;
+            internalFormat = GL_DEPTH_COMPONENT;
             pixelType = GL_FLOAT;
         }
         else
@@ -152,25 +158,40 @@ namespace Vortex
         }
     }
 
-    void OpenGLApplySettings(const Texture& tex, 
-        const HashMap<TextureWrapAxis, TextureWrapMode>& wrapModes,
-        const HashMap<TextureFilterOperation, TextureFilterMode>& filters,
-        bool mipmapEnabled)
-    {
-        tex.Bind();
-        for (auto& wrap : wrapModes)
-        {
-            glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureWrapAxis(wrap.first), ParseTextureWrapMode(wrap.second));
-        }
-        for (auto& filter : filters)
-        {
-            glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureFilterOperation(filter.first), ParseTextureFilterMode(filter.second));
-        }
-        if (mipmapEnabled)
-        {
-            glGenerateMipmap(ParseTextureType(tex.GetType()));
-        }
-    }
+    //void OpenGLApplySettings(const Texture& tex, 
+    //    const HashMap<TextureWrapAxis, TextureWrapMode>& wrapModes,
+    //    const HashMap<TextureFilterOperation, TextureFilterMode>& filters,
+    //    bool mipmapEnabled)
+    //{
+    //    for (auto& wrap : wrapModes)
+    //    {
+    //        glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureWrapAxis(wrap.first), ParseTextureWrapMode(wrap.second));
+    //    }
+    //    for (auto& filter : filters)
+    //    {
+    //        glTexParameteri(ParseTextureType(tex.GetType()), ParseTextureFilterOperation(filter.first), ParseTextureFilterMode(filter.second));
+    //    }
+    //    if (mipmapEnabled)
+    //    {
+    //        glGenerateMipmap(ParseTextureType(tex.GetType()));
+    //    }
+    //}
+
+    //void OpenGLApplySettings(const Texture& tex)
+    //{
+    //    switch (tex.GetType())
+    //    {
+    //    case TextureType::TEX2D:
+    //        OpenGLApplySettings(dynamic_cast<const OpenGLTexture2D&>(tex));
+    //        break;
+    //    case TextureType::TEX2D_MULTISAMPLE:
+    //        break;
+    //    case TextureType::CUBEMAP:
+    //        break;
+    //    default:
+    //        break;
+    //    }
+    //}
 
     // difference of glTextureStorage* and glTexImage*
     // https://community.khronos.org/t/framebuffer-texture-glteximage2d-vs-gltexstorage2d/74839/2
@@ -336,7 +357,7 @@ namespace Vortex
 
     void OpenGLTexture2D::ApplySettings() const
     {
-        OpenGLApplySettings(*this, m_WrapModes, m_Filters, m_MipmapEnabled);
+        OpenGLApplySettings(*this);
     }
 
     OpenGLCubemap::OpenGLCubemap(const std::vector<std::string>& facesPath)
@@ -430,7 +451,7 @@ namespace Vortex
 
     void OpenGLCubemap::ApplySettings() const
     {
-        OpenGLApplySettings(*this, m_WrapModes, m_Filters, m_MipmapEnabled);
+        OpenGLApplySettings(*this);
     }
 
 
@@ -468,6 +489,6 @@ namespace Vortex
     }
     void OpenGLMultisampleTexture2D::ApplySettings() const
     {
-        OpenGLApplySettings(*this, m_WrapModes, m_Filters, m_MipmapEnabled);
+        OpenGLApplySettings(*this);
     }
 }
