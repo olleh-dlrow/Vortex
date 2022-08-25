@@ -15,7 +15,7 @@ windows10 x64
 ## Framework Abstract
 
 see Wiki
-
+https://github.com/olleh-dlrow/Vortex/wiki
 
 
 ## Plan
