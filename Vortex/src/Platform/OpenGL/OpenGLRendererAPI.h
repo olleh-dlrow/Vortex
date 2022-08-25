@@ -12,6 +12,7 @@ namespace Vortex
         virtual void SetClearColor(const glm::vec4& color) override;
         virtual void Clear(BitField mask) override;
         virtual void SetDepthTest(bool enable) override;
+        virtual void SetCullFace(bool enable) override;
         virtual void SetDrawBufferMode(RDBufferMode mode) override;
         virtual void SetReadBufferMode(RDBufferMode mode) override;
         virtual void SetBlend(bool enable) override;

@@ -19,6 +19,10 @@ namespace Vortex
         {
             return GL_FRAGMENT_SHADER;
         }
+        if (type == "geometry")
+        {
+            return GL_GEOMETRY_SHADER;
+        }
         VT_CORE_ASSERT(false, "Unknown shader type!");
         return 0;
     }
@@ -114,8 +118,8 @@ namespace Vortex
     {
         GLuint program = glCreateProgram();
         
-        VT_CORE_ASSERT(shaderSources.size() <= 2, "We only support 2 shaders for now");
-        std::array<GLenum, 2> glShaderIDs;
+        VT_CORE_ASSERT(shaderSources.size() <= 3, "We only support 3 shaders for now");
+        std::vector<GLenum> glShaderIDs(shaderSources.size());
         int glShaderIDIndex = 0;
 
         for(auto& kv : shaderSources)

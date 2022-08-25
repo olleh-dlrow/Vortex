@@ -56,7 +56,7 @@ namespace Vortex
 				   scrPos.x <= vMax.x && scrPos.y <= vMax.y;
 		}
 		inline bool IsFocused() const { return m_IsFocused; }
-
+		void BindTargetFrameBuffer() const;
 	private:
 		Texture2D& GetRenderTexture();
 		void InitFrameBuffers();

@@ -180,10 +180,9 @@ namespace Vortex
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachIndex, GL_TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, cubemap.GetID(), mipLevel);
     }
-    void OpenGLFrameBuffer::AttachDepthBuffer(Texture2D& tex2D, int mipLevel)
+    void OpenGLFrameBuffer::AttachDepthBuffer(Texture& tex, int mipLevel)
     {
-        uint32_t texType = ParseTextureType(tex2D.GetType());
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texType, tex2D.GetID(), mipLevel);
+        glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tex.GetID(), mipLevel);
     }
     bool OpenGLFrameBuffer::CheckStatus() const
     {

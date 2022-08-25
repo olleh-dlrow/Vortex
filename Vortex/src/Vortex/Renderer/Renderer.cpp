@@ -38,7 +38,10 @@ namespace Vortex {
         s_RendererAPI->SetReadBufferMode(mode);
     }
 
-
+    void Renderer::SetCullFace(bool enable)
+    {
+        s_RendererAPI->SetCullFace(enable);
+    }
 
     void Renderer::SetDepthPassCond(DepthPassCond cond)
     {

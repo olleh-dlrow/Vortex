@@ -330,4 +330,9 @@ namespace Vortex
 
 		return false;
 	}
+
+	void ViewportWindow::BindTargetFrameBuffer() const
+	{
+		m_TargetFB->Bind();
+	}
 }

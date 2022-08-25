@@ -55,7 +55,7 @@ namespace Vortex {
         static void SetDepthTest(bool enable);
         static void SetDrawBufferMode(RDBufferMode mode);
         static void SetReadBufferMode(RDBufferMode mode);
-
+        static void SetCullFace(bool enable);
         static void SetDepthPassCond(DepthPassCond cond);
 
         static void SetBlend(bool enable);

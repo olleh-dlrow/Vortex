@@ -109,6 +109,13 @@ namespace Vortex
         else glDisable(GL_DEPTH_TEST);
     }
 
+    void OpenGLRendererAPI::SetCullFace(bool enable)
+    {
+        if (enable)
+            glEnable(GL_CULL_FACE);
+        else glDisable(GL_CULL_FACE);
+    }
+
     void OpenGLRendererAPI::SetDrawBufferMode(RDBufferMode mode)
     {
         GLenum m = ParseReadDrawBufferMode(mode);

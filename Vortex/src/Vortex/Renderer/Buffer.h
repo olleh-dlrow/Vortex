@@ -180,7 +180,7 @@ namespace Vortex
         virtual void AttachRenderBuffer(const Ref<RenderBuffer>& rb) const = 0;
         virtual void AttachTexture2D(Texture2D& tex2D, int attachIndex, int mipLevel = 0) = 0;
         virtual void AttachCubemap(Cubemap& cubemap, int attachIndex, int faceIndex, int mipLevel=0) = 0;
-        virtual void AttachDepthBuffer(Texture2D& tex2D, int mipLevel = 0) = 0;
+        virtual void AttachDepthBuffer(Texture& tex, int mipLevel = 0) = 0;
         virtual bool CheckStatus() const = 0;
         
         virtual uint32_t GetID() const = 0;

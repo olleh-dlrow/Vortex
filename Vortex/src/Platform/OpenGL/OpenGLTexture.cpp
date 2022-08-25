@@ -400,7 +400,7 @@ namespace Vortex
 
         SetTextureWrapMode(TextureWrapAxis::S, TextureWrapMode::CLAMP_TO_EDGE);
         SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
-        SetTextureWrapMode(TextureWrapAxis::T, TextureWrapMode::CLAMP_TO_EDGE);
+        SetTextureWrapMode(TextureWrapAxis::R, TextureWrapMode::CLAMP_TO_EDGE);
         ApplySettings();
     }
 
