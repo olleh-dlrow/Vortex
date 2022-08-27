@@ -237,6 +237,8 @@ public:
 
     void OnUpdate(Timestep ts) override 
     {
+        EditorLayer::OnUpdate(ts);
+
         lightPos.z = sin(Time::GetSeconds() * 0.5) * 3.0;
 
         Renderer::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });

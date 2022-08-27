@@ -16,7 +16,8 @@
 //#include "PBRLightTest.h"
 //#include "IBLTest.h"
 //#include "ShadowTest.h"
-#include "PointShadowTest.h"
+//#include "PointShadowTest.h"
+#include "AABBTest.h"
 /*
 tips:
 To copy the dll automatically, you can 
@@ -27,7 +28,7 @@ xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\Vortex\Vortex.dll" "$(Solu
 class Sandbox: public Vortex::Application {
 public:
     Sandbox() {
-        PushLayer(new PointShadowTest());
+        PushLayer(new AABBTest());
     }
     ~Sandbox() {
     

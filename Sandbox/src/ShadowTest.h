@@ -160,6 +160,8 @@ public:
     }
 
 	void OnUpdate(Timestep ts) override {
+        EditorLayer::OnUpdate(ts);
+
         // reset viewport
         int width = Application::Get().GetWindow().GetWidth();
         int height = Application::Get().GetWindow().GetHeight();

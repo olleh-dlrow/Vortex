@@ -11,10 +11,13 @@ namespace Vortex
 	public:
 		TransformComponent();
 		virtual void OnUpdate(Timestep ts) override;
+		glm::mat4 GetModelMatrix() const;
 
+		void RenderConfigGUI();
 	private:
 		glm::vec3		m_Position;
 		glm::vec3		m_Scale;
+		glm::vec3		m_Rotation;
 		glm::quat		m_Quaternion;
 	};
 }

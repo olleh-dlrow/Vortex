@@ -183,6 +183,16 @@ namespace Vortex
 			}
 		}
 
+		static glm::vec3 GetMinPosition() 
+		{
+			return glm::vec3(-0.5f, -0.5f, -0.5f);
+		}
+
+		static glm::vec3 GetMaxPosition()
+		{
+			return glm::vec3(0.5f, 0.5f, 0.5f);
+		}
+
 		static float* GetVertices()
 		{
 			static float vertices[] = {
